@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<people>
+    <person idnum="1234">
+        <first>Mario</first>
+        <last>Rossi</last>
+    </person>
+    <person idnum="5678">
+        <first>Elena</first>
+        <last>Bianchi</last>
+    </person>
+    <person idnum="9012">
+        <first>Giuseppe</first>
+        <last>Verdi</last>
+    </person>
+    <person idnum="3456">
+        <first>Anna</first>
+        <last>Rossi</last>
+    </person>
+</people>
