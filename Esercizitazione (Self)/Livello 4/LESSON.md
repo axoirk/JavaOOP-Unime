@@ -83,10 +83,97 @@ Un **Thread** è la più piccola unità di esecuzione. Un processo può essere f
 - Cambio di contesto molto più rapido e leggero.
 - Comunicazione fulminea inter-thread essendo nello stesso Heap.
 
-### Creazione di un Thread: `Runnable` vs `Thread`
-In Java ci sono due approcci ortodossi:
-1. **Estendere la classe `Thread`**: Si crea una sottoclasse e si fa override di `run()`. **Svantaggio Accademico Letale**: Java impone l'ereditarietà singola. Se estendi `Thread`, la tua classe non potrà mai estendere nessun'altra classe (es. non potrà estendere `JFrame` per una GUI).
-2. **Implementare l'interfaccia `Runnable`**: Consigliato. Si implementa l'interfaccia, si scrive la logica nel `run()`, e si inietta questa classe nel costruttore di un `new Thread()`. Questo pattern separa l'entità che fa il lavoro (il Runnable) dal motore che lo esegue (il Thread), garantendo massima flessibilità gerarchica.
+### Creazione di un Thread: `Runnable` vs `Thread` (Esempi Pratici)
+In Java ci sono due approcci ortodossi per definire e lanciare un Thread. Questa non è solo una scelta stilistica, ma una decisione architetturale.
+
+#### Metodo 1: Estendere la classe `Thread`
+Si crea una sottoclasse di `java.lang.Thread` e si esegue l'override del metodo `run()`.
+**Svantaggio Accademico Letale:** Java impone l'ereditarietà singola. Se estendi `Thread`, la tua classe non potrà **mai** estendere nessun'altra classe (es. non potrà estendere `JFrame` per creare un'interfaccia grafica).
+
+*Esempio 1A: Definizione e lancio dal Main*
+```java
+// Definizione
+public class MioThreadEsteso extends Thread {
+    @Override
+    public void run() {
+        System.out.println("Esecuzione parallela tramite estensione di Thread.");
+    }
+}
+
+// Lancio
+public class TestEsteso {
+    public static void main(String[] args) {
+        MioThreadEsteso t1 = new MioThreadEsteso();
+        // NON chiamare t1.run()! Devi chiamare start() per il multithreading.
+        t1.start(); 
+    }
+}
+```
+
+*Esempio 1B: Il Thread che si "Auto-Lancia"*
+Un pattern elegante è far sì che il Thread si auto-avvii non appena viene istanziato, includendo la chiamata `start()` direttamente nel suo costruttore.
+```java
+public class ThreadAutoAvviante extends Thread {
+    public ThreadAutoAvviante() {
+        // Il thread chiama start() su se stesso al momento della creazione
+        this.start(); 
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Sono partito da solo!");
+    }
+}
+
+// Nel main basta solo instanziarlo:
+// new ThreadAutoAvviante();
+```
+
+#### Metodo 2: Implementare l'interfaccia `Runnable` (Consigliato)
+Si crea una classe che implementa il metodo `run()`, poi la si passa come parametro (target) al costruttore di un nuovo oggetto `Thread`.
+**Vantaggio:** È il metodo caldamente consigliato dall'ingegneria del software. Permette alla tua classe di ereditare liberamente da altre classi padre e separa nettamente la logica del "Task" (il lavoro da svolgere) dal "Motore" (il Thread fisico che lo esegue).
+
+*Esempio 2A: Definizione e lancio dal Main*
+```java
+// Definizione del Task
+public class MioTask implements Runnable {
+    @Override
+    public void run() {
+        System.out.println("Esecuzione parallela tramite Runnable.");
+    }
+}
+
+// Lancio
+public class TestRunnable {
+    public static void main(String[] args) {
+        MioTask task = new MioTask(); // Creo l'entità logica
+        Thread t1 = new Thread(task); // Inietto il task nel Motore Thread
+        t1.start(); // Avvio il motore
+    }
+}
+```
+
+*Esempio 2B: Il Runnable che si auto-avvia*
+In questo caso, la classe non è un Thread, ma possiede un Thread interno (composizione) a cui passa se stessa (`this`).
+```java
+public class RunnableAutoAvviante implements Runnable {
+    private Thread motore;
+
+    public RunnableAutoAvviante() {
+        // Inietto me stesso (this, in quanto Runnable) nel nuovo Thread
+        motore = new Thread(this);
+        motore.start(); // Avvio il motore
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Runnable auto-avviato tramite composition!");
+    }
+}
+
+// Nel main:
+// new RunnableAutoAvviante();
+```
 
 ### Gli Stati (Ciclo di Vita) di un Thread
 1. **New**: Istanza appena creata, prima del `start()`.
