@@ -2,177 +2,209 @@
 
 ## 1. Classi, Oggetti e Incapsulamento
 
-### Teoria Fondamentale
-Il paradigma Object-Oriented modella il dominio del problema creando entità (Oggetti) che comunicano tra loro. 
+### Teoria Fondamentale: Astrazione e Information Hiding
+Il paradigma Object-Oriented (OOP) nasce per risolvere la crisi del software degli anni '70 e '80, dove enormi basi di codice procedurale (tutto globale, funzioni slegate dai dati) diventavano impossibili da mantenere. La OOP modella il dominio del problema creando entità autonome e coese (Oggetti) che comunicano scambiandosi messaggi.
 
 > **Definizione Accademica (Classe vs Oggetto):**
-> Una **Classe** è il "progetto" o *blueprint* a livello concettuale: definisce la struttura dei dati (variabili d'istanza) e i comportamenti (metodi). Un **Oggetto** è una specifica istanza creata a runtime in memoria heap, partendo da quella classe.
+> Una **Classe** è il "progetto" ingegneristico o *blueprint* a livello concettuale. Non esiste fisicamente in esecuzione se non come metadato, ma definisce la struttura dei dati (le *variabili d'istanza* o *stato*) e i comportamenti consentiti (i *metodi*). 
+> Un **Oggetto** è una specifica istanza creata a runtime nella memoria *Heap*. Ogni oggetto possiede una propria copia indipendente delle variabili d'istanza definite dalla classe, garantendo l'isolamento dello stato.
 
-L'**Incapsulamento (Information Hiding)** è il principio secondo il quale lo stato interno di un oggetto non deve essere manipolabile dall'esterno in modo incontrollato. I dati sono marcati come `private` ed esposti tramite metodi `public` (Pattern Getter/Setter), che si occupano della validazione.
+L'**Incapsulamento (Information Hiding)** è il principio supremo di sicurezza della OOP. Sancisce che lo stato interno di un oggetto non deve **mai** essere manipolabile dall'esterno in modo diretto. Si applica la regola della "Scatola Nera": i dati sono marcati come `private` (invisibili all'esterno) e vi si accede esclusivamente tramite un'interfaccia pubblica di metodi `public` (i famosi pattern Getter/Setter). Questo permette alla classe di fungere da "Dogana", applicando regole di validazione ed evitando che il software entri in stati logici incoerenti (es. impostare un'età negativa).
 
-L'**Overloading (Sovraccarico dei Metodi)** consente a una classe di avere più metodi (inclusi i Costruttori) con lo *stesso nome*, purché abbiano firme diverse (diverso numero o tipo di parametri).
+L'**Overloading (Sovraccarico dei Metodi)** consente a una classe di avere più metodi (inclusi i Costruttori) con lo *stesso identico nome*, purché la loro "firma" sia diversa (ossia cambi il numero o il tipo di parametri passati). Il compilatore capisce quale metodo invocare basandosi sugli argomenti forniti a tempo di compilazione (Static Binding).
 
 ### Sintassi ed Esempi di Codice
 ```java
-public class Studente {
-    // Variabili d'istanza incapsulate (Information Hiding)
-    private String nome;
+public class Studente Universitario {
+    // 1. Information Hiding: Nessuno fuori da questa classe può toccare questi campi.
+    private String matricola;
     private int eta;
+    private double mediaVoti;
     
-    // Costruttore 1 (Vuoto / Default)
-    public Studente() {
-        this.nome = "Sconosciuto";
+    // 2. Costruttore di Default (Senza argomenti)
+    // Se non lo si scrive e si usa un altro costruttore, Java NON lo genererà in automatico.
+    public StudenteUniversitario() {
+        this.matricola = "Non Assegnata";
         this.eta = 18;
+        this.mediaVoti = 18.0;
     }
     
-    // Costruttore 2 (Overloading con parametri)
-    public Studente(String nome, int eta) {
-        this.nome = nome;
-        setEta(eta); // Uso il setter per la validazione!
+    // 3. Costruttore con Overloading e Costructor Injection
+    // La keyword 'this' risolve l'ambiguità (Shadowing) tra il parametro e la variabile d'istanza.
+    public StudenteUniversitario(String matricola, int eta) {
+        this.matricola = matricola;
+        // Deleghiamo l'assegnazione al Setter per sfruttare la sua logica di validazione!
+        setEta(eta); 
+        this.mediaVoti = 18.0; 
     }
     
-    // Getter
-    public String getNome() {
-        return this.nome;
+    // 4. Pattern Getter: Lettura sicura (Read-Only per il mondo esterno)
+    public String getMatricola() {
+        return this.matricola;
     }
     
-    // Setter con validazione dello stato
+    // 5. Pattern Setter: Scrittura validata (Mutazione controllata)
     public void setEta(int eta) {
-        if (eta > 0 && eta <= 120) {
+        // La "Dogana" algoritmica
+        if (eta >= 16 && eta <= 120) {
             this.eta = eta;
         } else {
-            System.out.println("Errore: Età non valida.");
-            this.eta = 18; // Fallback di default
+            System.err.println("Errore di Dominio: Età fuori dal range accademico consentito.");
+            // Non si blocca l'esecuzione, ma si evita di corrompere lo stato!
+            // In contesti enterprise, qui si lancerebbe una IllegalArgumentException.
         }
     }
 }
 ```
 
 ### Best Practices & Errori Comuni (Trick Accademici)
-- **Bypassare i Setter nel Costruttore:** Errore classico. Nei costruttori bisogna invocare i metodi Setter per evitare di duplicare la logica di validazione e rischiare stati inconsistenti.
-- **Riferimento `this`:** È una best practice accademica usare sempre `this.variabile` per risolvere ambiguità di shadowing quando i parametri hanno lo stesso nome delle variabili d'istanza.
-- **Dimenticare i Costruttori:** Se non scrivi costruttori, Java ne inserisce uno vuoto di default. Ma se ne scrivi almeno uno (es. con parametri), quello vuoto non è più generato e, se necessario, dovrai scriverlo tu.
+- **Bypassare i Setter nel Costruttore:** Errore classico di design. Se scrivi logica di validazione dentro `setEta()`, non scrivere `this.eta = eta;` dentro il costruttore, altrimenti permetterai la creazione di un oggetto corrotto già alla nascita. Usa sempre `setEta(eta)` nel costruttore!
+- **Riferimento `this` Dimenticato:** Omettere `this` quando un parametro ha lo stesso nome di una variabile d'istanza (`eta = eta;`) fa sì che il parametro riassegni il valore a se stesso, lasciando lo stato dell'oggetto miseramente vuoto o a `null`.
+- **Restituire riferimenti interni modificabili (Privacy Leak):** Se un Getter restituisce un oggetto mutabile (es. un `Date` o un `ArrayList` interno), chi chiama il getter può svuotare la lista o cambiare la data distruggendo l'incapsulamento dall'esterno. Accademicamente, si risolve restituendo una *Defensive Copy* (copia difensiva: `return new ArrayList<>(questaLista);`).
 
 ---
 
-## 2. Ereditarietà
+## 2. Ereditarietà e Relazione Gerarchica
 
-### Teoria Fondamentale
-L'ereditarietà instaura una relazione forte di tipo **"is-a" (è-un)** tra una Sottoclasse (figlia) e una Superclasse (madre). 
+### Teoria Fondamentale: La Relazione "IS-A"
+Mentre le classi incapsulano i dati, l'Ereditarietà permette di riutilizzarli e specializzarli, abbattendo la ridondanza di codice. L'ereditarietà instaura una rigida relazione gerarchica di tipo **"is-a" (è un/una)** tra una Superclasse (Classe Base o Padre) e una Sottoclasse (Classe Derivata o Figlia). 
+Esempio: Una `Motocicletta` *è un* `Veicolo`.
 
-> **Nota del Docente (Visibilità `protected`):**
-> Il modificatore `protected` indica che una variabile d'istanza è invisibile al mondo esterno, ma è visibile (ereditata direttamente) dalle sottoclassi e dalle classi dello stesso package.
+Quando si usa la keyword `extends`, la figlia assorbe passivamente tutto il patrimonio genetico (metodi e campi visibili) del padre. Tuttavia, l'ereditarietà in Java è **strettamente singola**: una classe può avere un solo padre diretto. Questo design previene il collasso semantico noto in C++ come "Problema del Diamante" (ovvero ereditare due metodi identici da due padri diversi, generando ambiguità).
 
-L'**Overriding** è la riscrittura di un metodo della superclasse all'interno della sottoclasse. Mantieni esattamente la stessa firma, ma modifichi il comportamento interno.
+> **Dietro le Quinte (La Catena dei Costruttori):**
+> Gli oggetti non nascono nel vuoto. Quando istanzi una figlia, in memoria Heap viene creato prima il nucleo del padre, e poi l'estensione della figlia attorno ad esso. Per questo motivo, il costruttore della figlia **deve obbligatoriamente chiamare il costruttore del padre** come primissima operazione, usando la keyword `super()`. Se non lo fai, Java inserisce invisibilmente un `super()` vuoto. Se il padre non ha un costruttore vuoto, il tuo codice esploderà in fase di compilazione.
 
-| Modificatore | Visibilità in Classe | Nel Package | In Sottoclasse | Mondo Esterno |
+| Modificatore | Visibilità in Classe | Nel Package | Nelle Sottoclassi | Ovunque |
 | --- | --- | --- | --- | --- |
 | `private` | ✅ Sì | ❌ No | ❌ No | ❌ No |
-| `(default)` | ✅ Sì | ✅ Sì | ❌ No | ❌ No |
+| *(default)* | ✅ Sì | ✅ Sì | ❌ No | ❌ No |
 | `protected` | ✅ Sì | ✅ Sì | ✅ Sì | ❌ No |
 | `public` | ✅ Sì | ✅ Sì | ✅ Sì | ✅ Sì |
 
 ### Sintassi ed Esempi di Codice
 ```java
-// Superclasse
-public class Persona {
-    protected String codiceFiscale; // Visibile alle sottoclassi
+// SUPERCLASSE (Base)
+public class Lavoratore {
+    // 'protected' permette alle classi figlie di manipolare direttamente la variabile,
+    // mantenendola inaccessibile al mondo esterno (Information Hiding preservato parzialmente).
+    protected double stipendioBase; 
+    private String nome;
     
-    public Persona(String codiceFiscale) {
-        this.codiceFiscale = codiceFiscale;
+    public Lavoratore(String nome, double stipendioBase) {
+        this.nome = nome;
+        this.stipendioBase = stipendioBase;
     }
     
-    public void stampaIdentita() {
-        System.out.println("Persona generica con CF: " + codiceFiscale);
+    public void calcolaPaga() {
+        System.out.println("Paga del lavoratore " + nome + ": €" + stipendioBase);
     }
 }
 
-// Sottoclasse
-public class Docente extends Persona {
-    private String dipartimento;
+// SOTTOCLASSE (Derivata)
+public class Manager extends Lavoratore {
+    private double bonusProduzione;
     
-    public Docente(String codiceFiscale, String dipartimento) {
-        // Chiamata OBBLIGATORIA al costruttore della superclasse
-        super(codiceFiscale); 
-        this.dipartimento = dipartimento;
+    public Manager(String nome, double stipendioBase, double bonusProduzione) {
+        // 1. CHIAMATA A SUPER(): Deve essere rigorosamente la PRIMA riga eseguibile!
+        // Inizializza l'anima "Lavoratore" che risiede dentro al Manager.
+        super(nome, stipendioBase); 
+        this.bonusProduzione = bonusProduzione;
     }
     
-    // Method Overriding
+    // 2. OVERRIDING (Riscrittura del metodo)
+    // Usiamo l'annotazione @Override per chiedere al compilatore di vigilare sulle firme.
     @Override
-    public void stampaIdentita() {
-        // Uso 'super' per invocare il metodo della superclasse prima del codice aggiuntivo
-        super.stampaIdentita(); 
-        System.out.println("Docente del dipartimento: " + dipartimento);
+    public void calcolaPaga() {
+        double pagaTotale = stipendioBase + bonusProduzione; // Uso variabile protected
+        System.out.println("Paga del MANAGER: €" + pagaTotale + " (Bonus incluso)");
+        
+        // Se volessimo riutilizzare il comportamento originale del padre senza sovrascriverlo del tutto:
+        // super.calcolaPaga();
     }
 }
 ```
 
 ### Best Practices & Errori Comuni (Trick Accademici)
-- **Errore di Firma nell'Overriding:** Se sbagli anche solo una maiuscola, stai facendo *Overloading*, non Overriding. Il compilatore non ti avviserà a meno che tu non usi l'annotazione `@Override`, che genera un errore se non stai effettivamente sovrascrivendo nulla. Usala SEMPRE!
-- **Posizione del `super()`:** La chiamata a `super(...)` all'interno del costruttore figlio deve essere **rigorosamente la prima riga di codice**. Inserirla dopo genera un errore di sintassi.
+- **Errore di Firma nell'Overriding:** Se per sovrascrivere `calcolaPaga()` scrivi `public void calcolaPaga(int ore)`, stai commettendo un errore letale: hai appena fatto *Overloading* (creato un nuovo metodo), e non *Overriding*. A runtime, il polimorfismo invocherà il vecchio metodo del padre. Usa **sempre** `@Override`: se sbagli firma, il compilatore lancerà un errore impedendoti di procedere.
+- **Dimenticare il `super` con padri complessi:** Se la classe `Veicolo` ha solo il costruttore `Veicolo(String marca)`, la figlia `Automobile` non compilerà finché non scrivi esplicitamente `super("Fiat")` nella prima riga del suo costruttore.
+- **Rompere l'Information Hiding con `protected`:** L'abuso di `protected` per evitare di scrivere i getter spezza l'incapsulamento tra classi del medesimo package. Usalo saggiamente, preferendo di base `private` ovunque sia possibile.
 
 ---
 
-## 3. Classi Astratte e Polimorfismo
+## 3. Classi Astratte e Polimorfismo (Il Cuore della OOP)
 
-### Teoria Fondamentale
-Le classi astratte fungono da "contratti parziali". Possono contenere variabili e metodi implementati, ma anche **metodi astratti** (metodi privi di corpo). Non possono essere istanziate direttamente tramite `new`.
+### Teoria Fondamentale: Late Binding e V-Table
+Il **Polimorfismo** (dal greco "molte forme") è il concetto più sublime e potente dell'ingegneria del software orientata agli oggetti. Si poggia su una regola d'oro del compilatore: **"Un riferimento di una Superclasse può puntare e governare un'istanza di una Sottoclasse"**. In breve: un puntatore di tipo `Animale` può agganciare in memoria Heap un oggetto fisico `Cane`.
 
-> **Definizione Accademica (Polimorfismo e Associazione Dinamica):**
-> Il **Polimorfismo** (dal greco "molte forme") è l'abilità di una variabile riferimento di tipo Superclasse di puntare a un'istanza di una Sottoclasse. 
-> Grazie all'**Associazione Dinamica (Late Binding)**, quando invochi un metodo sovrascritto, la JVM decide *a tempo di esecuzione* quale versione del metodo eseguire (quella della figlia), basandosi sul tipo dell'oggetto effettivo in memoria (heap), e non sul tipo del riferimento.
+Ma cosa succede se invochiamo un metodo? 
+> **Definizione Accademica (Dynamic Method Dispatch / Late Binding):**
+> Quando invochi `animale.faiVerso()`, il compilatore non sa se farà "Miao" o "Bau". Il collegamento tra il nome del metodo e la funzione fisica in memoria viene risolto solo al volo, in frazioni di secondo, a *tempo di esecuzione* (Runtime). La JVM ispeziona la natura nuda e reale dell'oggetto che risiede nell'Heap (es. scorge che è un `Cane`) e invoca spietatamente il metodo `faiVerso()` sovrascritto dalla classe `Cane`, ignorando totalmente il tipo del riferimento. 
+> Per farlo velocemente, la JVM usa sotto il cofano una struttura in C++ chiamata **V-Table (Virtual Method Table)**, un array di puntatori a funzione.
 
-### Sintassi ed Esempi di Codice
+Le **Classi Astratte (`abstract`)** estremizzano questo concetto. Rappresentano "concetti platonici" (es. la `FormaGeometrica`), troppo astratti per avere senso compiuto nel mondo reale. Esse:
+- Non possono essere istanziate con la keyword `new`.
+- Servono unicamente da scheletro per le figlie.
+- Possono contenere **Metodi Astratti**: metodi privi di corpo (es. `public abstract double calcolaArea();`). Questi si comportano come contratti dittatoriali: obbligano il programmatore che scriverà le Sottoclassi (es. `Cerchio`) a fornire materialmente il codice per quel metodo, pena la non compilabilità.
+
+### Sintassi ed Esempi di Codice: Upcasting, Downcasting e `instanceof`
 ```java
-// Classe Astratta
+// CLASSE ASTRATTA: Non istanziabile. Modella un concetto.
 public abstract class Animale {
-    private String nome;
+    private String razza;
     
-    public Animale(String nome) {
-        this.nome = nome;
-    }
+    public Animale(String razza) { this.razza = razza; }
     
-    // Metodo astratto: niente corpo, solo la firma. Obbliga i figli a implementarlo!
-    public abstract void emettiVerso();
-    
-    public String getNome() { return nome; }
+    // Contratto vincolante: ogni figlio dovrà sapere come muoversi!
+    public abstract void muoviti();
 }
 
-public class Cane extends Animale {
-    public Cane(String nome) { super(nome); }
+public class Uccello extends Animale {
+    public Uccello() { super("Volatile"); }
     
     @Override
-    public void emettiVerso() {
-        System.out.println("Bau! Sono " + getNome());
-    }
+    public void muoviti() { System.out.println("Volo sbattendo le ali!"); }
+    
+    public void becca() { System.out.println("Becco i semi."); }
 }
 
-public class Gatto extends Animale {
-    public Gatto(String nome) { super(nome); }
+public class Pesce extends Animale {
+    public Pesce() { super("Acquatico"); }
     
     @Override
-    public void emettiVerso() {
-        System.out.println("Miao! Sono " + getNome());
-    }
+    public void muoviti() { System.out.println("Nuoto muovendo le pinne!"); }
 }
 
-public class TestPolimorfismo {
+public class PolimorfismoAvanzato {
     public static void main(String[] args) {
-        // Array Polimorfico (riferimenti della Superclasse)
-        Animale[] zoo = new Animale[2];
         
-        zoo[0] = new Cane("Fido"); // Upcasting implicito
-        zoo[1] = new Gatto("Silvestro");
+        // 1. UPCASTING (Implicito e Sicuro al 100%)
+        // Un riferimento 'padre' punta a un oggetto 'figlio'.
+        Animale pet1 = new Uccello();
+        Animale pet2 = new Pesce();
         
-        for (Animale a : zoo) {
-            // Late Binding: invoca la versione specifica di Cane o Gatto a Runtime
-            a.emettiVerso(); 
+        // 2. POLIMORFISMO IN AZIONE (Late Binding)
+        // Stessa riga di codice, risultati magicamente diversi in base all'Heap.
+        pet1.muoviti(); // Stampa "Volo sbattendo le ali!"
+        pet2.muoviti(); // Stampa "Nuoto muovendo le pinne!"
+        
+        // ERRORE ACCADEMICO! Il compilatore valuta il TIPO DEL RIFERIMENTO (Animale).
+        // Animale non ha un metodo becca(), anche se in memoria c'è un Uccello.
+        // pet1.becca(); // <-- NON COMPILA!
+        
+        // 3. DOWNCASTING E SICUREZZA (instanceof)
+        // Per recuperare le funzionalità specifiche di 'Uccello', dobbiamo fare Downcasting (restringimento).
+        // Il Downcasting è pericoloso: se 'pet1' fosse un Pesce, la JVM crasherebbe con ClassCastException!
+        // Dobbiamo usare 'instanceof' per verificare la vera natura prima di castare.
+        if (pet1 instanceof Uccello) {
+            Uccello u = (Uccello) pet1; // Downcast esplicito
+            u.becca(); // Ora possiamo invocare becca() in sicurezza.
         }
     }
 }
 ```
 
 ### Best Practices & Errori Comuni (Trick Accademici)
-- **`new Animale()` fallisce:** Istanziare direttamente una classe astratta causa errore a tempo di compilazione. Serve sempre una classe concreta (figlia) per l'istanza.
-- **Dimenticare l'implementazione:** Se una classe eredita da un'astratta e non implementa *tutti* i metodi astratti, essa stessa deve essere dichiarata a sua volta astratta, altrimenti si spacca la compilazione.
-- **Sottotipo e Supertipo:** Puoi sempre assegnare una figlia a un riferimento padre (es. `Animale a = new Cane();`), ma mai viceversa (`Cane c = new Animale();` genera ClassCastException).
+- **`new Animale()` fallisce:** Tentare di allocare memoria per una classe marcata come `abstract` genera errore. Solo le classi concrete possono popolare l'Heap.
+- **Dimenticare l'implementazione astratta:** Se un `Cerchio extends FormaGeometrica` ma tu non scrivi l'override per `calcolaArea()`, il compilatore rifiuterà la classe `Cerchio` dicendoti che deve essere dichiarata anch'essa `abstract`. Le figlie concrete devono onorare tutti i contratti!
+- **ClassCastException nel Downcasting:** Scrivere `Pesce p = (Pesce) pet1;` è un gravissimo azzardo (Downcasting Cieco). Siccome `pet1` nasconde un `Uccello`, a runtime la JVM lancerà `ClassCastException` mandando in crash l'applicazione. Non fidarti mai del cast tra oggetti senza prima aver interpellato l'operatore di guardia `instanceof`.

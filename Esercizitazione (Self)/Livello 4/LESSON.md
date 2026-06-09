@@ -1,53 +1,65 @@
 # Livello 4: Argomenti Avanzati
 
-## 1. File I/O e Serializzazione
+## 1. File I/O, Stream e Serializzazione
 
-### Teoria Fondamentale
-In Java, l'I/O su disco prevede l'uso di stream. `PrintWriter` si occupa di riversare dati testuali su file fisici ottimizzandone l'output tramite buffer interni. 
+### Teoria Fondamentale: Il Pattern Decorator e gli Stream
+L'architettura I/O (Input/Output) di Java è basata sul concetto astratto di **Stream** (Flusso). Un flusso è un nastro trasportatore di dati continuo e sequenziale, che può scorrere in entrata (`InputStream` / `Reader`) o in uscita (`OutputStream` / `Writer`).
+Java divide gli stream in due mondi:
+1. **Byte Streams (8-bit):** Per dati crudi binari (immagini, audio, eseguibili). Classi base: `InputStream` e `OutputStream`.
+2. **Character Streams (16-bit):** Per testo umano (Unicode). Classi base: `Reader` e `Writer`.
 
-La **Serializzazione** è un meccanismo binario. Consente di catturare l'intero "stato" (valori delle variabili) di un Oggetto in memoria Heap e congelarlo in un flusso binario, tipicamente per il salvataggio su un file non leggibile in testo chiaro. 
+> **Definizione Accademica (Pattern Decorator nell'I/O):**
+> Le API di I/O di Java non hanno una classe magica che fa tutto. Usano il *Pattern Decorator*. Si parte da uno stream "grezzo" (es. `FileReader`, che legge dal disco un carattere alla volta in modo lento) e lo si "incarta" o "decora" dentro uno stream più intelligente (es. `BufferedReader`), il quale aggiunge un buffer in RAM per azzerare i colli di bottiglia del disco rigido e aggiunge il comodo metodo `readLine()`.
 
-> **Nota del Docente (Interfacce Segnaposto):**
-> L'interfaccia `Serializable` è un'interfaccia vuota (Marker Interface). Non ha metodi. La sua unica utilità è apporre un "timbro" visibile alla JVM (Reflection), indicandole esplicitamente: *"Ho il permesso dell'autore di permettere la serializzazione per questa classe"*.
+La **Serializzazione** è il processo di ibernazione di un Oggetto. Prende l'intero "stato" (valori delle variabili) di un oggetto vivo nella memoria Heap e lo congela in una sequenza di byte crudi (Stream Binario). Questo permette di salvare l'oggetto su disco o spedirlo via rete. L'interfaccia `Serializable` è una **Marker Interface** (senza metodi): funge solo da "timbro" per autorizzare la JVM a compiere la serializzazione.
 
 ### Sintassi ed Esempi di Codice
 ```java
 import java.io.*;
 
-// Classe che autorizza la serializzazione
+// La Marker Interface abilita la serializzazione.
 public class Videogioco implements Serializable {
-    private String titolo;
-    // La keyword 'transient' impedisce alla variabile di essere serializzata (ottima per password)
-    private transient int identificatoreSegreto; 
+    // ID Univoco di Versione (Cruciale per retrocompatibilità)
+    private static final long serialVersionUID = 1L;
     
-    public Videogioco(String titolo) { this.titolo = titolo; }
+    private String titolo;
+    // 'transient' inibisce la serializzazione di questo specifico campo
+    private transient String passwordSegreta; 
+    
+    public Videogioco(String titolo, String password) { 
+        this.titolo = titolo; 
+        this.passwordSegreta = password;
+    }
     public String getTitolo() { return titolo; }
 }
 
-public class GestoreIO {
+public class GestoreArchitetturaIO {
     public static void main(String[] args) {
-        // SALVATAGGIO TESTUALE
-        try (PrintWriter writer = new PrintWriter(new File("testo.txt"))) {
-            // Il costrutto try-with-resources chiude automaticamente il buffer! Nessun Memory Leak.
-            writer.println("Salvataggio di un dato testuale.");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        
+        // 1. I/O TESTUALE: Scrittura Ottimizzata con Decorator
+        // FileWriter (grezzo) -> incartato in -> PrintWriter (intelligente)
+        // Il costrutto 'try-with-resources' chiude il buffer automaticamente!
+        try (PrintWriter writer = new PrintWriter(new FileWriter("log.txt", true))) {
+            writer.println("Operazione registrata con successo.");
+        } catch (IOException e) {
+            System.err.println("Errore disco: " + e.getMessage());
         }
 
-        // SERIALIZZAZIONE BINARIA (ObjectOutputStream)
+        // 2. SERIALIZZAZIONE BINARIA (ObjectOutputStream)
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("save.dat"))) {
-            Videogioco game = new Videogioco("Zelda");
+            Videogioco game = new Videogioco("Zelda", "qwerty1234");
             oos.writeObject(game); // Congela l'oggetto su disco
-            System.out.println("Oggetto salvato.");
+            System.out.println("Oggetto serializzato.");
         } catch (IOException e) {
             e.printStackTrace();
         }
         
-        // DESERIALIZZAZIONE BINARIA (ObjectInputStream)
+        // 3. DESERIALIZZAZIONE BINARIA (ObjectInputStream)
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("save.dat"))) {
-            // È obbligatorio il Casting Esplicito: il readObject torna un Object generico.
+            // DOWNCASTING OBBLIGATORIO: readObject() restituisce un 'Object' generico.
             Videogioco gameRicaricato = (Videogioco) ois.readObject();
-            System.out.println("Caricato: " + gameRicaricato.getTitolo());
+            System.out.println("Titolo caricato: " + gameRicaricato.getTitolo());
+            // La password sarà null, perché era marcata come 'transient'!
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -56,145 +68,102 @@ public class GestoreIO {
 ```
 
 ### Best Practices & Errori Comuni (Trick Accademici)
-- **Try-with-Resources:** Usare sempre la sintassi `try(Risorsa r = new Risorsa()) { }` introdotta in Java 7 per gestire i file. Chiama automaticamente il metodo `.close()` e azzera la possibilità di buffer intasati e Memory Leaks, che accadono spessissimo quando si lasciano PrintWriter "appesi".
-- **SerialVersionUID mancante:** Modificare i campi di una classe dopo averla serializzata porta a eccezioni (`InvalidClassException`) in fase di lettura. Questo avviene perché Java calcola un ID di versione nascosto. È sempre buona prassi inserire il `private static final long serialVersionUID = 1L;` fisso nella classe!
+- **Il Memory Leak del Buffer non svuotato:** Se non usi il `try-with-resources` e dimentichi di chiamare `.close()` (o almeno `.flush()`) su un `PrintWriter` o `BufferedWriter`, i dati rimarranno intrappolati nella RAM e il file sul disco risulterà miseramente vuoto (a 0 byte). Il `close()` forza lo svuotamento fisico sul disco.
+- **La Trappola del SerialVersionUID:** Se serializzi la classe `Videogioco`, poi chiudi il programma, aggiungi una nuova variabile alla classe (es. `int anno`), e provi a deserializzare il vecchio file, la JVM lancerà un'esplosiva `InvalidClassException`. Java calcola un hash (ID) in base ai campi della classe. Se cambiano, l'ID non combacia più. *Soluzione:* Dichiara esplicitamente un `private static final long serialVersionUID = 1L;`. Questo dirà alla JVM di fidarsi e tentare il recupero anche se la struttura è leggermente mutata.
 
 ---
 
 ## 2. Multithreading e Sincronizzazione
 
 ### Teoria Fondamentale: Processi vs Thread
-Un **Processo (Task)** è un programma in esecuzione. Ogni processo possiede uno **spazio di memoria privato** e non può accedere a quello di altri processi (salvo meccanismi complessi di memoria condivisa). Il cambio di contesto (Context Switch) tra processi è oneroso perché coinvolge il salvataggio di registri, stack e memoria.
+Un **Processo (Task)** è un programma in esecuzione. Ogni processo possiede uno **spazio di memoria privato** (context) e non può accedere a quello di altri processi (salvo meccanismi complessi come i socket o memoria condivisa). Il cambio di contesto (Context Switch) tra processi è un'operazione estremamente pesante per la CPU.
 
-Un **Thread** è un "sotto-processo" leggero. La differenza fondamentale è che i thread di uno stesso processo **condividono lo stesso spazio di memoria (Heap)**, pur avendo ciascuno il proprio Stack privato per le variabili locali.
-Vantaggi del Multithreading:
-- Cambio di contesto molto più rapido e leggero rispetto ai processi.
-- Facile condivisione dei dati e comunicazione inter-thread.
-- Esecuzione realmente (o pseudo) parallela di operazioni concorrenti.
+Un **Thread** è la più piccola unità di esecuzione. Un processo può essere frammentato in innumerevoli Thread. La differenza fondamentale è che i thread **condividono lo stesso spazio di memoria (Heap)** del processo padre, pur avendo ciascuno il proprio Stack privato per le variabili locali.
+*Vantaggi:*
+- Cambio di contesto molto più rapido e leggero.
+- Comunicazione fulminea inter-thread essendo nello stesso Heap.
 
 ### Creazione di un Thread: `Runnable` vs `Thread`
-In Java ci sono due metodi principali per creare un thread:
-1. **Estendere la classe `java.lang.Thread`**: Si crea una sottoclasse e si esegue l'override del metodo `run()`. **Svantaggio Accademico**: In Java c'è l'ereditarietà singola. Se estendi `Thread`, precludi alla tua classe la possibilità di estendere qualsiasi altra classe.
-2. **Implementare l'interfaccia `Runnable`**: Si crea una classe che implementa il metodo `run()`, poi la si passa come parametro al costruttore di un nuovo `Thread` (es. `new Thread(mioRunnable).start()`). **Vantaggio**: È il metodo caldamente consigliato dall'ingegneria del software. Permette alla tua classe di ereditare liberamente da altre classi padre e separa nettamente la logica del "Task" da quella del "Motore" (il Thread).
+In Java ci sono due approcci ortodossi:
+1. **Estendere la classe `Thread`**: Si crea una sottoclasse e si fa override di `run()`. **Svantaggio Accademico Letale**: Java impone l'ereditarietà singola. Se estendi `Thread`, la tua classe non potrà mai estendere nessun'altra classe (es. non potrà estendere `JFrame` per una GUI).
+2. **Implementare l'interfaccia `Runnable`**: Consigliato. Si implementa l'interfaccia, si scrive la logica nel `run()`, e si inietta questa classe nel costruttore di un `new Thread()`. Questo pattern separa l'entità che fa il lavoro (il Runnable) dal motore che lo esegue (il Thread), garantendo massima flessibilità gerarchica.
 
 ### Gli Stati (Ciclo di Vita) di un Thread
-1. **New (Initial)**: Istanza creata con `new Thread()`, ma non è ancora stato invocato il metodo `start()`.
-2. **Runnable**: Dopo aver chiamato `start()`. Il thread è pronto e in attesa che lo Scheduler gli assegni il processore (spesso basato su priorità e meccanismi *Round-Robin/Preemptive*).
-3. **Running**: Il thread sta attualmente eseguendo il suo metodo `run()` occupando la CPU.
-4. **Blocked / Waiting / Sleeping**: Il thread è sospeso in attesa di un evento (I/O, rilascio di un lock di mutua esclusione, fine del timer di `sleep`, o una chiamata a `wait()`).
-5. **Dead (Terminated)**: Il metodo `run()` è giunto al termine naturalmente (o per un'eccezione non gestita). Le risorse vengono rilasciate.
+1. **New**: Istanza appena creata, prima del `start()`.
+2. **Runnable**: Dopo `start()`. È in coda, fiducioso che lo Scheduler di Sistema (che usa spesso algoritmi *Preemptive* e *Round-Robin*) gli assegni presto un "time-slice" (fetta di tempo) della CPU.
+3. **Running**: Ha il controllo totale della CPU.
+4. **Blocked**: Il thread è stato cacciato dalla CPU ed è "addormentato" in attesa di un I/O, della scadenza di un timer (`sleep`), o dello sblocco di un Monitor.
+5. **Dead**: Il metodo `run()` è terminato. Il thread evapora.
 
-### Il Controllo dei Thread: Metodi Fondamentali
-La classe `Thread` fornisce metodi essenziali per controllare il flusso:
-- **`start()`**: Lancia il thread, rendendolo schedulabile. Chiama internamente il `run()`. 
-- **`sleep(long millis)`** (Statico): Sospende l'esecuzione del thread corrente per un tempo prefissato. *Trick Accademico*: Non rilascia MAI gli eventuali lock acquisiti, rendendolo molto pericoloso se usato male in blocchi sincronizzati.
-- **`yield()`** (Statico): Cede volontariamente e amichevolmente l'uso del processore ad altri thread in attesa con priorità uguale o superiore. Passa da *Running* a *Runnable*.
-- **`join()`**: Forza il thread *chiamante* a mettersi in attesa e bloccarsi finché il thread *su cui è stato invocato* `join()` non termina. Vitale per raccogliere i risultati di elaborazioni parallele. È possibile specificare un timeout: `join(long millis)`.
-- **`setPriority()` / `getPriority()`**: Modifica/legge la priorità (da `MIN_PRIORITY` a `MAX_PRIORITY`) suggerendo allo scheduler l'importanza del thread.
-- **`isAlive()`**: Ritorna `true` se il thread è stato avviato e non è ancora morto.
+### Metodi di Controllo e Sincronizzazione
+- **`start()` vs `run()`:** Se invochi `run()` a mano, il codice viene eseguito in modo noiosamente sequenziale sul main thread! Per biforcare davvero l'esecuzione asincrona, devi categoricamente invocare **`start()`**.
+- **`sleep(millis)` e `yield()`:** `sleep` paralizza il thread a tempo, **senza mai rilasciare eventuali Lock** (pericolo!). `yield` è invece un atto di gentilezza: il thread rinuncia volontariamente alla sua fetta di tempo CPU a favore di un compagno con pari priorità.
+- **`join()`:** Fondamentale. Ferma l'esecuzione del thread principale e lo costringe ad aspettare finché il thread bersaglio non è morto.
+- **Race Condition e `synchronized`:** Se due thread toccano l'Heap in parallelo (es. `i++`), l'operazione non essendo "atomica" causa collisioni (Race Condition). Il modificatore `synchronized` trasforma un blocco in una cassaforte. Richiede un "Lock" (Monitor) su un oggetto: entra un solo thread alla volta, realizzando la **Mutua Esclusione**.
 
-### Sincronizzazione, Race Condition e Mutua Esclusione
-Condividendo la stessa memoria (Heap), più thread possono leggere e scrivere la stessa variabile simultaneamente. Se l'operazione non è *atomica* (es. l'incremento `i = i + 1` prevede 3 passi: lettura, somma, scrittura), si verifica una gravissima **Race Condition (Competizione)** causando corruzione dei dati.
+### Nemesi e Coordinamento: `wait()`, `notify()` e Deadlock
+Un **Deadlock (Stallo)** è un abbraccio mortale: il Thread A possiede il Lock 1 e aspetta il Lock 2. Il Thread B possiede il Lock 2 e aspetta il Lock 1. Nessuno molla la presa. Il software si pietrifica senza lanciare eccezioni.
 
-Per garantire la **Mutua Esclusione**, Java usa i *Lock* (Monitor). Si ottiene tramite il modificatore **`synchronized`** (applicabile a metodi o interi blocchi di codice specificando l'oggetto). Quando un thread entra in un blocco `synchronized` sull'oggetto `X`, ne "ruba la chiave". Ogni altro thread che tenti di entrare in un blocco sincronizzato sullo stesso `X` troverà la porta chiusa e passerà in stato di *Blocked* finché il primo non uscirà rilasciando il lock.
-
-### Coordinamento Avanzato: `wait()` e `notify()`
-Spesso i thread devono collaborare ("Il Consumatore aspetta che il Produttore inserisca dati nel buffer"). Per fare questo si usano i metodi della superclasse assoluta `Object` (non di `Thread`!), da chiamare **esclusivamente** all'interno di contesti `synchronized`:
-- **`wait()`**: Il thread in esecuzione *rilascia immediatamente il lock* dell'oggetto e si congela, entrando in stato di *Waiting*.
-- **`notify()` / `notifyAll()`**: Risveglia uno (o tutti) i thread che si erano precedentemente addormentati in `wait()` su quel medesimo oggetto, permettendogli di competere di nuovo per riacquistare il lock.
-
-### Il Nemico Mortale: Il Deadlock (Stallo)
-Un **Deadlock** è uno stallo fatale e irrisolvibile. Si verifica quando due o più thread si bloccano a vicenda attendendo risorse l'uno dall'altro. 
-*Esempio Classico:*
-1. Il Thread 1 acquisisce il lock dell'oggetto A, poi ha bisogno del lock dell'oggetto B.
-2. Il Thread 2 acquisisce il lock dell'oggetto B, poi ha bisogno del lock dell'oggetto A.
-Entrambi aspetteranno in eterno che l'altro rilasci la risorsa. Il programma si congela. Java *non dispone di alcun meccanismo magico per prevenire o uccidere un deadlock*; è esclusiva responsabilità dell'architetto del software progettare gerarchie rigorose nell'acquisizione dei lock.
+Per un sano coordinamento (es. Produttore-Consumatore), Java offre (solo dentro aree `synchronized`):
+- **`wait()`**: Il thread entra in un profondo sonno e, a differenza dello `sleep`, **rilascia immediatamente il Lock** che possedeva, permettendo ad altri di lavorare.
+- **`notifyAll()`**: Urla al sistema di svegliare i compagni addormentati in `wait()` sullo stesso oggetto.
 
 ### Sintassi ed Esempi di Codice
 ```java
-// Implementazione consigliata tramite Runnable per il pattern Produttore-Consumatore
-public class SyncStack implements Runnable {
+public class SyncBuffer implements Runnable {
     private int[] array = new int[5];
     private int count = 0;
     private boolean isProducer;
 
-    public SyncStack(boolean isProducer) { this.isProducer = isProducer; }
+    public SyncBuffer(boolean isProducer) { this.isProducer = isProducer; }
 
-    // Mutua Esclusione e Coordinamento Inter-Thread (wait/notify)
-    public synchronized void inserisci(int dato) throws InterruptedException {
-        // OBBLIGATORIO: Utilizzo del WHILE per gestire i falsi risvegli (Spurious Wakeups)
+    public synchronized void produci(int dato) throws InterruptedException {
+        // Uso del WHILE obbligatorio per i "Falsi Risvegli" (Spurious Wakeups)
         while (count == array.length) {
-            System.out.println("Stack Pieno! Produttore in wait()...");
-            wait(); // Rilascia il lock dell'oggetto e si addormenta
+            wait(); // Cede la risorsa e attende
         }
         array[count] = dato;
         count++;
-        System.out.println("Inserito: " + dato);
-        notifyAll(); // Risveglia i thread Consumatori in attesa
+        notifyAll(); // Risveglia eventuali Consumatori affamati
     }
     
-    public synchronized void estrai() throws InterruptedException {
+    public synchronized void consuma() throws InterruptedException {
         while (count == 0) {
-            System.out.println("Stack Vuoto! Consumatore in wait()...");
-            wait();
+            wait(); // Cede la risorsa e attende dati
         }
         count--;
-        int estratto = array[count];
-        System.out.println("Estratto: " + estratto);
-        notifyAll(); // Risveglia i thread Produttori
+        notifyAll(); // Risveglia eventuali Produttori intasati
     }
 
     @Override
     public void run() {
         try {
-            if (isProducer) { 
-                inserisci(10); 
-                Thread.sleep(500); // sleep sospende il thread senza cedere lock
-            } else { 
-                estrai(); 
-                Thread.yield(); // yield cede gentilmente il passo allo Scheduler
-            }
-        } catch (InterruptedException e) {
-            System.out.println("Thread interrotto violentemente!");
-        }
+            if (isProducer) produci(42);
+            else consuma();
+        } catch (InterruptedException e) { }
     }
 
     public static void main(String[] args) throws InterruptedException {
-        SyncStack risorsa = new SyncStack(true); // Simulazione del Produttore
+        Thread t1 = new Thread(new SyncBuffer(true), "Produttore");
+        t1.start(); // LANCIO VERO DEL THREAD (non usare .run()!)
         
-        // La nostra classe passata in pasto al motore Thread
-        Thread t1 = new Thread(risorsa, "IlMioThread");
-        
-        // ERRORE GRAVE: t1.run(); (Lo eseguirebbe sequenzialmente nel main)
-        t1.start(); // Avvio corretto asincrono
-        
-        System.out.println("Thread vivo? " + t1.isAlive());
-        
-        // Il Main Thread si blocca e aspetta che t1 muoia prima di procedere
-        t1.join(); 
-        
-        System.out.println("Programma terminato regolarmente.");
+        System.out.println("Esecuzione asincrona in corso...");
+        t1.join(); // Il Main aspetta pazientemente la fine di t1
     }
 }
 ```
 
-### Best Practices & Errori Comuni (Trick Accademici)
-- **Non chiamare `run()`!:** Come visto nell'esempio, invocare esplicitamente `.run()` trasforma il task in una noiosa esecuzione sequenziale. Per la magia asincrona serve obbligatoriamente `.start()`.
-- **`wait()` e `notify()` orfani:** I metodi di wait/notify vanno invocati **esclusivamente** all'interno di metodi (o blocchi) marcati come `synchronized`. Se lo fai fuori da un blocco monitorato, la JVM lancerà un'atroce `IllegalMonitorStateException`.
-- **Prevenire i Deadlock:** La regola d'oro accademica per evitare i deadlock è forzare tutti i thread ad acquisire lock multipli sempre ed esclusivamente nello stesso identico ordine.
-
 ---
 
-## 3. XML Parsing
+## 3. XML Parsing: SAX vs DOM
 
-### Teoria Fondamentale
-L'estrapolazione di dati da file XML avviene tramite Parser. In Java, un approccio ottimizzato, specialmente per file giganteschi, è il **SAX Parser (Simple API for XML)**. SAX non carica l'intero albero XML in RAM (al contrario del DOM), ma scorre i nodi uno ad uno e reagisce generando "eventi" sequenziali gestiti tramite Callback (tecnica *Push* o guidata da eventi).
+### Teoria Fondamentale: Alberi in Memoria vs Flussi di Eventi
+L'XML (eXtensible Markup Language) è uno standard per la gerarchia dei dati. Java offre due architetture principali per leggerlo:
+1. **DOM (Document Object Model):** Prende l'intero file XML e lo mappa caricandolo interamente nella RAM in una struttura ad Albero. *Vantaggio:* Navigazione semplice avanti/indietro. *Svantaggio:* Se il file XML pesa 2GB, la JVM crollerà vittima di una spietata `OutOfMemoryError`.
+2. **SAX (Simple API for XML):** È la scelta degli architetti. Non carica nulla in RAM. È un parser "Push" basato sugli **Eventi**. Scorre il file riga per riga e spara eventi (Callback) ogni volta che sbatte contro un tag aperto, testo chiuso, o tag chiuso. È incredibilmente veloce e consuma una quantità irrisoria e fissa di RAM.
 
-> **Nota del Docente (Le Callback SAX):**
-> Estendendo la classe `DefaultHandler`, sovrascriviamo tre metodi d'intercettazione cruciali:
-> - `startElement`: Scatta alla vista di un tag di apertura (es. `<studente>`).
-> - `characters`: Estrae il vero e proprio testo contenuto tra i due tag.
-> - `endElement`: Scatta alla chiusura (es. `</studente>`).
+> **Definizione Accademica (Handler SAX):**
+> L'estrapolazione SAX richiede di estendere la classe `DefaultHandler` e fare override di tre "Trigger" fondamentali: `startElement` (intercetta l'apertura del tag), `characters` (intercetta il contenuto grezzo stringa), e `endElement` (conferma la chiusura).
 
 ### Sintassi ed Esempi di Codice
 ```java
@@ -204,44 +173,45 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 import java.io.File;
 
-public class LettoreXML {
+public class ArchitetturaSAX {
 
     public static void main(String[] args) {
         try {
-            // Configurazione Fabbrica e Parser
+            // Pattern Factory: deleghiamo l'istanziazione alla Fabbrica di Java
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
 
-            // Sviluppo dell'Handler Custom
+            // Il nostro ricettore di Eventi
             DefaultHandler handler = new DefaultHandler() {
-                boolean bNome = false;
+                private StringBuilder bufferTesto = new StringBuilder();
 
-                // Evento di Apertura
+                @Override
                 public void startElement(String uri, String localName, String qName, Attributes attributes) {
-                    if (qName.equalsIgnoreCase("NOME")) {
-                        bNome = true;
-                    }
-                }
-
-                // Evento di Estrazione Testuale
-                public void characters(char ch[], int start, int length) {
-                    if (bNome) {
-                        System.out.println("Nome studente XML: " + new String(ch, start, length));
-                        bNome = false; // Resetto il flag
-                    }
-                }
-
-                // Evento di Chiusura
-                public void endElement(String uri, String localName, String qName) {
+                    // Pulisco il buffer prima di ricevere nuovo testo per questo Tag
+                    bufferTesto.setLength(0); 
                     if (qName.equalsIgnoreCase("STUDENTE")) {
-                        System.out.println("Fine lettura record studente.");
+                        System.out.println("--- Inizio Record ---");
+                    }
+                }
+
+                @Override
+                public void characters(char ch[], int start, int length) {
+                    // Accumulo chirurgicamente i blocchi di testo sputati dal parser
+                    bufferTesto.append(new String(ch, start, length));
+                }
+
+                @Override
+                public void endElement(String uri, String localName, String qName) {
+                    if (qName.equalsIgnoreCase("NOME")) {
+                        System.out.println("Nome: " + bufferTesto.toString().trim());
+                    } else if (qName.equalsIgnoreCase("STUDENTE")) {
+                        System.out.println("--- Fine Record ---\n");
                     }
                 }
             };
 
-            // Avvio della cattura eventi passandogli un file (es. database.xml) e l'Handler
-            File inputFile = new File("database.xml");
-            saxParser.parse(inputFile, handler);
+            // Avvio l'iniezione del flusso XML nel nostro Handler
+            saxParser.parse(new File("studenti.xml"), handler);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -251,4 +221,4 @@ public class LettoreXML {
 ```
 
 ### Best Practices & Errori Comuni (Trick Accademici)
-- **Il problema della stringa spezzata in `characters`:** Il metodo `characters` non garantisce matematicamente di restituire il contenuto di un tag in un singolo colpo di callback; l'XML parser può frammentare le stringhe molto lunghe su invocazioni multiple. Spesso, un robusto Handler deve usare un `StringBuilder` concatenando i pezzi ad ogni scatto e chiudere la valutazione solo nell'`endElement`.
+- **La frammentazione nel metodo `characters`:** L'errore universale di chi usa SAX è credere che il testo contenuto tra `<a>` e `</a>` venga passato interamente in un colpo solo alla callback `characters`. Falso! Il parser, per ottimizzare l'I/O bufferizzato, si riserva il diritto di spezzare il testo lungo e invocare `characters` multiplamente. Per questo, come nell'esempio, è *obbligatorio* accumulare i pezzetti in uno `StringBuilder` e considerarli completi e stampabili solo allo scattare dell'`endElement`. Usare `String` e l'operatore `+` saturerebbe istantaneamente l'Heap (poiché le stringhe sono immutabili).
