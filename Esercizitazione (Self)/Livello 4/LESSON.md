@@ -88,7 +88,10 @@ In Java ci sono due approcci ortodossi per definire e lanciare un Thread. Questa
 
 #### Metodo 1: Estendere la classe `Thread`
 Si crea una sottoclasse di `java.lang.Thread` e si esegue l'override del metodo `run()`.
-**Svantaggio Accademico Letale:** Java impone l'ereditarietà singola. Se estendi `Thread`, la tua classe non potrà **mai** estendere nessun'altra classe (es. non potrà estendere `JFrame` per creare un'interfaccia grafica).
+**Svantaggio Accademico Letale:** Java impone l'ereditarietà singola. Se estendi `Thread`, la tua classe non potrà **mai** estendere nessun'altra classe (es. non potrà estendere `JFrame` per creare un'interfaccia grafica o `Applet` per il web).
+
+> **Nota del Docente (Il bypass dell'Ereditarietà Multipla):**
+> L'interfaccia `Runnable` risolve in modo ingegnoso l'impossibilità di usare l'ereditarietà multipla in Java. Se la tua classe (es. `Applicazione`) *deve* per forza estendere una superclasse base (es. `extends Applet`), ma hai contemporaneamente bisogno che svolga operazioni parallele come un Thread, non puoi scrivere `extends Applet, Thread` (il compilatore lo vieta). Derivando dalla classe base e *implementando* `Runnable`, si riesce a personalizzare la classe base e allo stesso tempo ad aggiungere le funzionalità di thread. In sintesi, l'uso di `Runnable` è assolutamente obbligatorio quando la classe che vuoi rendere un thread è *già* una classe derivata!
 
 *Esempio 1A: Definizione e lancio dal Main*
 ```java
