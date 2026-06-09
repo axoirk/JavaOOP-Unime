@@ -155,17 +155,35 @@ public class SyncBuffer implements Runnable {
 
 ---
 
-## 3. XML Parsing: SAX vs DOM
+## 3. Elaborazione XML in Java: SAX, DOM e JAXP
 
-### Teoria Fondamentale: Alberi in Memoria vs Flussi di Eventi
-L'XML (eXtensible Markup Language) è uno standard per la gerarchia dei dati. Java offre due architetture principali per leggerlo:
-1. **DOM (Document Object Model):** Prende l'intero file XML e lo mappa caricandolo interamente nella RAM in una struttura ad Albero. *Vantaggio:* Navigazione semplice avanti/indietro. *Svantaggio:* Se il file XML pesa 2GB, la JVM crollerà vittima di una spietata `OutOfMemoryError`.
-2. **SAX (Simple API for XML):** È la scelta degli architetti. Non carica nulla in RAM. È un parser "Push" basato sugli **Eventi**. Scorre il file riga per riga e spara eventi (Callback) ogni volta che sbatte contro un tag aperto, testo chiuso, o tag chiuso. È incredibilmente veloce e consuma una quantità irrisoria e fissa di RAM.
+### Teoria Fondamentale: L'Ecosistema JAXP e il Pattern Factory
+L'XML (eXtensible Markup Language) è uno standard universale per la rappresentazione gerarchica dei dati. Affinché un'applicazione Java possa comprendere un file XML, necessita di un **Parser** (analizzatore sintattico), il cui compito è decomporre il documento nei suoi elementi (tag, attributi, testo) e verificarne la correttezza formale (validazione).
 
-> **Definizione Accademica (Handler SAX):**
-> L'estrapolazione SAX richiede di estendere la classe `DefaultHandler` e fare override di tre "Trigger" fondamentali: `startElement` (intercetta l'apertura del tag), `characters` (intercetta il contenuto grezzo stringa), e `endElement` (conferma la chiusura).
+In Java, la gestione del parsing non avviene invocando direttamente una specifica libreria, ma passando attraverso un framework di astrazione chiamato **JAXP (Java API for XML Processing)**. 
 
-### Sintassi ed Esempi di Codice
+> **Definizione Accademica (Indipendenza tramite Pattern Factory):**
+> JAXP permette al programmatore di operare in totale indipendenza dall'effettiva implementazione del parser sottostante. Utilizza elegantemente il **Pattern Factory**: anziché usare la keyword `new` per istanziare un parser specifico (il che accoppierebbe il codice a quella specifica libreria), si chiede a una "Fabbrica Astratta" di fornirci un'istanza generica compatibile.
+> Esempio: `SAXParserFactory.newInstance().newSAXParser();`
+
+Dal punto di vista architetturale, l'interfacciamento tra applicazioni e parser si divide in due grandi famiglie di API diametralmente opposte per filosofia e gestione della memoria: **SAX** e **DOM**.
+
+### Il Modello ad Eventi: Interfacce SAX (Simple API for XML)
+Il parser SAX adotta un approccio puramente **sequenziale ed Event-Based**. 
+- **Meccanica:** Scorre il documento dall'alto verso il basso una sola volta. Non mantiene **nulla in memoria** (nessuna rappresentazione del file XML viene salvata in RAM).
+- **Vantaggi:** Estremamente veloce e leggero. È l'unica scelta ingegneristica possibile per analizzare file XML giganteschi (es. log da 5GB) senza far crollare la JVM in `OutOfMemoryError`.
+- **Svantaggi:** Poiché scorre in avanti, non permette di navigare all'indietro nell'albero né di modificare il documento dinamicamente.
+
+SAX si basa sul concetto di **Callback**. Il programmatore definisce una classe (che tipicamente estende `DefaultHandler`) contenente metodi specifici (`startElement`, `characters`, `endElement`). Il parser SAX, leggendo il file, "spara" eventi (trigger) invocando questi metodi ogni volta che incontra l'apertura di un tag, il suo contenuto testuale e la sua chiusura.
+
+### Il Modello ad Albero: Interfacce DOM (Document Object Model)
+Il DOM (standard W3C) adotta un approccio **Object-Oriented**.
+- **Meccanica:** Il parser legge interamente l'XML e costruisce nella memoria RAM un immenso **Parse-Tree (Albero sintattico)**. Ogni tag diventa un oggetto di tipo `Element`, ogni attributo un `Attr` e i testi interni diventano `TextNode`. L'intero albero è racchiuso nell'oggetto radice `Document`.
+- **Vantaggi:** Livello di astrazione elevatissimo. Permette di navigare liberamente in ogni direzione (figli, genitori, fratelli) e consente di manipolare il documento (aggiungere o rimuovere nodi dinamicamente).
+- **Svantaggi:** Essendo l'intero albero caricato simultaneamente in RAM, richiede un quantitativo di memoria spropositato. Inadatto per file di grandi dimensioni.
+
+### Sintassi ed Esempi di Codice: Implementazione SAX
+
 ```java
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -177,41 +195,51 @@ public class ArchitetturaSAX {
 
     public static void main(String[] args) {
         try {
-            // Pattern Factory: deleghiamo l'istanziazione alla Fabbrica di Java
+            // 1. IL PATTERN FACTORY DI JAXP
+            // Chiediamo alla Factory di generarci un parser SAX
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
 
-            // Il nostro ricettore di Eventi
+            // 2. L'HANDLER DEGLI EVENTI (Callback)
+            // Sviluppiamo il nostro ricettore di eventi estendendo DefaultHandler (l'interfaccia Parser-to-Application)
             DefaultHandler handler = new DefaultHandler() {
                 private StringBuilder bufferTesto = new StringBuilder();
+                private boolean inNome = false;
 
+                // Evento 1: Il parser incontra l'apertura di un tag (es. <nome id="1">)
                 @Override
                 public void startElement(String uri, String localName, String qName, Attributes attributes) {
-                    // Pulisco il buffer prima di ricevere nuovo testo per questo Tag
-                    bufferTesto.setLength(0); 
-                    if (qName.equalsIgnoreCase("STUDENTE")) {
-                        System.out.println("--- Inizio Record ---");
+                    bufferTesto.setLength(0); // Resetta il buffer per il nuovo tag
+                    if (qName.equalsIgnoreCase("NOME")) {
+                        inNome = true;
+                        // Estrazione sicura di un attributo
+                        String id = attributes.getValue("id"); 
+                        if(id != null) System.out.println("Trovato ID: " + id);
                     }
                 }
 
+                // Evento 2: Il parser legge il testo puro (PCDATA) tra i tag
                 @Override
                 public void characters(char ch[], int start, int length) {
-                    // Accumulo chirurgicamente i blocchi di testo sputati dal parser
-                    bufferTesto.append(new String(ch, start, length));
+                    if (inNome) {
+                        // Accumuliamo i frammenti chirurgicamente
+                        bufferTesto.append(new String(ch, start, length));
+                    }
                 }
 
+                // Evento 3: Il parser incontra la chiusura del tag (es. </nome>)
                 @Override
                 public void endElement(String uri, String localName, String qName) {
                     if (qName.equalsIgnoreCase("NOME")) {
-                        System.out.println("Nome: " + bufferTesto.toString().trim());
-                    } else if (qName.equalsIgnoreCase("STUDENTE")) {
-                        System.out.println("--- Fine Record ---\n");
+                        System.out.println("Valore Nome: " + bufferTesto.toString().trim());
+                        inNome = false; // Chiudiamo il "cancello"
                     }
                 }
             };
 
-            // Avvio l'iniezione del flusso XML nel nostro Handler
-            saxParser.parse(new File("studenti.xml"), handler);
+            // 3. AVVIO DELL'ELABORAZIONE
+            // Iniezione del file fisico e dell'Handler nel motore del parser
+            saxParser.parse(new File("database.xml"), handler);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -220,5 +248,51 @@ public class ArchitetturaSAX {
 }
 ```
 
+### Sintassi ed Esempi di Codice: Implementazione DOM
+
+```java
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import java.io.File;
+
+public class ArchitetturaDOM {
+    public static void main(String[] args) {
+        try {
+            // 1. IL PATTERN FACTORY PER DOM
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = dbf.newDocumentBuilder();
+            
+            // 2. CREAZIONE DEL PARSE-TREE IN RAM
+            Document doc = builder.parse(new File("database.xml"));
+            // Ottimizza l'albero unendo nodi di testo frammentati
+            doc.getDocumentElement().normalize(); 
+            
+            System.out.println("Elemento Radice: " + doc.getDocumentElement().getNodeName());
+            
+            // 3. NAVIGAZIONE DELL'OGGETTO
+            // Estrae una lista ordinata di tutti i nodi <studente>
+            NodeList listaStudenti = doc.getElementsByTagName("studente");
+            
+            for (int i = 0; i < listaStudenti.getLength(); i++) {
+                // Casting accademico: ci assicuriamo che il nodo sia effettivamente un Elemento (tag)
+                if (listaStudenti.item(i).getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                    Element elementoStudente = (Element) listaStudenti.item(i);
+                    
+                    // Navigazione agile tipica del DOM
+                    String nome = elementoStudente.getElementsByTagName("nome").item(0).getTextContent();
+                    System.out.println("Studente Trovato: " + nome);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
 ### Best Practices & Errori Comuni (Trick Accademici)
-- **La frammentazione nel metodo `characters`:** L'errore universale di chi usa SAX è credere che il testo contenuto tra `<a>` e `</a>` venga passato interamente in un colpo solo alla callback `characters`. Falso! Il parser, per ottimizzare l'I/O bufferizzato, si riserva il diritto di spezzare il testo lungo e invocare `characters` multiplamente. Per questo, come nell'esempio, è *obbligatorio* accumulare i pezzetti in uno `StringBuilder` e considerarli completi e stampabili solo allo scattare dell'`endElement`. Usare `String` e l'operatore `+` saturerebbe istantaneamente l'Heap (poiché le stringhe sono immutabili).
+- **Scelta Sbagliata dell'Architettura:** Usare DOM per leggere un file XML di 1GB porterà a un irreparabile `OutOfMemoryError`. La RAM richiesta per costruire l'albero DOM è spesso molto maggiore della dimensione del file stesso. Inversa, usare SAX per un file di configurazione minuscolo su cui bisogna iterare avanti e indietro rende il codice inutilmente complesso. Un ingegnere del software sceglie l'architettura in base alla natura del dato.
+- **La frammentazione in SAX (`characters`):** L'errore universale in SAX è supporre che il testo "Ciao" tra i tag `<a>` e `</a>` venga passato interamente in una singola chiamata alla callback `characters`. Il parser si riserva il diritto di spezzare la stringa e invocare il metodo `characters` decine di volte per lo stesso tag! È per questo che è **obbligatorio** usare uno `StringBuilder` per accumulare i frammenti nell'evento `characters` e valutare la stringa completa solo all'innesco dell'`endElement`. Usare la concatenazione classica con `String` saturerebbe istantaneamente l'Heap (immutabilità delle stringhe).
