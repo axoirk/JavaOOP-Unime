@@ -63,61 +63,125 @@ public class GestoreIO {
 
 ## 2. Multithreading e Sincronizzazione
 
-### Teoria Fondamentale
-Un Thread è un flusso di esecuzione "leggero" allocato in un Processo. Java implementa nativamente il Multithreading per l'esecuzione di operazioni concorrenti.
+### Teoria Fondamentale: Processi vs Thread
+Un **Processo (Task)** è un programma in esecuzione. Ogni processo possiede uno **spazio di memoria privato** e non può accedere a quello di altri processi (salvo meccanismi complessi di memoria condivisa). Il cambio di contesto (Context Switch) tra processi è oneroso perché coinvolge il salvataggio di registri, stack e memoria.
 
-> **Definizione Accademica (Interferenza di Thread o Race Condition):**
-> La **Race Condition** avviene quando più Thread accedono simultaneamente e in lettura/scrittura alla stessa porzione di memoria (es. un array condiviso o una variabile `count`). Senza supervisione, le azioni si accavallano originando dati corrotti. 
-> La parola chiave **`synchronized`** applica un lucchetto (Lock o Monitor) sull'oggetto, permettendo l'ingresso al blocco critico a un solo Thread per volta (Mutua Esclusione).
+Un **Thread** è un "sotto-processo" leggero. La differenza fondamentale è che i thread di uno stesso processo **condividono lo stesso spazio di memoria (Heap)**, pur avendo ciascuno il proprio Stack privato per le variabili locali.
+Vantaggi del Multithreading:
+- Cambio di contesto molto più rapido e leggero rispetto ai processi.
+- Facile condivisione dei dati e comunicazione inter-thread.
+- Esecuzione realmente (o pseudo) parallela di operazioni concorrenti.
 
-| Stato del Thread | Significato |
-| --- | --- |
-| **New** | Istanza creata, ma `start()` non è ancora stato chiamato. |
-| **Runnable / Running**| Thread pronto, in esecuzione (assegnato allo Scheduler). |
-| **Blocked / Waiting** | Sospeso in attesa di un Lock o ha invocato `wait()`. |
-| **Terminated** | Esecuzione del metodo `run()` completata regolarmente. |
+### Creazione di un Thread: `Runnable` vs `Thread`
+In Java ci sono due metodi principali per creare un thread:
+1. **Estendere la classe `java.lang.Thread`**: Si crea una sottoclasse e si esegue l'override del metodo `run()`. **Svantaggio Accademico**: In Java c'è l'ereditarietà singola. Se estendi `Thread`, precludi alla tua classe la possibilità di estendere qualsiasi altra classe.
+2. **Implementare l'interfaccia `Runnable`**: Si crea una classe che implementa il metodo `run()`, poi la si passa come parametro al costruttore di un nuovo `Thread` (es. `new Thread(mioRunnable).start()`). **Vantaggio**: È il metodo caldamente consigliato dall'ingegneria del software. Permette alla tua classe di ereditare liberamente da altre classi padre e separa nettamente la logica del "Task" da quella del "Motore" (il Thread).
+
+### Gli Stati (Ciclo di Vita) di un Thread
+1. **New (Initial)**: Istanza creata con `new Thread()`, ma non è ancora stato invocato il metodo `start()`.
+2. **Runnable**: Dopo aver chiamato `start()`. Il thread è pronto e in attesa che lo Scheduler gli assegni il processore (spesso basato su priorità e meccanismi *Round-Robin/Preemptive*).
+3. **Running**: Il thread sta attualmente eseguendo il suo metodo `run()` occupando la CPU.
+4. **Blocked / Waiting / Sleeping**: Il thread è sospeso in attesa di un evento (I/O, rilascio di un lock di mutua esclusione, fine del timer di `sleep`, o una chiamata a `wait()`).
+5. **Dead (Terminated)**: Il metodo `run()` è giunto al termine naturalmente (o per un'eccezione non gestita). Le risorse vengono rilasciate.
+
+### Il Controllo dei Thread: Metodi Fondamentali
+La classe `Thread` fornisce metodi essenziali per controllare il flusso:
+- **`start()`**: Lancia il thread, rendendolo schedulabile. Chiama internamente il `run()`. 
+- **`sleep(long millis)`** (Statico): Sospende l'esecuzione del thread corrente per un tempo prefissato. *Trick Accademico*: Non rilascia MAI gli eventuali lock acquisiti, rendendolo molto pericoloso se usato male in blocchi sincronizzati.
+- **`yield()`** (Statico): Cede volontariamente e amichevolmente l'uso del processore ad altri thread in attesa con priorità uguale o superiore. Passa da *Running* a *Runnable*.
+- **`join()`**: Forza il thread *chiamante* a mettersi in attesa e bloccarsi finché il thread *su cui è stato invocato* `join()` non termina. Vitale per raccogliere i risultati di elaborazioni parallele. È possibile specificare un timeout: `join(long millis)`.
+- **`setPriority()` / `getPriority()`**: Modifica/legge la priorità (da `MIN_PRIORITY` a `MAX_PRIORITY`) suggerendo allo scheduler l'importanza del thread.
+- **`isAlive()`**: Ritorna `true` se il thread è stato avviato e non è ancora morto.
+
+### Sincronizzazione, Race Condition e Mutua Esclusione
+Condividendo la stessa memoria (Heap), più thread possono leggere e scrivere la stessa variabile simultaneamente. Se l'operazione non è *atomica* (es. l'incremento `i = i + 1` prevede 3 passi: lettura, somma, scrittura), si verifica una gravissima **Race Condition (Competizione)** causando corruzione dei dati.
+
+Per garantire la **Mutua Esclusione**, Java usa i *Lock* (Monitor). Si ottiene tramite il modificatore **`synchronized`** (applicabile a metodi o interi blocchi di codice specificando l'oggetto). Quando un thread entra in un blocco `synchronized` sull'oggetto `X`, ne "ruba la chiave". Ogni altro thread che tenti di entrare in un blocco sincronizzato sullo stesso `X` troverà la porta chiusa e passerà in stato di *Blocked* finché il primo non uscirà rilasciando il lock.
+
+### Coordinamento Avanzato: `wait()` e `notify()`
+Spesso i thread devono collaborare ("Il Consumatore aspetta che il Produttore inserisca dati nel buffer"). Per fare questo si usano i metodi della superclasse assoluta `Object` (non di `Thread`!), da chiamare **esclusivamente** all'interno di contesti `synchronized`:
+- **`wait()`**: Il thread in esecuzione *rilascia immediatamente il lock* dell'oggetto e si congela, entrando in stato di *Waiting*.
+- **`notify()` / `notifyAll()`**: Risveglia uno (o tutti) i thread che si erano precedentemente addormentati in `wait()` su quel medesimo oggetto, permettendogli di competere di nuovo per riacquistare il lock.
+
+### Il Nemico Mortale: Il Deadlock (Stallo)
+Un **Deadlock** è uno stallo fatale e irrisolvibile. Si verifica quando due o più thread si bloccano a vicenda attendendo risorse l'uno dall'altro. 
+*Esempio Classico:*
+1. Il Thread 1 acquisisce il lock dell'oggetto A, poi ha bisogno del lock dell'oggetto B.
+2. Il Thread 2 acquisisce il lock dell'oggetto B, poi ha bisogno del lock dell'oggetto A.
+Entrambi aspetteranno in eterno che l'altro rilasci la risorsa. Il programma si congela. Java *non dispone di alcun meccanismo magico per prevenire o uccidere un deadlock*; è esclusiva responsabilità dell'architetto del software progettare gerarchie rigorose nell'acquisizione dei lock.
 
 ### Sintassi ed Esempi di Codice
 ```java
-// Il task Produttore/Consumatore condividerà questa risorsa
-public class SyncStack {
+// Implementazione consigliata tramite Runnable per il pattern Produttore-Consumatore
+public class SyncStack implements Runnable {
     private int[] array = new int[5];
     private int count = 0;
+    private boolean isProducer;
 
-    // Mutua Esclusione e Coordinamento Inter-Thread
+    public SyncStack(boolean isProducer) { this.isProducer = isProducer; }
+
+    // Mutua Esclusione e Coordinamento Inter-Thread (wait/notify)
     public synchronized void inserisci(int dato) throws InterruptedException {
         // OBBLIGATORIO: Utilizzo del WHILE per gestire i falsi risvegli (Spurious Wakeups)
         while (count == array.length) {
-            System.out.println("Stack Pieno! Sospensione...");
-            wait(); // Rilascia il lock e si addormenta
+            System.out.println("Stack Pieno! Produttore in wait()...");
+            wait(); // Rilascia il lock dell'oggetto e si addormenta
         }
-        
         array[count] = dato;
         count++;
         System.out.println("Inserito: " + dato);
-        
         notifyAll(); // Risveglia i thread Consumatori in attesa
     }
     
     public synchronized void estrai() throws InterruptedException {
         while (count == 0) {
-            System.out.println("Stack Vuoto! Sospensione...");
+            System.out.println("Stack Vuoto! Consumatore in wait()...");
             wait();
         }
-        
         count--;
         int estratto = array[count];
         System.out.println("Estratto: " + estratto);
-        
         notifyAll(); // Risveglia i thread Produttori
+    }
+
+    @Override
+    public void run() {
+        try {
+            if (isProducer) { 
+                inserisci(10); 
+                Thread.sleep(500); // sleep sospende il thread senza cedere lock
+            } else { 
+                estrai(); 
+                Thread.yield(); // yield cede gentilmente il passo allo Scheduler
+            }
+        } catch (InterruptedException e) {
+            System.out.println("Thread interrotto violentemente!");
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        SyncStack risorsa = new SyncStack(true); // Simulazione del Produttore
+        
+        // La nostra classe passata in pasto al motore Thread
+        Thread t1 = new Thread(risorsa, "IlMioThread");
+        
+        // ERRORE GRAVE: t1.run(); (Lo eseguirebbe sequenzialmente nel main)
+        t1.start(); // Avvio corretto asincrono
+        
+        System.out.println("Thread vivo? " + t1.isAlive());
+        
+        // Il Main Thread si blocca e aspetta che t1 muoia prima di procedere
+        t1.join(); 
+        
+        System.out.println("Programma terminato regolarmente.");
     }
 }
 ```
 
 ### Best Practices & Errori Comuni (Trick Accademici)
-- **Non chiamare `run()`!:** Chiamare esplicitamente `.run()` su un Thread esegue il metodo in modo sequenziale sul Thread Principale (main). Per attivare la magia del vero parallelismo, si deve obbligatoriamente invocare il metodo **`.start()`**, il quale affida il flusso allo Scheduler di sistema.
-- **Implementare Runnable o Estendere Thread?** Dal punto di vista architetturale e accademico, è infinitamente preferibile `implements Runnable` e darlo in pasto a un `new Thread(mioRunnable)`. Essendo Java a singola eredità, estendere Thread "brucia" l'unico spazio disponibile di ereditarietà per la classe.
-- **`wait()` e `notify()` orfani:** I metodi `wait()`, `notify()` e `notifyAll()` vanno invocati **esclusivamente** all'interno di metodi (o blocchi) marcati come `synchronized`. Fallire questa regola scaturisce in una violenta `IllegalMonitorStateException`.
+- **Non chiamare `run()`!:** Come visto nell'esempio, invocare esplicitamente `.run()` trasforma il task in una noiosa esecuzione sequenziale. Per la magia asincrona serve obbligatoriamente `.start()`.
+- **`wait()` e `notify()` orfani:** I metodi di wait/notify vanno invocati **esclusivamente** all'interno di metodi (o blocchi) marcati come `synchronized`. Se lo fai fuori da un blocco monitorato, la JVM lancerà un'atroce `IllegalMonitorStateException`.
+- **Prevenire i Deadlock:** La regola d'oro accademica per evitare i deadlock è forzare tutti i thread ad acquisire lock multipli sempre ed esclusivamente nello stesso identico ordine.
 
 ---
 
