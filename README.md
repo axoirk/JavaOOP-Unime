@@ -1,4 +1,4 @@
-# ExercicesJava-Unime
+# JavaOOP-Unime
 
 > A personal study repository for the **Object-Oriented Programming (OOP) with Java** course at the **University of Messina (Unime)**, Computer Science degree.
 
