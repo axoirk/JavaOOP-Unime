@@ -31,11 +31,18 @@ ExercicesJava-Unime/
 │   │   ├── Esercizio 1/
 │   │   ├── ...
 │   │   └── Esercizio n/
-│   ├── ...
-│   └── Livello n/
-│       ├── Esercizio 1/
-│       ├── ...
-│       └── Esercizio n/
+│   ├── Livello 3/               # Level 3 – advanced exercises
+│   │   ├── Esercizio 1/
+│   │   ├── ...
+│   │   └── Esercizio n/
+│   ├── Livello 4/               # Level 4 – complex topics (I/O, Threads, XML)
+│   │   ├── LESSON.md            # Theory and notes for the level
+│   │   ├── Esercizio 1/
+│   │   ├── Esercizio 2/
+│   │   ├── Esercizio 3/
+│   │   ├── Esercizio 4/
+│   │   └── Esercizio 5/
+│   └── ...
 ├── Professor Exercises/         # Official course exercises (planned)
 │   ├── Exercise .../
 │   └── ...
