@@ -31,7 +31,8 @@ ExercicesJava-Unime/
 │   │   └── Esercizio n/
 │   ├── ...
 │   └── Livello n/               # Level n – specific topic exercises
-│       ├── LESSON.md            # Theory and notes for the level (if applicable)
+│       ├── Teoria/              # Theory and study materials (if applicable)
+│       │   └── LESSON.md        # Notes and concepts for the level
 │       ├── Esercizio 1/
 │       ├── ...
 │       └── Esercizio n/
