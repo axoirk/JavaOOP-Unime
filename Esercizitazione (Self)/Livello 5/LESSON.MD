@@ -97,7 +97,7 @@ I comandi Maven (CLI) si costruiscono passando a `mvn` le fasi o i goal desidera
 * `mvn clean install`: **Il comando più celebre**. Esegue una pulizia del workspace, ricompila, testa, genera l'artefatto e lo salva nella cache locale (Repository Locale), rendendolo pronto all'uso per altri tuoi progetti.
 
 ### Lavorare con IntelliJ IDEA
-Se utilizzi **IntelliJ IDEA**, è utile sapere che l'integrazione con Maven è nativa, permettendoti di gestire i progetti (come richiesto anche nei test pratici o esercizi) in totale facilità senza utilizzare obbligatoriamente la CLI:
+Se utilizzi **IntelliJ IDEA**, è utile sapere che l'integrazione con Maven è nativa, permettendoti di gestire i progetti in totale facilità senza utilizzare obbligatoriamente la CLI:
 * **Archetipi da UI:** Invece di usare `mvn archetype:generate` da terminale, andando su *File > New > Project*, puoi selezionare il generatore **"Maven Archetype"**, scegliere dalla lista il template che desideri (es. `maven-archetype-quickstart`) e l'IDE preparerà tutto in autonomia.
 * **Aggiornamento delle Dipendenze:** Quando scrivi o modifichi un blocco `<dependency>` nel `pom.xml`, IntelliJ mostra un'icona "M" flottante per effettuare il *Load Maven Changes* (sincronizzazione). Cliccandola, avvierà il download dei JAR automaticamente.
 * **Pannello Maven:** C'è un pannello "Maven" laterale molto utile (di solito a destra) con l'albero di tutti i tuoi *Lifecycle*. Con un semplice doppio click su `clean`, `install` o `package` avvierai i comandi di build.
