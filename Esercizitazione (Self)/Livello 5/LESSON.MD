@@ -76,10 +76,11 @@ Mentre le dipendenze aggiungono librerie al progetto, il blocco `<build>` serve 
     </plugins>
 </build>
 ```
+* **Distribuzione e Fat JAR (Maven Assembly Plugin):** Spesso si ha la necessità di distribuire l'applicativo non come semplice libreria, ma come eseguibile stand-alone (`java -jar ...`) che contenga al suo interno anche tutte le dipendenze esterne. Questo "mega-pacchetto" viene chiamato in gergo **Fat JAR** (o Uber JAR). Per realizzarlo, è necessario istruire Maven aggiungendo ai plugin il `maven-assembly-plugin`, indicandogli il descrittore `jar-with-dependencies` e specificando qual è la tua classe principale (`<mainClass>`).
 
 ### Strutture Avanzate del POM (Enterprise Features)
 * **Ereditarietà (Inheritance):** Più progetti possono dichiarare un tag `<parent>` per ereditare versioni di dipendenze e plugin da un POM genitore. Perfetto per garantire che tutti i microservizi di un'azienda usino la stessa versione delle librerie.
-* **Aggregazione (Multi-Module):** Un POM "Padre" (con `<packaging>pom</packaging>`) può includere un tag `<modules>` che elenca vari sotto-progetti. Lanciando Maven sul POM Padre, si attiverà la build automatica e concatenata di tutti i sottomoduli (rispettando le dipendenze incrociate tra di essi).
+* **Aggregazione (Multi-Module):** Un POM "Padre" (con `<packaging>pom</packaging>`) può includere un tag `<modules>` che elenca vari sotto-progetti. Lanciando Maven sul POM Padre, si attiverà la build automatica e concatenata di tutti i sottomoduli. Maven analizza internamente queste correlazioni tramite il suo motore chiamato **Reactor**, che stabilisce dinamicamente qual è l'ordine corretto in cui compilare i moduli in base alle loro interdipendenze.
 * **Profili (Profiles):** Tramite il nodo `<profiles>` è possibile creare configurazioni condizionali che si attivano solo in determinati contesti (es. un profilo per l'ambiente di "Sviluppo" che usa un database in memoria, e uno per "Produzione" che usa Oracle). Si richiamano da riga di comando con l'opzione `-P nome-profilo`.
 
 ## 6. Utilizzo Pratico e Comandi Principali
@@ -94,3 +95,10 @@ I comandi Maven (CLI) si costruiscono passando a `mvn` le fasi o i goal desidera
 * `mvn compile`: Traduce il codice sorgente senza fare altro.
 * `mvn test`: Esegue gli unit test. Include intrinsecamente le fasi precedenti (quindi compila i sorgenti, compila i test, ed esegue i test).
 * `mvn clean install`: **Il comando più celebre**. Esegue una pulizia del workspace, ricompila, testa, genera l'artefatto e lo salva nella cache locale (Repository Locale), rendendolo pronto all'uso per altri tuoi progetti.
+
+### Lavorare con IntelliJ IDEA
+Se utilizzi **IntelliJ IDEA**, è utile sapere che l'integrazione con Maven è nativa, permettendoti di gestire i progetti (come richiesto anche nei test pratici o esercizi) in totale facilità senza utilizzare obbligatoriamente la CLI:
+* **Archetipi da UI:** Invece di usare `mvn archetype:generate` da terminale, andando su *File > New > Project*, puoi selezionare il generatore **"Maven Archetype"**, scegliere dalla lista il template che desideri (es. `maven-archetype-quickstart`) e l'IDE preparerà tutto in autonomia.
+* **Aggiornamento delle Dipendenze:** Quando scrivi o modifichi un blocco `<dependency>` nel `pom.xml`, IntelliJ mostra un'icona "M" flottante per effettuare il *Load Maven Changes* (sincronizzazione). Cliccandola, avvierà il download dei JAR automaticamente.
+* **Pannello Maven:** C'è un pannello "Maven" laterale molto utile (di solito a destra) con l'albero di tutti i tuoi *Lifecycle*. Con un semplice doppio click su `clean`, `install` o `package` avvierai i comandi di build.
+* **Progetti Multi-Modulo:** IntelliJ facilita l'aggregazione di moduli. Creando un nuovo sottomodulo (*New > Module* su un progetto esistente), IntelliJ andrà a impostare automaticamente le relazioni: aggiungerà il tag `<modules>` nel `pom.xml` genitore, e preparerà il tag `<parent>` nel `pom.xml` del figlio.
