@@ -386,3 +386,12 @@ public class ArchitetturaDOM {
 ### Best Practices & Errori Comuni (Trick Accademici)
 - **Scelta Sbagliata dell'Architettura:** Usare DOM per leggere un file XML di 1GB porterà a un irreparabile `OutOfMemoryError`. La RAM richiesta per costruire l'albero DOM è spesso molto maggiore della dimensione del file stesso. Inversa, usare SAX per un file di configurazione minuscolo su cui bisogna iterare avanti e indietro rende il codice inutilmente complesso. Un ingegnere del software sceglie l'architettura in base alla natura del dato.
 - **La frammentazione in SAX (`characters`):** L'errore universale in SAX è supporre che il testo "Ciao" tra i tag `<a>` e `</a>` venga passato interamente in una singola chiamata alla callback `characters`. Il parser si riserva il diritto di spezzare la stringa e invocare il metodo `characters` decine di volte per lo stesso tag! È per questo che è **obbligatorio** usare uno `StringBuilder` per accumulare i frammenti nell'evento `characters` e valutare la stringa completa solo all'innesco dell'`endElement`. Usare la concatenazione classica con `String` saturerebbe istantaneamente l'Heap (immutabilità delle stringhe).
+
+---
+
+> ⚠️ **SEGNALAZIONE: ARGOMENTI MANCANTI E DA SPOSTARE RISPETTO AL NUOVO SYLLABUS**
+> In base alla nuova organizzazione a 7 livelli, in questo file mancano i seguenti argomenti (che appartengono al Livello 4):
+> - **Interfacce Grafiche (GUI):** Lo sviluppo visivo tramite librerie come `Swing` (es. `JFrame`, `JLabel`, `JButton`).
+> - **Layout e Action Listener:** Gestione degli eventi generati dall'interfaccia (come il click dei bottoni) e disposizione geometrica dei componenti a schermo.
+> 
+> *Nota Strutturale:* La teoria su **Multithreading e Sincronizzazione** (presente qui) andrebbe spostata nel `LESSON.md` del **Livello 5**. La teoria sull'**XML (SAX e DOM)** andrebbe spostata nel **Livello 6**.

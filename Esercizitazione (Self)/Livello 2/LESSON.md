@@ -208,3 +208,12 @@ public class PolimorfismoAvanzato {
 - **`new Animale()` fallisce:** Tentare di allocare memoria per una classe marcata come `abstract` genera errore. Solo le classi concrete possono popolare l'Heap.
 - **Dimenticare l'implementazione astratta:** Se un `Cerchio extends FormaGeometrica` ma tu non scrivi l'override per `calcolaArea()`, il compilatore rifiuterà la classe `Cerchio` dicendoti che deve essere dichiarata anch'essa `abstract`. Le figlie concrete devono onorare tutti i contratti!
 - **ClassCastException nel Downcasting:** Scrivere `Pesce p = (Pesce) pet1;` è un gravissimo azzardo (Downcasting Cieco). Siccome `pet1` nasconde un `Uccello`, a runtime la JVM lancerà `ClassCastException` mandando in crash l'applicazione. Non fidarti mai del cast tra oggetti senza prima aver interpellato l'operatore di guardia `instanceof`.
+
+---
+
+> ⚠️ **SEGNALAZIONE: ARGOMENTI MANCANTI E DA SPOSTARE RISPETTO AL NUOVO SYLLABUS**
+> In base alla nuova organizzazione a 7 livelli, in questo file mancano i seguenti argomenti (che appartengono al Livello 2):
+> - **Variabili di Classe (Static) e Costanti:** L'uso della keyword `static` per variabili condivise e `static final` per le costanti.
+> - **Inner Classes (Classi Interne):** La definizione e l'utilità delle classi private annidate all'interno di classi esterne per nascondere la logica interna.
+> 
+> *Nota Strutturale:* La teoria su **Ereditarietà**, **Polimorfismo** e **Classi Astratte** (attualmente presente qui) andrebbe formalmente spostata nel file `LESSON.md` del **Livello 3**.

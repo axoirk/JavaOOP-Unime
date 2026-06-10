@@ -183,3 +183,9 @@ public class IterazioniAvanzate {
 - **Off-by-One Error:** Questo è l'errore algoritmico più pernicioso dell'informatica. Essendo Java "Zero-Indexed" (conta da 0), per ciclare un array di 5 elementi si va dall'indice 0 all'indice 4. Se si imposta la condizione del `for` su `i <= 5` (minore o uguale), all'ultimo giro il ciclo tenterà di accedere allo slot 5, causando l'implacabile crash della JVM tramite `ArrayIndexOutOfBoundsException`. Si deve usare la disuguaglianza stretta: `i < 5`.
 - **Infinite Loop (Cicli Infiniti):** Dimenticarsi di inserire l'istruzione di aggiornamento (es. `i++`) nel corpo di un `while`, o aggiornare la variabile in modo che si allontani dalla condizione di uscita, bloccherà il thread in un ciclo perpetuo consumando un intero core della CPU al 100% senza scampo.
 - **Variabili Ombra (Shadowing Errato):** Dichiarare una variabile int `i = 0;` fuori dal ciclo e poi rimettere `for(int i = 0; ...)` all'interno rimescolando i tipi, genera un disastro semantico di ridefinizione variabile che il compilatore blocca a difesa dell'information hiding globale.
+
+---
+
+> ⚠️ **SEGNALAZIONE: ARGOMENTI MANCANTI RISPETTO AL NUOVO SYLLABUS**
+> In base alla nuova organizzazione del corso a 7 livelli, in questo file manca la trattazione del seguente argomento fondamentale per il Livello 1:
+> - **I Packages:** L'uso della direttiva `package` per raggruppare le classi e la parola chiave `import` per richiamarle tra file separati.

@@ -102,3 +102,10 @@ Se utilizzi **IntelliJ IDEA**, è utile sapere che l'integrazione con Maven è n
 * **Aggiornamento delle Dipendenze:** Quando scrivi o modifichi un blocco `<dependency>` nel `pom.xml`, IntelliJ mostra un'icona "M" flottante per effettuare il *Load Maven Changes* (sincronizzazione). Cliccandola, avvierà il download dei JAR automaticamente.
 * **Pannello Maven:** C'è un pannello "Maven" laterale molto utile (di solito a destra) con l'albero di tutti i tuoi *Lifecycle*. Con un semplice doppio click su `clean`, `install` o `package` avvierai i comandi di build.
 * **Progetti Multi-Modulo:** IntelliJ facilita l'aggregazione di moduli. Creando un nuovo sottomodulo (*New > Module* su un progetto esistente), IntelliJ andrà a impostare automaticamente le relazioni: aggiungerà il tag `<modules>` nel `pom.xml` genitore, e preparerà il tag `<parent>` nel `pom.xml` del figlio.
+
+---
+
+> ⚠️ **SEGNALAZIONE: ARGOMENTI MANCANTI E DA SPOSTARE RISPETTO AL NUOVO SYLLABUS**
+> In base alla nuova organizzazione a 7 livelli:
+> - **Questo intero file (Apache Maven) appartiene concettualmente al Livello 7.**
+> - **Manca del tutto la teoria del Livello 5** (Thread, Programmazione concorrente, Runnable, Identificazione Thread, join/sleep/yield, Sincronizzazione e Comunicazione wait/notify). Attualmente, questa teoria risiede erroneamente all'interno del file `LESSON.md` del Livello 4.

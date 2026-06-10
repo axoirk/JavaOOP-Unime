@@ -238,3 +238,13 @@ public class ListaConcatenataCustom implements Iterable<String> {
 ### Best Practices & Errori Comuni (Trick Accademici)
 - **Perdere la Testa (Orphan Node):** Attenzione a non assegnare mai per sbaglio `head = head.next;` per scorrere la lista! Facendo così, perdi il riferimento al primissimo nodo. Di conseguenza, il Garbage Collector giudicherà il primo nodo come *Unreachable* e lo distruggerà per sempre. Per leggere una lista, si istanzia sempre un puntatore temporaneo (come `ListNode current = head;`) per preservare le ancore vitali.
 - **Crash da Elemento Nullo (`NullPointerException` sulla coda):** Il nodo che chiude la lista avrà sempre il puntatore `next` impostato a `null`. Accedere avventatamente a `current.next.data` in prossimità della chiusura causerà inevitabilmente lo schianto del sistema. L'uso metodico del costrutto `while(current != null)` è vitale.
+
+---
+
+> ⚠️ **SEGNALAZIONE: ARGOMENTI MANCANTI E DA SPOSTARE RISPETTO AL NUOVO SYLLABUS**
+> In base alla nuova organizzazione a 7 livelli, in questo file mancano i seguenti argomenti (che appartengono al Livello 3):
+> - **Le Interfacce:** Dichiarazione (`interface`) e implementazione (`implements`), oltre alle differenze architetturali chiave rispetto alle classi astratte.
+> - **Estensione di Interfacce e Comparable:** L'implementazione dell'interfaccia standard `Comparable` e del metodo `compareTo()` per l'ordinamento degli oggetti.
+> - La teoria completa su **Ereditarietà, Polimorfismo e Classi Astratte** (attualmente è scritta nel file del Livello 2).
+> 
+> *Nota Strutturale:* Le strutture dati (`Array`, `ArrayList`, `LinkedList`) qui trattate restano propedeutiche e molto utili, ma non compaiono esplicitamente come requirement primari del Livello 3 nel nuovo piano di studi.
