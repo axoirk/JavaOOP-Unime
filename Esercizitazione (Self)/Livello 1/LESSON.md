@@ -186,6 +186,52 @@ public class IterazioniAvanzate {
 
 ---
 
-> ⚠️ **SEGNALAZIONE: ARGOMENTI MANCANTI RISPETTO AL NUOVO SYLLABUS**
-> In base alla nuova organizzazione del corso a 7 livelli, in questo file manca la trattazione del seguente argomento fondamentale per il Livello 1:
-> - **I Packages:** L'uso della direttiva `package` per raggruppare le classi e la parola chiave `import` per richiamarle tra file separati.
+## 4. I Packages e l'Organizzazione del Codice
+
+### Teoria Fondamentale: Namespaces e Risoluzione dei Conflitti
+Man mano che i software crescono, scrivere tutte le classi nella stessa cartella diventa ingestibile. Cosa succede se due sviluppatori creano entrambi una classe chiamata `Utente` ma con scopi diversi? Si genera un conflitto di nomi (*Name Clash*). 
+
+Java risolve questo problema introducendo i **Packages** (pacchetti). Un package non è altro che un *Namespace* logico che si riflette fisicamente in una struttura di cartelle sul disco rigido (es. il package `com.universita.oop` corrisponde al percorso `com/universita/oop/`).
+
+- **Dichiarazione (`package`):** Deve essere rigorosamente la *prima* riga di codice eseguibile (non commentata) in un file `.java`. Definisce a quale "famiglia" appartiene la classe. Se si omette, la classe finisce nel *Default Package* (pratica deprecata a livello enterprise).
+- **Inclusione (`import`):** Se una classe ha bisogno di utilizzare un'altra classe che risiede in un package *diverso*, deve importarla esplicitamente. Senza l'import, il compilatore non sa dove andare a cercare la definizione dell'oggetto. Le uniche classi che non necessitano di import manuale sono quelle dello stesso package e quelle del core package `java.lang` (che contiene ad esempio `String` o `System`).
+
+### Sintassi ed Esempi di Codice
+Immaginiamo di avere un progetto diviso in moduli: la logica di business e le interfacce utente.
+
+**File 1: `/src/com/unime/logica/Calcolatrice.java`**
+```java
+// 1. Dichiarazione del package di appartenenza (PRIMA RIGA ASSOLUTA)
+package com.unime.logica;
+
+public class Calcolatrice {
+    public int somma(int a, int b) {
+        return a + b;
+    }
+}
+```
+
+**File 2: `/src/com/unime/interfaccia/MainConsole.java`**
+```java
+package com.unime.interfaccia;
+
+// 2. Importiamo la classe dal package esterno per poterla usare
+import com.unime.logica.Calcolatrice; 
+
+// Nota: se volessimo importare TUTTE le classi di 'logica', potremmo usare l'asterisco:
+// import com.unime.logica.*; (Sconsigliato per evitare di inquinare il namespace locale)
+
+public class MainConsole {
+    public static void main(String[] args) {
+        // Senza l'import in alto, il compilatore andrebbe in errore non trovando il simbolo "Calcolatrice"
+        Calcolatrice calc = new Calcolatrice();
+        int risultato = calc.somma(10, 5);
+        System.out.println("Risultato inter-package: " + risultato);
+    }
+}
+```
+
+### Best Practices & Errori Comuni (Trick Accademici)
+- **Convenzione sui Nomi Invertita (Reverse Domain Name):** È uno standard mondiale dare ai package il nome del dominio aziendale invertito per garantirne l'unicità globale. Se l'azienda ha il sito `oop.unime.it`, i package partiranno tutti dal prefisso `it.unime.oop.`.
+- **Package name in lowercase:** I nomi dei package devono essere scritti tutti in **minuscolo**, senza eccezioni o CamelCase. Es. `com.mioprogetto.gestioneutenti`, mai `com.MioProgetto.GestioneUtenti`.
+- **L'Errore di Posizionamento Fisico:** Il compilatore Java (specie da CLI) è spietato: la struttura fisica delle cartelle sul computer DEVE rispecchiare esattamente la dichiarazione del package. Se scrivi `package com.app;` ma metti il file `Main.java` direttamente sul Desktop invece che nella cartella `Desktop/com/app/`, la JVM si rifiuterà di avviarlo lanciando l'errore `NoClassDefFoundError` (wrong name). Gli IDE come IntelliJ IDEA risolvono e mascherano in automatico questo problema strutturando le cartelle per te.
