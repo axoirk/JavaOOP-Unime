@@ -1,4 +1,4 @@
-# Esercizio 1 – Classe base e Istanziazione / Basic Class and Object Instantiation
+# Esercizio 1
 
 ---
 

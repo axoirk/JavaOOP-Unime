@@ -1,4 +1,4 @@
-# Esercizio 2 – Costruttori Multipli (Overloading) / Multiple Constructors (Overloading)
+# Esercizio 2
 
 ---
 

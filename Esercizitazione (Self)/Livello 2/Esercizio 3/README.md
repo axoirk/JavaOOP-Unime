@@ -1,4 +1,4 @@
-# Esercizio 3 – Incapsulamento e Validazione / Encapsulation and Validation
+# Esercizio 3
 
 ---
 
