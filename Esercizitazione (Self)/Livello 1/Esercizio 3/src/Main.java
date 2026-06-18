@@ -6,25 +6,31 @@ import java.util.Scanner;
  */
 public class Main {
     public static void main(String[] args) {
-
-        System.out.println("Valuta il film (Scrivi: EXCELLENT, AVERAGE, o BAD): ");
         Scanner scanner = new Scanner(System.in);
-        String userInput = scanner.next().toUpperCase();
 
-        // valueOf mappa la stringa al corrispondente valore dell'enum.
-        MovieRating input = MovieRating.valueOf(userInput);
-        switch (input) {
-            case EXCELLENT:
-                System.out.println("Hai valutato questo film ECCELLENTE");
+        System.out.println("Inserisci una valutazione: (A, B, C, D, F): ");
+        String input = scanner.nextLine();
+
+        char voteChar = input.toUpperCase().charAt(0);
+
+        switch (voteChar) {
+            case 'A':
+                System.out.println("Hai inserito una valutazione ECCELLENTE");
                 break;
-            case AVERAGE:
-                System.out.println("Hai valutato questo film NELLA MEDIA");
+            case 'B':
+                System.out.println("Hai inserito una valutazione MOLTO BUONO");
                 break;
-            case BAD:
-                System.out.println("Hai valutato questo film BRUTTO");
+            case 'C':
+                System.out.println("Hai inserito una valutazione SUFFICIENTE");
+                break;
+            case 'D':
+                System.out.println("Hai inserito una valutazione SCARSO");
+                break;
+            case 'F':
+                System.out.println("Hai inserito una valutazione INSUFFICIENTE");
                 break;
             default:
-                System.out.println("Valutazione inesistente");
+                System.out.println("Valutazione Non Valida");
                 break;
         }
 

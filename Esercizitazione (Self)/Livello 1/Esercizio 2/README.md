@@ -1,4 +1,4 @@
-# Esercizio 2 – Calcolo del BMI / BMI Calculator
+# Esercizio 2
 
 ---
 

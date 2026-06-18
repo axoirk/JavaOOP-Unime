@@ -1,24 +1,18 @@
-import java.util.Scanner;
+package com.unime.app;
 
-/**
- * Esercizio sul ciclo for a numero fisso di iterazioni.
- * Simula una crescita settimanale per 10 settimane.
- */
+import java.util.Scanner;
+import com.unime.math.*;
+
 public class Main {
     public static void main(String[] args){
-
-        System.out.println("Inserisci il numero di insetti, e il tasso di crescita settimanale.");
         Scanner scanner = new Scanner(System.in);
+        UtiliyMath utMath = new UtiliyMath();
 
-        Integer n = scanner.nextInt();
-        Integer raddoppio = scanner.nextInt();
+        System.out.println("Inserisci 2 valori interi: (Suddivisi da spazio): ");
 
-        // Il for rappresenta una simulazione temporale a passi settimanali.
-        for (int i = 1; i <= 10; i++) {
-            n *= raddoppio;
-            System.out.printf("Settimana %d\nNumero attuale insetti: %d\n\n", i, n);
-        }
+        int a = scanner.nextInt();
+        int b = scanner.nextInt();
 
-        System.out.printf("I tuoi insetti sono diventati in totale: " + n);
+        System.out.printf("La somma dei 2 numeri equivale a: " + utMath.somma(a, b));
     }
 }

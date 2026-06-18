@@ -1,4 +1,4 @@
-# Esercizio 4 – Calcolo della Media con Sentinella (Ciclo While) / Average Calculation with Sentinel (While Loop)
+# Esercizio 4
 
 ---
 

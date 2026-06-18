@@ -1,25 +1,18 @@
-# Esercizio 1 – Lettura e Stampa di un Numero / Reading and Printing a Number
+# Esercizio 1
 
 ---
 
 ## 🇮🇹 Italiano
 
 ### Descrizione
-Programma base che introduce l'uso dell'input da tastiera in Java.
+Usa gli operatori aritmetici di base per calcolare l'Indice di Massa Corporea (BMI) a partire da peso e altezza inseriti dall'utente.
+La formula è: `BMI = peso / (altezza * altezza)`.
 
-L'utente viene invitato ad inserire un numero compreso tra **1 e 99**.  
-Il programma legge il valore tramite `Scanner` e lo stampa a schermo.
-
-### Concetti trattati
-- Classe `Scanner` per la lettura da standard input
-- Variabili di tipo `Integer`
-- Output formattato con `System.out.printf`
-
-### Esempio di esecuzione
+### Esempio di Output
 ```
-Inserisci un numero da 1 a 99:
-42
-Il numero inserito é 42
+Inserisci il tuo peso in kg: 70.5
+Inserisci la tua altezza in metri: 1.75
+Il tuo BMI è: 23.020408163265305
 ```
 
 ---
@@ -27,19 +20,12 @@ Il numero inserito é 42
 ## 🇬🇧 English
 
 ### Description
-A basic program that introduces keyboard input in Java.
+Use basic arithmetic operators to calculate the Body Mass Index (BMI) from weight and height entered by the user.
+The formula is: `BMI = weight / (height * height)`.
 
-The user is prompted to enter a number between **1 and 99**.  
-The program reads the value using `Scanner` and prints it to the screen.
-
-### Concepts covered
-- `Scanner` class for reading from standard input
-- `Integer` variables
-- Formatted output with `System.out.printf`
-
-### Sample run
+### Output Example
 ```
-Inserisci un numero da 1 a 99:
-42
-Il numero inserito é 42
+Inserisci il tuo peso in kg: 70.5
+Inserisci la tua altezza in metri: 1.75
+Il tuo BMI è: 23.020408163265305
 ```
