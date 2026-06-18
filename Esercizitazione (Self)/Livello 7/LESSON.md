@@ -105,7 +105,75 @@ Se utilizzi **IntelliJ IDEA**, è utile sapere che l'integrazione con Maven è n
 
 ---
 
-> ⚠️ **SEGNALAZIONE: ARGOMENTI MANCANTI E DA SPOSTARE RISPETTO AL NUOVO SYLLABUS**
-> In base alla nuova organizzazione a 7 livelli:
-> - **Questo intero file (Apache Maven) appartiene concettualmente al Livello 7.**
-> - **Manca del tutto la teoria del Livello 5** (Thread, Programmazione concorrente, Runnable, Identificazione Thread, join/sleep/yield, Sincronizzazione e Comunicazione wait/notify). Attualmente, questa teoria risiede erroneamente all'interno del file `LESSON.md` del Livello 4.
+## 7. JDBC: Connessione ai Database Relazionali
+
+### Teoria Fondamentale: Il Ponte tra Java e SQL
+**JDBC (Java Database Connectivity)** è l'API standard di Java per interagire con database relazionali (RDBMS). Funge da strato di astrazione che permette di scrivere codice Java per inviare query SQL a qualsiasi database, a patto di avere il **Driver** corretto.
+
+### Componenti Architetturali
+1.  **DriverManager:** La classe che gestisce il caricamento dei driver e stabilisce la connessione fisica.
+2.  **Connection:** Rappresenta la sessione attiva con il database.
+3.  **Statement:** L'oggetto usato per inviare comandi SQL. Si divide in:
+    -   `Statement`: Per query semplici e statiche.
+    -   `PreparedStatement`: **Consigliato.** Pre-compila la query e permette di inserire parametri in modo sicuro, prevenendo la **SQL Injection**.
+4.  **ResultSet:** Una tabella virtuale che contiene i risultati di una query `SELECT`. Si naviga riga per riga con il metodo `next()`.
+
+*Esempio Teorico: Gestione Inventario (JDBC)*
+```java
+String url = "jdbc:mysql://localhost:3306/magazzino";
+try (Connection conn = DriverManager.getConnection(url, "user", "pass");
+     PreparedStatement pstmt = conn.prepareStatement("SELECT nome FROM Prodotti WHERE quantita > ?")) {
+    
+    pstmt.setInt(1, 10); // Imposta il primo parametro (?)
+    ResultSet rs = pstmt.executeQuery();
+    
+    while (rs.next()) {
+        System.out.println("Prodotto disponibile: " + rs.getString("nome"));
+    }
+} catch (SQLException e) { e.printStackTrace(); }
+```
+
+---
+
+## 8. NoSQL e Database Documentali (MongoDB)
+
+### Oltre il Relazionale
+Mentre i DB SQL (come MySQL) usano tabelle rigide con righe e colonne, i database **NoSQL** (come MongoDB) sono **Schema-less**. I dati vengono memorizzati come **Documenti** (solitamente in formato BSON/JSON).
+
+### Concetti Chiave di MongoDB
+-   **Collection:** L'equivalente di una tabella SQL.
+-   **Document:** Un singolo record (un oggetto JSON).
+-   **_id:** Campo obbligatorio che funge da chiave primaria univoca.
+
+In Java, l'integrazione avviene tramite il `mongo-java-driver`, che permette di mappare oggetti Java direttamente in documenti del database.
+
+---
+
+## 9. Architetture Web con Spring Boot e REST
+
+### Cos'è Spring Boot?
+Spring Boot è l'evoluzione del framework Spring, progettata per creare applicazioni **stand-alone** e pronte per la produzione con configurazione minima. Sfrutta il concetto di **Inversion of Control (IoC)** per gestire i componenti dell'applicazione (Bean).
+
+### Servizi RESTful
+Il modello **REST (Representational State Transfer)** è lo standard per la comunicazione tra sistemi via HTTP.
+-   **Risorse:** Tutto è una risorsa identificata da un URL (es. `/api/libri`).
+-   **Verbi HTTP:** Si usano i metodi standard: `GET` (leggere), `POST` (creare), `PUT` (aggiornare), `DELETE` (eliminare).
+
+### Annotazioni Chiave
+-   **`@SpringBootApplication`:** Abilita la configurazione automatica.
+-   **`@RestController`:** Segnala che la classe gestirà richieste web e restituirà dati (solitamente JSON).
+-   **`@GetMapping("/percorso")`:** Mappa una funzione a una specifica richiesta GET.
+
+*Esempio Teorico: Controller per un Catalogo (Spring)*
+```java
+@RestController
+@RequestMapping("/api/catalogo")
+public class CatalogoController {
+
+    @GetMapping("/saluto")
+    public String sayHello(@RequestParam(value = "nome", defaultValue = "Ospite") String nome) {
+        return "Benvenuto nel catalogo, " + nome + "!";
+    }
+}
+```
+
