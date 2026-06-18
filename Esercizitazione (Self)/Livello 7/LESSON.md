@@ -105,47 +105,90 @@ Se utilizzi **IntelliJ IDEA**, è utile sapere che l'integrazione con Maven è n
 
 ---
 
-## 7. JDBC: Connessione ai Database Relazionali
+## 7. JDBC: L'Architettura di Connessione ai Database Relazionali
 
-### Teoria Fondamentale: Il Ponte tra Java e SQL
-**JDBC (Java Database Connectivity)** è l'API standard di Java per interagire con database relazionali (RDBMS). Funge da strato di astrazione che permette di scrivere codice Java per inviare query SQL a qualsiasi database, a patto di avere il **Driver** corretto.
+### Teoria Fondamentale e Architettura
+**JDBC (Java Database Connectivity)** è una libreria standard (`java.sql` e `javax.sql`) che permette ai programmi Java di connettersi ai database ed eseguire comandi SQL, astraendo i dettagli specifici di ogni vendor dietro un'API comune. Architetturalmente, JDBC si divide in due strati: l'**API JDBC** (usata dallo sviluppatore) e il **JDBC Driver Manager** (il motore che comunica fisicamente con i driver dei database).
 
-### Componenti Architetturali
-1.  **DriverManager:** La classe che gestisce il caricamento dei driver e stabilisce la connessione fisica.
-2.  **Connection:** Rappresenta la sessione attiva con il database.
-3.  **Statement:** L'oggetto usato per inviare comandi SQL. Si divide in:
-    -   `Statement`: Per query semplici e statiche.
-    -   `PreparedStatement`: **Consigliato.** Pre-compila la query e permette di inserire parametri in modo sicuro, prevenendo la **SQL Injection**.
-4.  **ResultSet:** Una tabella virtuale che contiene i risultati di una query `SELECT`. Si naviga riga per riga con il metodo `next()`.
+### I Quattro Tipi di Driver JDBC
+La connessione fisica dipende dal driver scelto. La teoria categorizza i driver in 4 classi architetturali:
+1.  **Type I (JDBC-ODBC Bridge):** Mappa le chiamate JDBC all'accesso API ODBC. Soluzione obsoleta, inefficace e limitata alle sole capacità dell'ODBC sottostante.
+2.  **Type II (Native API Driver):** Comunica interfacciandosi direttamente con le API native (C/C++) del database. Più veloce del Type I, ma lega il codice alla macchina fisica.
+3.  **Type III (Network Protocol / Middleware):** Le chiamate passano tramite un protocollo di rete verso un *middleware server* che le traduce per il DB. Ottimo per architetture enterprise complesse.
+4.  **Type IV (Thin Driver / All-Java):** Scritto interamente in Java, comunica direttamente col protocollo nativo del database. È il più efficiente, indipendente dalla piattaforma e non richiede librerie native (es. MySQL Connector/J).
 
-*Esempio Teorico: Gestione Inventario (JDBC)*
+### Classi Core e Workflow Operativo
+Il ciclo di vita di una connessione JDBC segue passaggi rigorosi:
+1.  **Il DriverManager:** Classe non istanziabile (metodi statici) che rintraccia i driver registrati. La chiamata `DriverManager.getConnection(url, user, password)` valuta la URL (es. `jdbc:mysql://localhost:3306/db`) e restituisce una sessione.
+2.  **La Connection:** Rappresenta una sessione attiva. Avendo i database un limite di sessioni parallele, non chiudere una connessione genera *resource leak* critici.
+3.  **Gli Statement (L'Esecuzione):**
+    -   `Statement`: Per query semplici e statiche. Produce un ResultSet *forward-only* e *read-only*.
+    -   `PreparedStatement`: **Il più importante**. Viene pre-compilato e messo in cache sul database, ottimizzando i tempi di esecuzione e prevenendo attacchi di **SQL Injection** tramite l'uso di placeholder (`?`).
+    -   `CallableStatement`: Usato per invocare *Stored Procedures* residenti direttamente nel database.
+4.  **Il ResultSet (I Dati):** Sfrutta il concetto di "Cursor". Alla creazione, il cursore è posizionato *prima* della prima riga. Il metodo `next()` sposta il cursore in avanti. **Attenzione:** in JDBC gli indici delle colonne partono da `1`, non da `0`.
+
+#### Gestione Avanzata (RowSets e MetaData)
+-   **RowSets:** A differenza del `ResultSet`, che richiede una connessione sempre aperta col database, i **RowSet** (introdotti nelle API javax.sql) possono essere **disconnessi**. Permettono di estrarre i dati, chiudere la connessione e continuare a manipolare i record localmente.
+-   **MetaData:** JDBC permette di interrogare la struttura del database stesso. Usando `DatabaseMetaData` o `ResultSetMetaData`, si possono scoprire i nomi delle colonne, i tipi di dato e persino la versione del database a cui si è connessi senza scrivere query SQL specifiche.
+
+*Esempio Teorico: Gestione Inventario (PreparedStatement e Finally)*
 ```java
 String url = "jdbc:mysql://localhost:3306/magazzino";
-try (Connection conn = DriverManager.getConnection(url, "user", "pass");
-     PreparedStatement pstmt = conn.prepareStatement("SELECT nome FROM Prodotti WHERE quantita > ?")) {
+// L'uso del try-with-resources garantisce la sacralità del '.close()' per evitare resource leak
+try (Connection conn = DriverManager.getConnection(url, "admin", "admin123");
+     PreparedStatement pstmt = conn.prepareStatement("SELECT nome, quantita FROM Prodotti WHERE categoria = ?")) {
     
-    pstmt.setInt(1, 10); // Imposta il primo parametro (?)
-    ResultSet rs = pstmt.executeQuery();
+    pstmt.setString(1, "Elettronica"); // Valorizzazione sicura del placeholder
     
-    while (rs.next()) {
-        System.out.println("Prodotto disponibile: " + rs.getString("nome"));
+    try (ResultSet rs = pstmt.executeQuery()) {
+        while (rs.next()) {
+            // Estrazione tramite nome colonna o indice (che in JDBC parte da 1)
+            System.out.println(rs.getString("nome") + " - Qta: " + rs.getInt(2));
+        }
     }
-} catch (SQLException e) { e.printStackTrace(); }
+} catch (SQLException e) { 
+    System.err.println("Errore di connessione o sintassi SQL: " + e.getMessage()); 
+}
 ```
 
 ---
 
-## 8. NoSQL e Database Documentali (MongoDB)
+## 8. Il Paradigma NoSQL e i Database Documentali
 
-### Oltre il Relazionale
-Mentre i DB SQL (come MySQL) usano tabelle rigide con righe e colonne, i database **NoSQL** (come MongoDB) sono **Schema-less**. I dati vengono memorizzati come **Documenti** (solitamente in formato BSON/JSON).
+### Oltre il Relazionale: L'assenza di Schema
+Mentre i database SQL impongono uno schema rigido (tabelle, colonne, tipi di dato definiti a priori), i database **NoSQL** nascono per gestire strutture dati dinamiche, scalabili e non relazionali.
 
-### Concetti Chiave di MongoDB
--   **Collection:** L'equivalente di una tabella SQL.
--   **Document:** Un singolo record (un oggetto JSON).
--   **_id:** Campo obbligatorio che funge da chiave primaria univoca.
+Due categorie principali nel panorama NoSQL sono:
+1.  **Database Documentali (es. MongoDB):** Memorizzano le informazioni sotto forma di documenti simili al JSON (BSON). Non esistono "tabelle", ma **Collection**, e non esistono "righe", ma **Documenti**.
+2.  **Time Series Database (es. InfluxDB):** Ottimizzati per gestire enormi volumi di dati legati al tempo (timestamp come chiave primaria), utili per IoT o telemetria. Strutturati in *Measurements* (la categoria), *Tags* (metadati indicizzati per la ricerca veloce) e *Fields* (i valori reali non indicizzati).
 
-In Java, l'integrazione avviene tramite il `mongo-java-driver`, che permette di mappare oggetti Java direttamente in documenti del database.
+### L'Approccio Documentale (MongoDB in Java)
+In MongoDB, l'assenza di schema (*schema-less*) permette di aggiungere campi a un documento "al volo" al momento dell'inserimento, rendendolo perfetto per salvare oggetti la cui struttura varia nel tempo o a seconda del contesto. Un documento ha sempre un campo obbligatorio `_id` che funge da chiave primaria.
+
+L'interfacciamento in Java (tramite librerie come `mongo-java-driver`) prevede:
+-   L'apertura di un `MongoClient`.
+-   La selezione di un `MongoDatabase` e di una `MongoCollection`.
+-   La manipolazione tramite l'oggetto `Document` nativo (che mappa essenzialmente un dizionario Chiave-Valore).
+
+*Esempio Teorico: Inserimento Dati non Strutturati*
+```java
+// Connessione al server locale
+try (MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017")) {
+    // Selezione del DB e della Collection
+    MongoDatabase database = mongoClient.getDatabase("unime_db");
+    MongoCollection<Document> collection = database.getCollection("studenti");
+
+    // Creazione di un documento dinamico
+    Document studente = new Document("nome", "Mario")
+                            .append("cognome", "Rossi")
+                            // Possiamo inserire liste e strutture annidate!
+                            .append("esami_superati", Arrays.asList("OOP", "Sistemi Operativi"));
+    
+    // Inserimento fire-and-forget
+    collection.insertOne(studente);
+    System.out.println("Documento NoSQL inserito con successo!");
+}
+```
 
 ---
 
