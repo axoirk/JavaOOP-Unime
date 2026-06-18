@@ -1,0 +1,11 @@
+Ciao
+mi
+chiamo
+mirko
+e
+sono
+bravo
+a
+programmare
+in
+java

@@ -72,3 +72,7 @@ Please keep each exercise in its own folder and follow the existing naming conve
 ## 📄 License
 
 This project is intended for personal educational use only.
+
+---
+
+*✍️ **Author's Note**: The `Esercizitazione (Self)` portion of this repository was designed, reviewed, and restructured with the assistance of artificial intelligence (Gemini CLI), based on the noticeboards and PDF/PowerPoint files originally provided by the professor to facilitate the progressive and professional learning of Java.*
