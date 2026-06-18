@@ -1,61 +1,30 @@
-# Esercizio 3 – Divisione con Eccezione Personalizzata / Division with Custom Exception
+# Esercizio 5 – Gestione delle Eccezioni / Exception Handling
 
 ---
 
 ## 🇮🇹 Italiano
 
 ### Descrizione
-Questo esercizio introduce la gestione delle eccezioni in Java con una eccezione personalizzata.
+Questo esercizio introduce la gestione robusta degli errori in Java attraverso l'uso delle **eccezioni**.
 
 Il programma:
-- acquisisce da tastiera numeratore e denominatore;
-- controlla il caso di divisione per zero;
-- lancia una `DivideByZeroException` dedicata quando il denominatore e `0`;
-- stampa il risultato della divisione in formato decimale quando l'input e valido.
+- Definisce un'eccezione personalizzata `DivideByZeroException`.
+- Utilizza i blocchi `try-catch` per intercettare potenziali errori durante l'esecuzione (come l'input non valido o la divisione per zero).
+- Utilizza la keyword `throw` per lanciare esplicitamente un'eccezione quando viene rilevata una condizione di errore applicativo.
+- Gestisce l'input dell'utente tramite la classe `Scanner`.
 
 ### Obiettivo didattico
-L'obiettivo e comprendere:
-- differenza tra flusso normale e flusso eccezionale;
-- uso di `throw` per segnalare errori applicativi;
-- creazione di una classe eccezione custom che estende `Exception`;
-- gestione dell'errore con blocco `try/catch` e messaggi utente.
+- Comprendere il meccanismo di propagazione delle eccezioni.
+- Creare e utilizzare eccezioni personalizzate.
+- Scrivere codice sicuro e resiliente agli errori di runtime.
 
-### Struttura e comportamento del codice
-Flusso principale:
-1. Lettura di numeratore e denominatore con `Scanner`
-2. Verifica del denominatore (`denom == 0`)
-3. Lancio di `new DivideByZeroException()` in caso non valido
-4. Calcolo della divisione con cast a `double`
-5. Stampa del risultato (`%.2f`) oppure del messaggio di errore nel `catch`
-
-### File
-| File | Descrizione |
-|------|-------------|
-| `Main.java` | Gestisce input utente, controllo del denominatore, lancio eccezione e stampa risultato |
-| `DivideByZeroException.java` | Definisce l'eccezione personalizzata con messaggio "Non puoi dividere per zero!" |
-
-### Concetti trattati
-- Input da tastiera con `Scanner`
-- Casting numerico a `double`
-- Eccezioni personalizzate (`extends Exception`)
-- `throw` e `try/catch`
-- Validazione di input critico (denominatore diverso da zero)
-
-### Esempio di esecuzione
-```
-Inserisci un numeratore:
-10
-Inserisci un denominatore:
-2
-Risultato divisione: 5.00
-```
-
-```
+### Esempio di Output
+```text
 Inserisci un numeratore:
 10
 Inserisci un denominatore:
 0
-Non puoi dividere per zero!
+Attenzione: divisione per zero non consentita!
 ```
 
 ---
@@ -63,55 +32,24 @@ Non puoi dividere per zero!
 ## 🇬🇧 English
 
 ### Description
-This exercise introduces Java exception handling with a custom exception class.
+This exercise introduces robust error handling in Java through the use of **exceptions**.
 
 The program:
-- reads numerator and denominator from keyboard input;
-- checks the division-by-zero case;
-- throws a dedicated `DivideByZeroException` when denominator is `0`;
-- prints the division result in decimal format when input is valid.
+- Defines a custom exception named `DivideByZeroException`.
+- Uses `try-catch` blocks to intercept potential errors during execution (such as invalid input or division by zero).
+- Uses the `throw` keyword to explicitly raise an exception when an application error condition is detected.
+- Handles user input via the `Scanner` class.
 
-### Learning objective
-The goal is to understand:
-- the difference between normal flow and exceptional flow;
-- use of `throw` to signal application errors;
-- how to create a custom exception class extending `Exception`;
-- error handling with `try/catch` and user-facing messages.
+### Learning Objective
+- Understand the exception propagation mechanism.
+- Create and use custom exceptions.
+- Write safe and resilient code against runtime errors.
 
-### Code flow and behavior
-Main flow:
-1. Read numerator and denominator using `Scanner`
-2. Check denominator (`denom == 0`)
-3. Throw `new DivideByZeroException()` when invalid
-4. Compute division with `double` cast
-5. Print result (`%.2f`) or error message in the `catch` block
-
-### Files
-| File | Description |
-|------|-------------|
-| `Main.java` | Handles user input, denominator check, exception throw, and result printing |
-| `DivideByZeroException.java` | Defines the custom exception with message "Non puoi dividere per zero!" |
-
-### Concepts covered
-- Keyboard input with `Scanner`
-- Numeric casting to `double`
-- Custom exceptions (`extends Exception`)
-- `throw` and `try/catch`
-- Critical input validation (non-zero denominator)
-
-### Sample run
-```
-Inserisci un numeratore:
-10
-Inserisci un denominatore:
-2
-Risultato divisione: 5.00
-```
-
-```
+### Output Example
+```text
 Inserisci un numeratore:
 10
 Inserisci un denominatore:
 0
-Non puoi dividere per zero!
+Attenzione: divisione per zero non consentita!
 ```

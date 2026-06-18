@@ -1,4 +1,4 @@
-package PACKAGE_NAME;
-
-public class Measurable {
+public interface Measurable {
+    public double getArea();
+    public double getPerimeter();
 }
