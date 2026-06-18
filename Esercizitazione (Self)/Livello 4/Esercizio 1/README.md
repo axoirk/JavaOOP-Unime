@@ -1,4 +1,4 @@
-# Esercizio 1 – Scrivere e Leggere File di Testo / Writing and Reading Text Files
+# Esercizio 1: Scrivere e Leggere File di Testo / Exercise 1: Writing and Reading Text Files
 
 ---
 

@@ -1,4 +1,4 @@
-# Esercizio 2 – Serializzazione di Oggetti / Object Serialization
+# Esercizio 5: Serializzazione di Oggetti / Exercise 5: Object Serialization
 
 ---
 
