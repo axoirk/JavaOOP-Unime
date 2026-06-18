@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<universita>
+         <studenti>
+             <studente>
+                 <nome>Mario</nome>
+                 <cognome>Rossi</cognome>
+                 <matricola>12345</matricola>
+             </studente>
+            <studente>
+                 <nome>Giulia</nome>
+                 <cognome>Bianchi</cognome>
+                 <matricola>67890</matricola>
+             </studente>
+             <studente>
+                 <nome>Luca</nome>
+                 <cognome>Verdi</cognome>
+                 <matricola>11223</matricola>
+             </studente>
+         </studenti>
+</universita>
