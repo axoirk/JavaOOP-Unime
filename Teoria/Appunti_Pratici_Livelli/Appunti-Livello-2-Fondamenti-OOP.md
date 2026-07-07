@@ -132,3 +132,57 @@ public class Smartwatch {
     }
 }
 ```
+
+---
+
+## 5. Mappe (Map, HashMap, TreeMap)
+
+### Teoria Fondamentale: Strutture Chiave-Valore
+In Java, l'interfaccia `Map` (come ad esempio `HashMap`, `TreeMap`) rappresenta una struttura dati del framework *Collections* che memorizza coppie di **Chiave-Valore** (Key-Value). A differenza delle liste (come `ArrayList`), i dati non sono indicizzati da un numero sequenziale, ma da una chiave univoca che permette di recuperare il valore associato in modo efficiente.
+
+- **`HashMap`**: È l'implementazione più utilizzata. L'accesso e l'inserimento sono estremamente veloci, ma non garantisce alcun ordine specifico degli elementi inseriti.
+- **`TreeMap`**: Mantiene le chiavi sempre ordinate (es. in ordine alfabetico o numerico naturale), ma le operazioni di inserimento/ricerca sono leggermente più lente rispetto all'`HashMap`.
+
+### Esempio: Registro Voti (Mappa String -> Integer)
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+public class RegistroVoti {
+    public static void main(String[] args) {
+        // Creazione di una mappa con Chiave=String (Nome) e Valore=Integer (Voto)
+        Map<String, Integer> voti = new HashMap<>();
+
+        // 1. Inserimento elementi (put)
+        voti.put("Marco", 28);
+        voti.put("Giulia", 30);
+        voti.put("Antonio", 24);
+        voti.put("Luca", 18);
+
+        // 2. Lettura singola di un elemento (get)
+        // Legge il valore associato alla chiave, restituisce null se non esiste
+        Integer votoMarco = voti.get("Marco");
+        System.out.println("Voto di Marco: " + votoMarco);
+
+        // 3. Estrazione di un elemento (remove)
+        // Rimuove la coppia dalla mappa e restituisce il valore che è stato appena eliminato
+        Integer votoAntonio = voti.remove("Antonio");
+        System.out.println("Antonio rimosso. Il suo voto era: " + votoAntonio);
+
+        // 4. Verifica esistenza (containsKey / containsValue)
+        if (voti.containsKey("Giulia")) {
+            System.out.println("Giulia è presente nel registro.");
+        }
+
+        // 5. Lettura di tutte le chiavi (keySet) o di tutti i valori (values)
+        System.out.println("\nSolo i Nomi (Chiavi): " + voti.keySet());
+        System.out.println("Solo i Voti (Valori): " + voti.values());
+
+        // 6. Iterazione completa su Coppie Chiave-Valore (entrySet)
+        System.out.println("\n--- Elenco Voti Aggiornato ---");
+        for (Map.Entry<String, Integer> entry : voti.entrySet()) {
+            System.out.println("Studente: " + entry.getKey() + " | Voto: " + entry.getValue());
+        }
+    }
+}
+```
