@@ -1,78 +1,80 @@
 # JavaOOP-Unime
 
-> A personal study repository for the **Object-Oriented Programming (OOP) with Java** course at the **University of Messina (Unime)**, Computer Science degree.
+> Un repository personale di studio per il corso di **Programmazione a Oggetti (OOP) con Java** presso l'**Università degli Studi di Messina (Unime)**, corso di laurea in Informatica.
 
 ---
 
-## 📖 About
+## 📖 Informazioni
 
-This repository serves as a personal handbook and exercise collection for learning and practising Object-Oriented Programming concepts using Java.  
-It is organised into two main categories:
+Questo repository funge da manuale personale e raccolta di esercizi per l'apprendimento e la pratica dei concetti di Programmazione a Oggetti utilizzando Java.  
+È organizzato in due categorie principali:
 
-| Category | Description |
+| Categoria | Descrizione |
 |----------|-------------|
-| **Self Exercises** (`Esercizitazione (Self)`) | Exercises written independently, without external guidance, to reinforce understanding of the topics covered in class. |
-| **Professor Exercises** *(coming soon)* | Exercises officially released by the course professor as part of the curriculum. |
+| **Esercitazioni (Self)** (`Esercitazioni (Self)`) | Esercizi scritti in modo indipendente, senza guida esterna, per rafforzare la comprensione degli argomenti trattati a lezione. |
+| **Esercizi del Professore** *(in arrivo)* | Esercizi rilasciati ufficialmente dal professore del corso come parte del curriculum. |
 
 ---
 
-## 🗂️ Repository Structure
+## 🗂️ Struttura del Repository
 
-```
+```text
 ExercicesJava-Unime/
-├── Esercizitazione (Self)/      # Independent self-practice exercises
-│   ├── Livello 1/               # Level 1 – introductory exercises
+├── Teoria/                      # Appunti, concetti e teoria
+│   ├── Appunti_Pratici_Livelli/ # Teoria relativa ai livelli pratici
+│   ├── Fondamenti_e_Pilastri_OOP/ # Fondamenti e storia di Java, pilastri OOP
+│   └── Extra/                   # Appunti extra (es. Client-Server)
+├── Esercitazioni (Self)/        # Esercizi di pratica indipendente
+│   ├── Livello 1/               # Livello 1 – esercizi introduttivi
 │   │   ├── Esercizio 1/
 │   │   ├── ...
 │   │   └── Esercizio n/
-│   ├── Livello 2/               # Level 2 – intermediate exercises
+│   ├── Livello 2/               # Livello 2 – esercizi intermedi
 │   │   ├── Esercizio 1/
 │   │   ├── ...
 │   │   └── Esercizio n/
 │   ├── ...
-│   └── Livello n/               # Level n – specific topic exercises
-│       ├── Teoria/              # Theory and study materials (if applicable)
-│       │   └── LESSON.md        # Notes and concepts for the level
+│   └── Livello n/               # Livello n – esercizi su argomenti specifici
 │       ├── Esercizio 1/
 │       ├── ...
 │       └── Esercizio n/
-├── Professor Exercises/         # Official course exercises (planned)
+├── Professor Exercises/         # Esercizi ufficiali del corso (in programma)
 │   ├── Exercise .../
 │   └── ...
 └── ...
 ```
 
-Each exercise folder is a standalone IntelliJ IDEA project containing one or more `.java` source files.
+Ogni cartella di esercizio è un progetto IntelliJ IDEA indipendente contenente uno o più file sorgente `.java`.
 
 ---
 
-## 🎯 Goals
+## 🎯 Obiettivi
 
-- Understand and apply core OOP principles (encapsulation, inheritance, polymorphism, abstraction).
-- Practise Java syntax and standard libraries.
-- Build a personal reference for exam preparation.
-
----
-
-## 🏫 Course Info
-
-- **University:** Università degli Studi di Messina (Unime)
-- **Degree:** Computer Science (Informatica)
-- **Subject:** Object-Oriented Programming – Java
+- Comprendere e applicare i principi fondamentali dell'OOP (incapsulamento, ereditarietà, polimorfismo, astrazione).
+- Fare pratica con la sintassi Java e le librerie standard.
+- Costruire un riferimento personale per la preparazione all'esame.
 
 ---
 
-## 🤝 Contributing
+## 🏫 Informazioni sul Corso
 
-Feel free to open a **Pull Request** if you spot a bug, have a suggestion, or want to add improvements.  
-Please keep each exercise in its own folder and follow the existing naming convention.
-
----
-
-## 📄 License
-
-This project is intended for personal educational use only.
+- **Università:** Università degli Studi di Messina (Unime)
+- **Corso di Laurea:** Informatica
+- **Materia:** Programmazione a Oggetti – Java
 
 ---
 
-*✍️ **Author's Note**: The `Esercizitazione (Self)` portion of this repository was designed, reviewed, and restructured with the assistance of artificial intelligence (Gemini CLI), based on the noticeboards and PDF/PowerPoint files originally provided by the professor to facilitate the progressive and professional learning of Java.*
+## 🤝 Contribuire
+
+Sentiti libero di aprire una **Pull Request** se noti un bug, hai un suggerimento o vuoi aggiungere miglioramenti.  
+Per favore, mantieni ogni esercizio nella propria cartella e segui la convenzione di denominazione esistente.
+
+---
+
+## 📄 Licenza
+
+Questo progetto è inteso solo per uso educativo personale.
+
+---
+
+*✍️ **Nota dell'Autore**: La parte `Esercitazioni (Self)` di questo repository è stata progettata, revisionata e ristrutturata con l'assistenza dell'intelligenza artificiale (Gemini CLI), sulla base delle bacheche e dei file PDF/PowerPoint forniti originariamente dal professore per facilitare l'apprendimento progressivo e professionale di Java.*
