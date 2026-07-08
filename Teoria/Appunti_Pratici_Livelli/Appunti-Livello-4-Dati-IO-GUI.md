@@ -116,7 +116,48 @@ public class EsempioLetturaFile {
 }
 ```
 
-### La Serializzazione degli Oggetti (Byte Streams)
+### Lettura e Scrittura di File Binari Crudi (Byte Streams)
+Oltre al testo e agli oggetti serializzati, spesso un programma deve manipolare file binari "puri", come immagini, file audio, video o eseguibili. Per questa tipologia di file non si usano i Character Streams (che corromperebbero i dati tentando di interpretarli come testo), ma si utilizzano le classi di base dei **Byte Streams**: `FileInputStream` e `FileOutputStream`.
+
+L'approccio più efficiente per copiare o manipolare file binari è leggere pacchetti di byte (un buffer) invece di un singolo byte alla volta, per poi scriverli immediatamente a destinazione.
+
+*Esempio 3: Copiare un file binario (es. un'immagine) ad alte prestazioni*
+```java
+import java.io.*;
+
+public class CopiaFileBinario {
+    public static void main(String[] args) {
+        File origine = new File("immagine.jpg");
+        File destinazione = new File("immagine_copia.jpg");
+
+        // Usiamo il try-with-resources per chiudere entrambi gli stream in automatico
+        try (
+            FileInputStream fis = new FileInputStream(origine);
+            FileOutputStream fos = new FileOutputStream(destinazione)
+        ) {
+            // Creiamo un "secchio" (buffer) da 4 KB per trasportare i byte a blocchi
+            byte[] buffer = new byte[4096];
+            int byteLetti;
+
+            // fis.read(buffer) riempie il secchio e restituisce quanti byte ha effettivamente letto.
+            // Quando restituisce -1, significa che il file è finito.
+            while ((byteLetti = fis.read(buffer)) != -1) {
+                // Scriviamo nel file di destinazione solo i byte effettivamente letti nel secchio
+                fos.write(buffer, 0, byteLetti);
+            }
+            
+            System.out.println("Copia binaria completata con successo!");
+
+        } catch (FileNotFoundException e) {
+            System.err.println("File sorgente non trovato.");
+        } catch (IOException e) {
+            System.err.println("Errore di I/O durante la copia: " + e.getMessage());
+        }
+    }
+}
+```
+
+### La Serializzazione degli Oggetti (Byte Streams Avanzati)
 E se volessimo salvare l'intero "stato" di un Oggetto in modo che persista dopo la chiusura del programma? Interviene la **Serializzazione**. Essa è un processo chimico-informatico che prende un oggetto vivo nello Heap (con tutti i suoi campi e i relativi valori) e lo "iberna", trasformandolo in una pura sequenza di byte crudi (uno Stream Binario). 
 
 Questa sequenza di byte può essere salvata su disco con un `FileOutputStream` oppure sparata in un socket di rete. Quando ne abbiamo bisogno, possiamo "resuscitare" l'oggetto tramite il processo inverso: la **Deserializzazione**.
