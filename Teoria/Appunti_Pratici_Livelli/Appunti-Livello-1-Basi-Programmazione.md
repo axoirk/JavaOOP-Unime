@@ -170,3 +170,57 @@ public class Inventario {
     }
 }
 ```
+
+---
+
+## 6. Manipolazione delle Stringhe e Dimensioni (Length vs Size)
+
+### Teoria Fondamentale: String non è un Array primitivo
+A differenza del C o C++, in Java la `String` è un **Oggetto** a tutti gli effetti, non un semplice array di caratteri (non si possono usare le parentesi quadre `[i]` per leggere i caratteri). Ha a disposizione un ricco arsenale di metodi per la manipolazione.
+
+### Esempio: Contare le parole (Split vs Ciclo Manuale)
+Un caso tipico è dividere o analizzare una stringa di testo. Il metodo `split(String regex)` è lo strumento più potente per "tagliare" le stringhe usando un delimitatore (es. uno spazio vuoto).
+
+```java
+public class AnalisiStringhe {
+    public static void main(String[] args) {
+        String frase = "Questa è una prova tecnica";
+
+        // METODO 1 (Smart): Usare split() per tagliare tramite spazio
+        String[] parole = frase.split(" ");
+        System.out.println("Numero totale di parole: " + parole.length); // Stampa 5
+
+        // METODO 2 (Manuale): Contare gli spazi uno ad uno
+        int counterSpazi = 0;
+        // Non si può fare frase[i]! Si usa il metodo charAt()
+        for (int i = 0; i < frase.length(); i++) {
+            if (frase.charAt(i) == ' ') { 
+                counterSpazi++;
+            }
+        }
+        
+        // Le parole sono gli spazi totali + 1
+        System.out.println("Numero di parole (manuale): " + (counterSpazi + 1));
+    }
+}
+```
+
+### Il Grande Dilemma: `length` vs `length()` vs `size()`
+In Java, chiedere "quanto è lungo" qualcosa ha una sintassi diversa a seconda della **famiglia** a cui l'oggetto appartiene. Memorizza bene questa regola d'oro:
+
+1. **`length` (Senza parentesi tonde)**
+   - **Famiglia:** **Array Primitivi** (es. `int[]`, `String[]`, `double[]`).
+   - **Cos'è:** È una *variabile pubblica* strutturale, non un metodo. L'array ha una dimensione fissa e immutabile registrata in questa variabile.
+   - **Esempio:** `int numeroDiParole = parole.length;`
+
+2. **`length()` (Con parentesi tonde)**
+   - **Famiglia:** Classe **`String`** (e classi affini come `StringBuilder`).
+   - **Cos'è:** È un vero e proprio *metodo* che ispeziona l'oggetto stringa e calcola quanti caratteri contiene.
+   - **Esempio:** `int lettereTotali = frase.length();`
+
+3. **`size()` (Con parentesi tonde)**
+   - **Famiglia:** Il framework delle **Collections** (Liste, Mappe, Set -> es. `ArrayList`, `HashMap`).
+   - **Cos'è:** È il metodo universale per chiedere a strutture dati dinamiche (che si allargano e restringono a runtime) quanti elementi ospitano in quel preciso istante.
+   - **Esempio:** `int numeroInvitati = listaInvitati.size();`
+
+*(Nota a margine: non esiste un metodo standard universale `getLength()` nelle strutture base di Java. Incontri `getLength()` solo in librerie specifiche e molto settoriali, come ad esempio le `NodeList` quando fai il parsing dei file XML (DOM)!).*
