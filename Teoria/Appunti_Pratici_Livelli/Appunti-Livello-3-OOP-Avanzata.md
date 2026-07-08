@@ -128,7 +128,84 @@ public class Televisore implements Accendibile {
 
 ---
 
-## 4. Gestione delle Eccezioni
+## 4. Ordinamento: Classe `Collections` e Interfaccia `Comparable`
+
+### Il problema dell'ordinamento
+Immagina di avere un `ArrayList<Studente>`. Se provi a chiamare il metodo di sistema `Collections.sort(listaStudenti)`, il compilatore Java andrà in panico e genererà un errore. Perché? Perché Java sa come ordinare i numeri (crescente) o le stringhe (alfabetico), ma non ha idea di cosa renda uno "Studente" più grande o più piccolo di un altro. Va ordinato per età? Per media voti? Per matricola?
+
+### L'Interfaccia `Comparable`
+Per risolvere il problema, la tua classe deve dichiarare nativamente il suo criterio di "Ordinamento Naturale" (Natural Ordering). Lo fa implementando l'interfaccia di sistema **`Comparable<T>`** che fa parte del package `java.lang`.
+
+Questa interfaccia ti obbliga a implementare un solo metodo magico: `compareTo(T altroOggetto)`.
+
+### Regole matematiche del `compareTo`
+Il metodo `compareTo` confronta l'oggetto corrente (`this`) con l'oggetto passato come parametro (`altroOggetto`), e deve restituire un numero intero seguendo questa convenzione universale:
+1. **Ritorna un numero POSITIVO (> 0)** se `this` è *maggiore* di `altroOggetto` (quindi `this` va posizionato DOPO nell'ordinamento).
+2. **Ritorna un numero NEGATIVO (< 0)** se `this` è *minore* di `altroOggetto` (quindi `this` va posizionato PRIMA).
+3. **Ritorna ZERO (0)** se `this` e `altroOggetto` sono considerati uguali ai fini dell'ordinamento.
+
+### Sintassi ed Esempio Completo
+Nel seguente esempio vogliamo ordinare gli studenti per **Media** in ordine Decrescente (chi ha media più alta viene per primo). Se la media è identica, usiamo la **Matricola** come spareggio in ordine Crescente (la matricola più piccola viene per prima).
+
+```java
+import java.util.*;
+
+// Notare l'uso dei Generics <Studente> per evitare casting manuali
+public class Studente implements Comparable<Studente> {
+    private int matricola;
+    private double media;
+
+    public Studente(int matricola, double media) {
+        this.matricola = matricola;
+        this.media = media;
+    }
+
+    @Override
+    public int compareTo(Studente altroStudente) {
+        // Criterio 1: Media DECRESCENTE (Più alta viene prima)
+        if (this.media > altroStudente.media) {
+            return -1; // this ha media più alta, quindi è "più piccolo/viene prima" nell'ordine decrescente
+        }
+        if (this.media < altroStudente.media) {
+            return 1;  // this ha media più bassa, viene dopo
+        }
+        
+        // Criterio 2: Se la media è identica, spareggio per Matricola CRESCENTE
+        // Suggerimento pro: puoi usare Integer.compare per i tipi primitivi
+        return Integer.compare(this.matricola, altroStudente.matricola);
+    }
+    
+    @Override
+    public String toString() {
+        return "Mat:" + matricola + " Media:" + media;
+    }
+}
+
+// Classe Test
+class GestoreOrdinamento {
+    public static void main(String[] args) {
+        List<Studente> classe = new ArrayList<>();
+        classe.add(new Studente(3, 28.0));
+        classe.add(new Studente(1, 30.0));
+        classe.add(new Studente(2, 30.0));
+
+        // Ora che Studente è Comparable, possiamo usare la classe di utility Collections!
+        Collections.sort(classe);
+
+        // Risultato stampato:
+        // Mat:1 Media:30.0 (Viene prima per parità di media e matricola più bassa)
+        // Mat:2 Media:30.0
+        // Mat:3 Media:28.0
+        for(Studente s : classe) {
+            System.out.println(s);
+        }
+    }
+}
+```
+
+---
+
+## 5. Gestione delle Eccezioni
 
 ### Teoria Fondamentale
 Le eccezioni sono eventi anomali che interrompono il normale flusso del programma. Java usa un sistema basato su oggetti per gestire questi errori.
