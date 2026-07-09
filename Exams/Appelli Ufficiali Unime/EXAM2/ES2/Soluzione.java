@@ -1,1 +1,1 @@
-// Scrivi qui la tua classe Client.\n
+// Inserisci qui la tua soluzione:

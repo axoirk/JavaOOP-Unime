@@ -1,1 +1,1 @@
-// Scrivi qui le tue classi.\n// Ricorda: solo una classe puo' essere 'public' (se ne usi una).\n
+// Inserisci qui la tua soluzione:

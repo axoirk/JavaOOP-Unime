@@ -1,1 +1,1 @@
-// Scrivi qui la tua classe Convertitore.\n
+// Inserisci qui la tua soluzione:
