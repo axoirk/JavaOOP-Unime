@@ -30,7 +30,7 @@ mvn exec:java -Dexec.mainClass="org.esercizio.unime.App"
 # Simulazione completa — aula d'esame in browser: 3 tracce, cronometro, Esegui, consegna
 python3 Exams/aula.py "Exams/Simulazioni/Prove/SIM_1"
 python3 Exams/aula.py "Exams/Appelli Ufficiali Unime/EXAM3"   # rifare l'appello vero
-python3 Exams/aula.py <cartella> --durata 45 --riparti --senza-editor --porta 8765
+python3 Exams/aula.py <cartella> --durata 45 --riparti --porta 8765
 
 # Singolo esercizio — replica il pulsante "Esegui" di Moodle e conta i tentativi
 ./Exams/esegui.sh "Exams/Simulazioni/Prove/SIM_1/ES2"
@@ -38,8 +38,8 @@ python3 Exams/aula.py <cartella> --durata 45 --riparti --senza-editor --porta 87
 ./Exams/esegui.sh <cartella> --reset     # azzera il contatore
 ```
 
-`aula.py` (stdlib, nessuna dipendenza) apre TextMate sulla cartella della simulazione e una pagina
-locale con le tre tracce, il cronometro dei 45 minuti, un Esegui per esercizio e il pulsante Consegna.
+`aula.py` (stdlib, nessuna dipendenza) apre una pagina locale con l'editor del codice sotto ogni
+traccia (sola colorazione Java, salvataggio automatico in `ESn/Soluzione.java`), le tre tracce, il cronometro dei 45 minuti, un Esegui per esercizio e il pulsante Consegna.
 Dopo un Esegui mostra il verdetto e l'elenco delle verifiche del tester, con atteso e ottenuto su
 quelle fallite, come il riquadro dei test di Moodle; i tester devono perciò stampare nel formato
 `[OK]`/`[KO]` descritto in `REGOLE_GENERAZIONE_AI.MD` §4. Alla consegna — manuale o allo scadere del tempo, che

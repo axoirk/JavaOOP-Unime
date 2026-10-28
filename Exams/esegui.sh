@@ -5,6 +5,8 @@
 # Compila Soluzione.java, lancia il tester invisibile (Main.class) e conta
 # le esecuzioni. All'appello il limite è 5 per esercizio: oltre, penalità.
 # Un errore di compilazione consuma un'esecuzione esattamente come un successo.
+# Come su Moodle si compila da zero: i .class dei run precedenti vengono
+# cancellati (resta solo il tester, Main.class e le sue classi interne).
 #
 # Uso:
 #   ./esegui.sh [cartella_esercizio]      esegue (default: cartella corrente)
@@ -21,7 +23,7 @@ for arg in "$@"; do
 	case "$arg" in
 		--reset) AZIONE="reset" ;;
 		--stato) AZIONE="stato" ;;
-		-h|--help) sed -n '3,14p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+		-h|--help) sed -n '3,15p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
 		*) DIR="$arg" ;;
 	esac
 done
@@ -57,6 +59,8 @@ if [ "$N" -gt "$LIMITE" ]; then
 	printf ' ⚠  OLTRE IL LIMITE: %d esecuzione/i in eccesso. Penalità sul punteggio.\n' "$((N - LIMITE))"
 fi
 echo "──────────────────────────────────────────────"
+
+find . -maxdepth 1 -name '*.class' ! -name 'Main.class' ! -name 'Main$*.class' -delete
 
 if ! javac Soluzione.java; then
 	echo "──────────────────────────────────────────────"

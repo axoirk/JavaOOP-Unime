@@ -139,17 +139,16 @@ Il thread principale:
 python3 Exams/aula.py "Exams/Simulazioni/Prove/SIM_1"
 ```
 
-Apre l'editor sulla cartella e la pagina d'aula: tracce, cronometro da 45 minuti, **Esegui** per
+Apre la pagina d'aula: tracce con l'editor del codice sotto ciascuna, cronometro da 45 minuti, **Esegui** per
 esercizio (cinque, oltre è penalità), **Consegna**. Alla consegna — manuale o allo scadere del
 tempo — nasce `Consegna_SIM_N_<data>.md` con i dati grezzi: esecuzioni, tempi, output, codice
 consegnato. **Nessun punteggio:** la correzione è un passaggio separato.
 
-Il codice si scrive **solo** in un editor di testo semplice, **un file per esercizio**. Un IDE con
+Il codice si scrive **solo** nell'editor della pagina (colorazione, nessun controllo), **un file per
+esercizio**, salvato da solo in `ESn/Soluzione.java`. Un IDE con
 analisi statica invalida la prova: misurerebbe qualcosa che all'appello non hai.
 
-Alla consegna `aula.py` chiude l'editor da solo, così l'attenzione non resta su esecuzioni ormai
-bloccate; se non riesce a chiuderlo entro pochi secondi riporta in primo piano la pagina delle
-tracce nel browser.
+In pausa e dopo la consegna l'editor diventa di sola lettura.
 
 ---
 

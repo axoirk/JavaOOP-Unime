@@ -3,9 +3,11 @@
 
 Apre una finestra del browser con le tre tracce, il cronometro dei
 45 minuti complessivi e il pulsante Esegui per esercizio (max 5 esecuzioni, oltre
-scatta la penalita'). Il codice si scrive in TextMate, che viene aperto
-sulla cartella della simulazione: la pagina rilegge Soluzione.java dal
-disco a ogni esecuzione e non contiene alcun editor.
+scatta la penalita'). Il codice si scrive nella pagina stessa, sotto la
+traccia, come su Moodle: un editor con la sola colorazione della sintassi
+Java (nessun completamento, nessun controllo degli errori). Ogni modifica
+viene salvata in ESn/Soluzione.java, che resta il file compilato, quello
+riportato nella consegna e quello usato da esegui.sh.
 
 Dopo un Esegui la pagina elenca le singole verifiche del tester con il loro
 esito e, su quelle fallite, il valore atteso e quello prodotto — come il
@@ -15,18 +17,13 @@ manuale o allo scadere del tempo, conserva l'output integrale di ogni run.
 Il pulsante Pausa ferma il cronometro e sospende le esecuzioni; la pausa
 sopravvive alla chiusura della finestra e non viene conteggiata nel tempo
 di prova. Chiudere il server senza mettere in pausa, invece, lascia
-l'orologio in corsa: il tempo e' quello reale.
-
-Alla consegna (manuale o per tempo scaduto) TextMate viene chiuso, cosi'
-l'attenzione non resta sull'editor a esecuzioni ormai bloccate. Se non
-riesce a chiuderlo entro pochi secondi, riporta in primo piano la pagina
-delle tracce nel browser.
+l'orologio in corsa: il tempo e' quello reale. In pausa, e dopo la
+consegna, l'editor diventa di sola lettura.
 
 Uso:
     python3 Exams/aula.py "Exams/Simulazioni/Prove/SIM_1"
     python3 Exams/aula.py <cartella> --durata 45      minuti (default 45)
     python3 Exams/aula.py <cartella> --riparti        azzera prova e contatori
-    python3 Exams/aula.py <cartella> --senza-editor   non apre TextMate
     python3 Exams/aula.py <cartella> --porta 8765
 """
 
@@ -34,7 +31,6 @@ import html
 import json
 import os
 import re
-import shutil
 import subprocess
 import sys
 import threading
@@ -122,16 +118,26 @@ class Prova:
     # -- esecuzioni -------------------------------------------------------
 
     def numero_esecuzioni(self, es: str) -> int:
-        return len(self.dati["esecuzioni"][es])
+        """Legge .esecuzioni, il contatore condiviso con esegui.sh."""
+        contatore = self.cartella / es / ".esecuzioni"
+        return int(contatore.read_text().strip() or 0) if contatore.exists() else 0
 
-    def sincronizza_contatore(self, es: str):
-        """Tiene allineato .esecuzioni, il file usato anche da esegui.sh."""
-        (self.cartella / es / ".esecuzioni").write_text(f"{self.numero_esecuzioni(es)}\n")
+    def leggi_codice(self, es: str) -> str:
+        return (self.cartella / es / "Soluzione.java").read_text()
+
+    def scrivi_codice(self, es: str, codice: str):
+        (self.cartella / es / "Soluzione.java").write_text(codice)
 
     def esegui(self, es: str) -> dict:
         cartella_es = self.cartella / es
         n = self.numero_esecuzioni(es) + 1
         avvio = time.time()
+
+        # Come su Moodle si compila da zero: un .class rimasto da un run
+        # precedente farebbe compilare codice che non esiste piu'.
+        for vecchio in cartella_es.glob("*.class"):
+            if vecchio.name != "Main.class" and not vecchio.name.startswith("Main$"):
+                vecchio.unlink()
 
         compila = subprocess.run(
             ["javac", "Soluzione.java"],
@@ -164,7 +170,7 @@ class Prova:
         }
         self.dati["esecuzioni"][es].append(voce)
         self.salva()
-        self.sincronizza_contatore(es)
+        (cartella_es / ".esecuzioni").write_text(f"{n}\n")
         return voce
 
     # -- consegna ---------------------------------------------------------
@@ -183,10 +189,6 @@ class Prova:
         percorso = self.scrivi_report(motivo)
         self.dati["report"] = percorso
         self.salva()
-        if getattr(self, "editor_attivo", False):
-            chiuso = chiudi_editor(getattr(self, "indirizzo", ""))
-            print("  Editor chiuso." if chiuso
-                  else "  Editor non chiuso: pagina tracce riportata in primo piano.")
         return percorso
 
     def scrivi_report(self, motivo: str) -> str:
@@ -206,14 +208,15 @@ class Prova:
         r.append(f"- **Motivo della consegna:** {motivo}")
         if self.dati["pausa_totale"] > 0:
             r.append(f"- **Tempo in pausa (non conteggiato):** {formatta(self.dati['pausa_totale'])}")
-        r.append("- **Ambiente:** cieco (TextMate, nessuna analisi del codice), un solo file per esercizio\n")
+        r.append("- **Ambiente:** editor nella pagina, sola colorazione della sintassi "
+                 "(nessuna analisi del codice), un solo file per esercizio\n")
 
         r.append("## Esecuzioni\n")
         r.append("| Esercizio | Punti | Esecuzioni | Oltre il limite | Esito ultima |")
         r.append("|---|---|---|---|---|")
         for es in ESERCIZI:
             voci = self.dati["esecuzioni"][es]
-            n = len(voci)
+            n = self.numero_esecuzioni(es)    # comprende i run fatti con esegui.sh
             oltre = max(0, n - LIMITE_ESECUZIONI)
             ultima = voci[-1]["esito"] if voci else "—"
             r.append(f"| {es} | {PUNTI[es]} | {n} / {LIMITE_ESECUZIONI} | "
@@ -345,7 +348,7 @@ def inline(testo: str) -> str:
 # Pagina
 # --------------------------------------------------------------------------
 
-PAGINA = """<!doctype html>
+PAGINA = r"""<!doctype html>
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -426,6 +429,40 @@ PAGINA = """<!doctype html>
   .confronto .valore { color: var(--testo); word-break: break-all; white-space: pre-wrap; }
   .confronto .valore.perso { color: var(--ko); }
   .avviso { color: var(--attenzione); font-size: 12.5px; margin-top: 10px; }
+  .colonna { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .editor-testa { display: flex; justify-content: space-between; align-items: baseline;
+                  margin-bottom: 8px; }
+  .editor-testa h2 { margin: 0; }
+  #salvataggio { color: var(--tenue); font-size: 12px; }
+  #salvataggio.sporco { color: var(--attenzione); }
+  /* Textarea trasparente sopra un <pre> colorato: stessi font, rientri e
+     a capo, cosi' il testo colorato cade esattamente sotto il cursore. */
+  .editor { position: relative; height: 62vh; min-height: 260px; resize: vertical;
+            overflow: hidden; background: #0f1115; border: 1px solid var(--bordo);
+            border-radius: 6px; }
+  .editor { --margine: 46px; }
+  .editor pre, .editor textarea, .editor .numeri div {
+    margin: 0; border: 0; padding: 12px 14px; tab-size: 4; white-space: pre;
+    font: 13.5px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0; }
+  .editor .numeri { position: absolute; top: 0; left: 0; bottom: 0; width: var(--margine);
+                    overflow: hidden; z-index: 1; background: #0c0e11;
+                    border-right: 1px solid var(--bordo); user-select: none; }
+  .editor .numeri div { padding: 12px 9px 12px 0; text-align: right; color: #4b5263; }
+  .editor pre { position: absolute; top: 0; left: var(--margine);
+                min-width: calc(100% - var(--margine)); min-height: 100%;
+                background: none; border-radius: 0; overflow: visible;
+                pointer-events: none; color: var(--testo); }
+  .editor textarea { position: absolute; top: 0; left: var(--margine);
+                     width: calc(100% - var(--margine)); height: 100%; resize: none;
+                     background: transparent; color: transparent; caret-color: var(--testo);
+                     outline: none; overflow: auto; }
+  .editor textarea::selection { background: rgba(110, 168, 254, .35); }
+  .editor textarea[readonly] { cursor: default; }
+  .editor code { font: inherit; }
+  .colonna .riquadro + .riquadro { border-radius: 8px; }
+  .j-kw { color: #c792ea; } .j-tipo { color: #82aaff; } .j-str { color: #c3e88d; }
+  .j-num { color: #f78c6c; } .j-ann { color: #ffcb6b; }
+  .j-com { color: #6b7385; font-style: italic; }
 </style>
 </head>
 <body>
@@ -439,7 +476,21 @@ PAGINA = """<!doctype html>
 <div class="tab" id="tab"></div>
 
 <main>
-  <section class="riquadro" id="traccia"></section>
+  <div class="colonna">
+    <section class="riquadro" id="traccia"></section>
+    <section class="riquadro">
+      <div class="editor-testa">
+        <h2>Risposta — Soluzione.java</h2>
+        <span id="salvataggio"></span>
+      </div>
+      <div class="editor">
+        <div class="numeri" aria-hidden="true"><div id="numeri">1</div></div>
+        <pre aria-hidden="true"><code id="colorato"></code></pre>
+        <textarea id="codice" wrap="off" spellcheck="false" autocomplete="off"
+                  autocorrect="off" autocapitalize="off" aria-label="Codice dell'esercizio"></textarea>
+      </div>
+    </section>
+  </div>
   <aside class="riquadro laterale">
     <h2 style="margin-top:0">Esecuzione</h2>
     <div class="riga"><span>Esercizio</span><b id="es-corrente">ES1</b></div>
@@ -460,6 +511,111 @@ const PUNTI = __PUNTI__;
 let corrente = "ES1";
 let stato = null;
 const esiti = {};   // ultimo verdetto per esercizio: non deve seguire il cambio di tab
+const codici = {};  // testo di ogni Soluzione.java come si trova nell'editor
+const daSalvare = {};   // autosalvataggi in attesa, per esercizio
+let caricato = false;
+const area = document.getElementById("codice");
+const colorato = document.getElementById("colorato");
+const numeri = document.getElementById("numeri");
+let righe = 1;
+
+const TOKEN = /(\/\/[^\n]*|\/\*[\s\S]*?(?:\*\/|$))|("(?:[^"\\\n]|\\.)*"?|'(?:[^'\\\n]|\\.)*'?)|(@\w+)|\b(\d[\w.]*)|\b(abstract|assert|boolean|break|byte|case|catch|char|class|continue|default|do|double|else|enum|extends|final|finally|float|for|if|implements|import|instanceof|int|interface|long|native|new|package|private|protected|public|record|return|short|static|super|switch|synchronized|this|throw|throws|transient|try|var|void|volatile|while|yield|true|false|null)\b|\b([A-Z]\w*)/g;
+const CLASSI = [null, "j-com", "j-str", "j-ann", "j-num", "j-kw", "j-tipo"];
+
+function colora(testo) {
+  let fuori = "", ultimo = 0, m;
+  TOKEN.lastIndex = 0;
+  while ((m = TOKEN.exec(testo)) !== null) {
+    const gruppo = m.findIndex((g, i) => i > 0 && g !== undefined);
+    fuori += fuggi(testo.slice(ultimo, m.index))
+      + '<span class="' + CLASSI[gruppo] + '">' + fuggi(m[0]) + '</span>';
+    ultimo = TOKEN.lastIndex;
+  }
+  return fuori + fuggi(testo.slice(ultimo));
+}
+
+function allinea() {
+  colorato.parentElement.style.transform =
+    "translate(" + (-area.scrollLeft) + "px," + (-area.scrollTop) + "px)";
+  numeri.style.transform = "translateY(" + (-area.scrollTop) + "px)";
+}
+
+function ridisegnaCodice() {
+  colorato.innerHTML = colora(area.value) + "\n";
+  const n = area.value.split("\n").length;   // wrap="off": una riga logica = una riga a schermo
+  if (n !== righe) {
+    righe = n;
+    numeri.textContent = Array.from({length: n}, (_, i) => i + 1).join("\n");
+  }
+  allinea();
+}
+
+function mostraCodice() {
+  area.value = codici[corrente] || "";
+  area.scrollTop = area.scrollLeft = 0;
+  ridisegnaCodice();
+}
+
+function segnaSalvataggio(testo, sporco) {
+  const s = document.getElementById("salvataggio");
+  s.textContent = testo;
+  s.className = sporco ? "sporco" : "";
+}
+
+function programmaSalvataggio(es, attesa) {
+  clearTimeout(daSalvare[es]);
+  segnaSalvataggio("modifiche non salvate", true);
+  daSalvare[es] = setTimeout(() => salvaCodice(es), attesa);
+}
+
+async function salvaCodice(es) {
+  clearTimeout(daSalvare[es]);
+  delete daSalvare[es];
+  try {
+    const r = await fetch("/api/salva", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({es: es, codice: codici[es]})
+    });
+    const d = await r.json();
+    if (d.errore) segnaSalvataggio(d.errore, true);
+    else if (!Object.keys(daSalvare).length) segnaSalvataggio("salvato", false);
+  } catch (e) {
+    segnaSalvataggio("server non raggiungibile: nuovo tentativo…", true);
+    programmaSalvataggio(es, 3000);
+  }
+}
+
+async function salvaTutto() {
+  for (const es of Object.keys(daSalvare)) await salvaCodice(es);
+}
+
+async function caricaCodice() {
+  const r = await fetch("/api/codice");
+  Object.assign(codici, await r.json());
+  caricato = true;
+  mostraCodice();
+  aggiornaPannello();
+}
+
+area.addEventListener("scroll", allinea);
+area.addEventListener("input", () => {
+  codici[corrente] = area.value;
+  ridisegnaCodice();
+  programmaSalvataggio(corrente, 700);
+});
+area.addEventListener("keydown", e => {
+  if (e.key === "Tab" && !e.shiftKey && !area.readOnly) {
+    e.preventDefault();
+    document.execCommand("insertText", false, "    ");   // a differenza di setRangeText, resta annullabile
+  }
+});
+// Chiusura o ricarica della scheda con un salvataggio ancora in attesa.
+window.addEventListener("pagehide", () => {
+  for (const es of Object.keys(daSalvare)) {
+    navigator.sendBeacon("/api/salva", JSON.stringify({es: es, codice: codici[es]}));
+  }
+});
 
 function creaTab() {
   const tab = document.getElementById("tab");
@@ -469,7 +625,7 @@ function creaTab() {
     b.innerHTML = es + '<span class="conta" id="conta-' + es + '">0/5</span>';
     b.onclick = () => {
       corrente = es;
-      aggiornaTab(); disegnaTraccia(); aggiornaPannello(); mostraEsito();
+      aggiornaTab(); disegnaTraccia(); mostraCodice(); aggiornaPannello(); mostraEsito();
     };
     tab.appendChild(b);
   }
@@ -508,6 +664,7 @@ function aggiornaPannello() {
   document.getElementById("es-punti").textContent = PUNTI[corrente];
   const bloccato = stato.consegnato || stato.scaduto || stato.in_pausa;
   document.getElementById("esegui").disabled = bloccato;
+  area.readOnly = bloccato || !caricato;
   document.getElementById("consegna").disabled = stato.consegnato;
   const pausa = document.getElementById("pausa");
   pausa.disabled = stato.consegnato;
@@ -552,13 +709,17 @@ document.getElementById("esegui").onclick = async () => {
   bottone.textContent = "Compilazione…";
   esiti[lanciato] = {classe: "", html: '<div class="verdetto">IN CORSO…</div>'};
   mostraEsito();
+  // Il codice viaggia con la richiesta: si compila esattamente cio' che e' nell'editor.
+  clearTimeout(daSalvare[lanciato]);
+  delete daSalvare[lanciato];
   const r = await fetch("/api/esegui", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({es: lanciato})
+    body: JSON.stringify({es: lanciato, codice: codici[lanciato]})
   });
   const d = await r.json();
   bottone.textContent = "Esegui";
+  if (!d.errore && !Object.keys(daSalvare).length) segnaSalvataggio("salvato", false);
   if (d.errore) {
     esiti[lanciato] = {classe: "fallito",
       html: '<div class="verdetto">NON ESEGUITO</div><div class="nota">' + d.errore + '</div>'};
@@ -600,12 +761,14 @@ document.getElementById("esegui").onclick = async () => {
 };
 
 document.getElementById("pausa").onclick = async () => {
+  await salvaTutto();
   await fetch("/api/pausa", {method: "POST"});
   await poll();
 };
 
 document.getElementById("consegna").onclick = async () => {
   if (!confirm("Consegnare adesso? Le esecuzioni si chiudono e viene generato il report.")) return;
+  await salvaTutto();
   await fetch("/api/consegna", {method: "POST"});
   for (const es of ESERCIZI) {
     esiti[es] = {classe: "", html: '<div class="verdetto">CONSEGNATO</div><div class="nota">'
@@ -619,6 +782,7 @@ creaTab();
 aggiornaTab();
 disegnaTraccia();
 mostraEsito();
+caricaCodice();
 poll();
 setInterval(poll, 1000);
 </script>
@@ -635,6 +799,7 @@ class Gestore(BaseHTTPRequestHandler):
 
     prova: Prova = None
     pagina: str = ""
+    origini: set = set()
 
     def log_message(self, formato, *args):
         pass
@@ -663,6 +828,10 @@ class Gestore(BaseHTTPRequestHandler):
                     "esecuzioni": {e: p.numero_esecuzioni(e) for e in ESERCIZI},
                 })
             return
+        if self.path == "/api/codice":
+            with stato_lock:
+                self._json({e: Gestore.prova.leggi_codice(e) for e in ESERCIZI})
+            return
         if self.path in ("/", "/index.html"):
             corpo = Gestore.pagina.encode()
             self.send_response(200)
@@ -674,6 +843,11 @@ class Gestore(BaseHTTPRequestHandler):
         self.send_error(404)
 
     def do_POST(self):
+        # Solo la pagina dell'aula: un'altra scheda non deve poter consegnare o consumare esecuzioni.
+        origine = self.headers.get("Origin")
+        if origine and origine not in Gestore.origini:
+            self.send_error(403)
+            return
         lunghezza = int(self.headers.get("Content-Length") or 0)
         corpo = self.rfile.read(lunghezza) if lunghezza else b"{}"
         try:
@@ -696,6 +870,20 @@ class Gestore(BaseHTTPRequestHandler):
             self._json({"report": os.path.basename(percorso)})
             return
 
+        if self.path == "/api/salva":
+            es, codice = richiesta.get("es"), richiesta.get("codice")
+            if es not in ESERCIZI or not isinstance(codice, str):
+                self._json({"errore": "Richiesta non valida."}, 400)
+                return
+            with stato_lock:
+                self.controlla_scadenza()
+                if Gestore.prova.dati["consegnato"]:
+                    self._json({"errore": "prova consegnata: modifica non salvata"})
+                    return
+                Gestore.prova.scrivi_codice(es, codice)
+            self._json({"salvato": True})
+            return
+
         if self.path == "/api/esegui":
             es = richiesta.get("es")
             if es not in ESERCIZI:
@@ -710,18 +898,22 @@ class Gestore(BaseHTTPRequestHandler):
                 if p.in_pausa():
                     self._json({"errore": "Prova in pausa: riprendi per eseguire."})
                     return
+                if isinstance(richiesta.get("codice"), str):
+                    p.scrivi_codice(es, richiesta["codice"])
                 voce = p.esegui(es)
             print(f"  {es} — esecuzione {voce['n']}: {voce['esito']}")
             # Come su Moodle: verdetto, elenco delle verifiche con il loro
             # esito e, su quelle fallite, atteso e ottenuto. Se il tester non
-            # segue la convenzione, viaggia l'output grezzo.
+            # segue la convenzione, o il test fallisce (eccezioni su stderr),
+            # viaggia anche l'output grezzo.
             self._json({
                 "n": voce["n"],
                 "esito": voce["esito"],
                 "oltre_limite": voce["oltre_limite"],
                 "errori_compilatore": voce["errori_compilatore"],
                 "verifiche": voce["verifiche"],
-                "uscita": voce["uscita"] if not voce["verifiche"] else "",
+                "uscita": voce["uscita"]
+                          if not voce["verifiche"] or voce["esito"] == "FALLITO" else "",
             })
             return
 
@@ -740,42 +932,6 @@ class Gestore(BaseHTTPRequestHandler):
 # Avvio
 # --------------------------------------------------------------------------
 
-def apri_editor(cartella: Path):
-    if shutil.which("mate"):
-        subprocess.Popen(["mate", str(cartella)])
-        return "TextMate (mate)"
-    esito = subprocess.run(["open", "-a", "TextMate", str(cartella)],
-                           capture_output=True, text=True)
-    if esito.returncode == 0:
-        return "TextMate"
-    return None
-
-
-def editor_in_esecuzione() -> bool:
-    return subprocess.run(["pgrep", "-x", "TextMate"], capture_output=True).returncode == 0
-
-
-def chiudi_editor(indirizzo: str) -> bool:
-    """Alla consegna: chiude TextMate. Se non e' in esecuzione o non risponde
-    entro pochi secondi, rinuncia e riporta in primo piano la pagina delle
-    tracce nel browser, cosi' l'attenzione resta li' e non sull'editor."""
-    chiuso = False
-    if editor_in_esecuzione():
-        try:
-            subprocess.run(
-                ["osascript", "-e", 'tell application "TextMate" to quit'],
-                capture_output=True, text=True, timeout=5)
-            chiuso = not editor_in_esecuzione()
-        except (subprocess.TimeoutExpired, FileNotFoundError):
-            chiuso = False
-    if not chiuso:
-        try:
-            subprocess.run(["open", indirizzo], capture_output=True, text=True, timeout=5)
-        except (subprocess.TimeoutExpired, FileNotFoundError):
-            pass
-    return chiuso
-
-
 def main(argv):
     if len(argv) < 2 or argv[1].startswith("--"):
         print(__doc__)
@@ -784,7 +940,6 @@ def main(argv):
     cartella = Path(argv[1]).resolve()
     durata, porta = 45, 8765
     riparti = "--riparti" in argv
-    senza_editor = "--senza-editor" in argv
     apri_browser = "--senza-browser" not in argv
     for opzione, converti in (("--durata", int), ("--porta", int)):
         if opzione in argv:
@@ -813,15 +968,12 @@ def main(argv):
     Gestore.pagina = pagina
     server = ThreadingHTTPServer(("127.0.0.1", porta), Gestore)
     indirizzo = f"http://127.0.0.1:{porta}"
+    Gestore.origini = {indirizzo, f"http://localhost:{porta}"}
 
-    editor = None if senza_editor else apri_editor(cartella)
-    prova.editor_attivo = editor is not None
-    prova.indirizzo = indirizzo
     print(f"\n  Aula d'esame — {cartella.name}")
     print(f"  Durata: {durata} minuti · rimanenti ora: {formatta(prova.rimanente())}")
     print(f"  Pagina: {indirizzo}")
-    print(f"  Editor: {editor or 'non aperto'}")
-    print(f"  Il codice si scrive in {cartella}/ESn/Soluzione.java")
+    print(f"  Il codice si scrive nella pagina e si salva in {cartella}/ESn/Soluzione.java")
     print("  Ctrl+C per chiudere la finestra senza consegnare.\n")
     if apri_browser:
         webbrowser.open(indirizzo)
