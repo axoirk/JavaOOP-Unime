@@ -42,3 +42,6 @@ target/
 *.ipr
 __pycache__/
 *.pyc
+
+# critique di impeccable: locale
+.impeccable/
