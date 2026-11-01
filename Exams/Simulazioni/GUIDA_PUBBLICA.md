@@ -8,7 +8,8 @@ della traccia, tester black-box e rubrica di correzione: qui c'è solo ciò che 
 ```text
 Exams/Simulazioni/
 ├── GUIDA_PUBBLICA.md   questo file
-└── Prove/              le simulazioni generate: SIM_1, SIM_2, … (locali, non versionate)
+├── Prove/              la serie attiva: SIM_1, SIM_2, … (locali, non versionate)
+└── Archivio/           una cartella per serie chiusa: Serie_1/, Serie_2/, … (locali, non versionate)
 ```
 
 > **Nota sui file locali.** Le simulazioni generate, lo storico dei punteggi e il registro delle
@@ -88,7 +89,7 @@ La composizione si decide al momento della generazione, guardando cosa è stato 
 Prima di generare, l'agente:
 
 1. legge lo **storico locale** — punteggi, copertura per sotto-argomento, prove recenti;
-2. guarda le tracce già presenti in `Prove/` e, se serve un riscontro sulle formulazioni, quelle degli appelli reali;
+2. guarda le tracce già presenti in `Prove/` e in `Archivio/Serie_*/` e, se serve un riscontro sulle formulazioni, quelle degli appelli reali;
 3. sceglie una composizione che **copra terreno nuovo**: sotto-argomenti mai toccati, o toccati male, prima di quelli già solidi;
 4. tiene calde le aree già dimostrate solide, senza ripetere la stessa formulazione due volte di fila.
 
@@ -139,7 +140,7 @@ Il thread principale:
 python3 Exams/aula.py "Exams/Simulazioni/Prove/SIM_1"
 ```
 
-Apre la pagina d'aula: tracce con l'editor del codice sotto ciascuna, cronometro da 45 minuti, **Esegui** per
+Apre la pagina d'aula: tracce con l'editor del codice accanto a ciascuna, cronometro da 45 minuti, **Esegui** per
 esercizio (cinque, oltre è penalità), **Consegna**. Alla consegna — manuale o allo scadere del
 tempo — nasce `Consegna_SIM_N_<data>.md` con i dati grezzi: esecuzioni, tempi, output, codice
 consegnato. **Nessun punteggio:** la correzione è un passaggio separato.

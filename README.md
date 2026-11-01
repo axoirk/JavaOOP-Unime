@@ -171,7 +171,7 @@ python3 Exams/aula.py "Exams/Appelli Ufficiali Unime/EXAM4"    # rifare un appel
 python3 Exams/aula.py <cartella> --durata 45 --riparti --porta 8765
 ```
 
-Apre una pagina locale con le tre tracce, l'editor del codice sotto ciascuna (sola colorazione Java, salvato in `ESn/Soluzione.java`), il cronometro, un **Esegui** per esercizio e il pulsante **Consegna**. Dopo un Esegui mostra il verdetto e le verifiche una per una, con atteso e ottenuto su quelle fallite — come il riquadro dei test di Moodle.
+Apre una pagina locale con le tre tracce, l'editor del codice accanto a ciascuna (colorazione Java, parentesi chiuse in automatico, salvato in `ESn/Soluzione.java`), il cronometro, un **Esegui** per esercizio e il pulsante **Consegna**. Dopo un Esegui mostra il verdetto e le verifiche una per una, con atteso e ottenuto su quelle fallite — come il riquadro dei test di Moodle.
 
 Alla consegna — manuale o allo scadere del tempo, che blocca le esecuzioni — genera `Consegna_<SIM>_<data>.md` con i **soli dati grezzi**: esecuzioni, tempi, output, codice consegnato. Nessun punteggio: la correzione è un passaggio separato.
 

@@ -38,8 +38,8 @@ python3 Exams/aula.py <cartella> --durata 45 --riparti --porta 8765
 ./Exams/esegui.sh <cartella> --reset     # azzera il contatore
 ```
 
-`aula.py` (stdlib, nessuna dipendenza) apre una pagina locale con l'editor del codice sotto ogni
-traccia (sola colorazione Java, salvataggio automatico in `ESn/Soluzione.java`), le tre tracce, il cronometro dei 45 minuti, un Esegui per esercizio e il pulsante Consegna.
+`aula.py` (stdlib, nessuna dipendenza) apre una pagina locale con la traccia a sinistra e l'editor a
+destra (colorazione Java, parentesi chiuse in automatico, salvataggio automatico in `ESn/Soluzione.java`), le tre tracce, il cronometro dei 45 minuti, un Esegui per esercizio e il pulsante Consegna.
 Dopo un Esegui mostra il verdetto e l'elenco delle verifiche del tester, con atteso e ottenuto su
 quelle fallite, come il riquadro dei test di Moodle; i tester devono perciò stampare nel formato
 `[OK]`/`[KO]` descritto in `REGOLE_GENERAZIONE_AI.MD` §4. Alla consegna — manuale o allo scadere del tempo, che
@@ -56,7 +56,7 @@ Non esistono test unitari (nessun JUnit configurato). L'unico meccanismo di test
 |------|-----------|
 | `Teoria/` | Appunti in Markdown. `Fondamenti_e_Pilastri_OOP/` (01→06, teoria trasversale) e `Appunti_Pratici_Livelli/` (un file per Livello 1-7, allineato al Syllabus). |
 | `Esercitazioni (Self)/` | `Livello 1..7/Esercizio N/` + `Progetti Recap/`. Esercizi scritti dallo studente. |
-| `Exams/` | `Appelli Ufficiali Unime/EXAM1..4/` (tracce, soluzioni e tester; **EXAM3 ed EXAM4 sono gli appelli davvero sostenuti**, 08/07/2026 e 08/09/2026) e `Simulazioni/`: `GUIDA_PUBBLICA.md` (tracciata) più il materiale personale non tracciato — `GUIDA.md` con il registro delle prove, `Prove/SIM_N/`, `Archivio/`. |
+| `Exams/` | `Appelli Ufficiali Unime/EXAM1..4/` (tracce, soluzioni e tester; **EXAM3 ed EXAM4 sono gli appelli davvero sostenuti**, 08/07/2026 e 08/09/2026) e `Simulazioni/`: `GUIDA_PUBBLICA.md` (tracciata) più il materiale personale non tracciato — `GUIDA.md` con il registro delle prove, `Prove/SIM_N/` (serie attiva), `Archivio/Serie_N/` (serie chiuse). |
 | `java_lessons/` | Materiale del professore. **Ignorato da git — non modificare.** |
 
 I 7 Livelli sono definiti da `Esercitazioni (Self)/SYLLABUS.MD`: 1 basi/sintassi → 2 fondamenti OOP → 3 OOP avanzata + eccezioni → 4 I/O, file, Serializable, Swing → 5 JVM e thread → 6 networking e XML → 7 Maven/JDBC/NoSQL/Spring. Ogni nuovo esercizio o file di teoria deve collocarsi in questo schema.

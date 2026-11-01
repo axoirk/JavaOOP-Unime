@@ -13,15 +13,15 @@ L'appello si svolge dentro una pagina **Moodle**, in un'area di scrittura di liv
 La simulazione deve replicare queste condizioni:
 
 - **Un solo file per esercizio.** Tutte le classi richieste vanno dichiarate nello stesso file `Soluzione.java`. Non è ammessa la suddivisione in più file.
-- **Editor cieco.** Lo studente scrive in un editor di testo semplice, privo di analisi del codice: l'editor di riferimento è quello nella pagina di `Exams/aula.py`, sotto la traccia come su Moodle: colorazione della sintassi, ma nessun controllo e nessun suggerimento. Per il singolo esercizio con `esegui.sh` sono ammessi `nano` e TextEdit in modalità testo semplice. L'uso di un IDE con analisi statica (IntelliJ, VS Code con estensioni Java, Eclipse) durante la prova **invalida la simulazione**.
+- **Editor cieco.** Lo studente scrive in un editor di testo semplice, privo di analisi del codice: l'editor di riferimento è quello nella pagina di `Exams/aula.py`, accanto alla traccia: colorazione della sintassi, ma nessun controllo e nessun suggerimento. Per il singolo esercizio con `esegui.sh` sono ammessi `nano` e TextEdit in modalità testo semplice. L'uso di un IDE con analisi statica (IntelliJ, VS Code con estensioni Java, Eclipse) durante la prova **invalida la simulazione**.
 - **Esecuzione contingentata.** L'esecuzione avviene solo tramite `Exams/aula.py` (aula d'esame in browser: tracce, cronometro, Esegui, consegna) oppure, per il singolo esercizio, tramite `Exams/esegui.sh`. Entrambi replicano il pulsante Esegui e contano i tentativi sullo stesso file `.esecuzioni`.
 - **Riquadro dei test.** Dopo un Esegui lo studente vede il verdetto, l'elenco delle verifiche con il loro esito e, su quelle fallite, il valore atteso e quello prodotto — come il riquadro dei test di Moodle. Gli errori del compilatore sono mostrati integralmente.
 - **Limite di 5 esecuzioni per esercizio.** Oltre la quinta, ogni esecuzione produce una penalità sul punteggio. Un errore di compilazione consuma un'esecuzione esattamente come un'esecuzione riuscita. Il tetto è per esercizio e non si travasa: l'ora complessiva è gestibile liberamente, le esecuzioni no.
 
 ### 0.1 Inizializzazione Ambiente (Preparazione Cartelle)
 
-- Le simulazioni vivono in `Exams/Simulazioni/`: `Prove/` contiene quelle attive, `Archivio/` quelle svolte sotto le regole vecchie (chiuso, non si alimenta più). Se `Prove/` non esiste, **va creata** (es. `mkdir -p "Exams/Simulazioni/Prove/SIM_X/ES1"`).
-- Ogni simulazione risiede in una sottocartella numerata progressivamente (`SIM_1`, `SIM_2`, …) contenente `ES1`, `ES2`, `ES3`. La struttura degli argomenti e la scala di difficoltà sono in `Exams/Simulazioni/GUIDA_PUBBLICA.md`.
+- Le simulazioni vivono in `Exams/Simulazioni/`: `Prove/` contiene la serie attiva, `Archivio/` le serie chiuse, una cartella ciascuna (`Serie_1/`, `Serie_2/`, …; non si alimentano più). Quando una serie si chiude, le sue `SIM_N` passano in `Archivio/Serie_<n+1>/` e la nuova riparte da `SIM_1`. Se `Prove/` non esiste, **va creata** (es. `mkdir -p "Exams/Simulazioni/Prove/SIM_X/ES1"`).
+- Ogni simulazione risiede in una sottocartella numerata progressivamente dentro la serie (`SIM_1`, `SIM_2`, …) contenente `ES1`, `ES2`, `ES3`. La struttura degli argomenti e la scala di difficoltà sono in `Exams/Simulazioni/GUIDA_PUBBLICA.md`.
 - In ogni cartella esercizio l'AI deposita: `README.md` (traccia), `Soluzione.java` (con i soli `import`), `Main.class` (tester compilato).
 
 ---
