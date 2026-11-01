@@ -371,7 +371,82 @@ catch (IOException e) {
     System.err.println("errore: " + e.getMessage());
 }
 ```
-Funziona con qualunque tipo che implementi `AutoCloseable`: stream, `Socket`, `ServerSocket`, `DatagramSocket`, `Connection` JDBC. **Attenzione:** se la traccia impone esplicitamente un blocco `finally`, il `try-with-resources` non lo sostituisce agli occhi del correttore — la parola chiave richiesta deve comparire.
+Funziona con qualunque tipo che implementi `AutoCloseable`: stream, `Socket`, `ServerSocket`, `DatagramSocket`, `Connection` JDBC. **Attenzione:** se la traccia impone esplicitamente un blocco `finally`, il `try-with-resources` non lo sostituisce agli occhi del correttore — la parola chiave richiesta deve comparire. La forma da scrivere in quel caso è nella sezione seguente.
+
+### `finally` che chiude i flussi a mano
+Quando la traccia dice *"la chiusura dei flussi deve avvenire nel blocco `finally`"*, il try-with-resources non basta: serve la forma classica. È sempre la stessa, in **quattro passi**, e ognuno evita un errore preciso.
+
+```java
+import java.io.*;
+
+class Lettore {
+    public String primaRiga(String percorso) throws IOException {
+        BufferedReader in = null;                        // 1. dichiarato FUORI dal try, a null
+        try {
+            in = new BufferedReader(new FileReader(percorso));   // 2. assegnato DENTRO
+            return in.readLine();
+        } finally {
+            if (in != null) {                            // 3. se FileReader è fallito, in è ancora null
+                in.close();                              // 4. close() dichiara IOException: serve il throws
+            }
+        }
+    }
+}
+```
+
+| Se sbagli il passo | Cosa succede |
+|---|---|
+| 1. dichiari `in` **dentro** il `try` | nel `finally` la variabile non esiste: `cannot find symbol` (una variabile vive solo fra le graffe in cui nasce) |
+| 3. niente controllo `null` | se l'apertura fallisce (file inesistente), `in` è `null`: `in.close()` lancia `NullPointerException` e **sovrascrive** l'eccezione vera, e anche il `return` già pronto nel `catch` |
+| 4. `close()` senza `throws IOException` (o senza `try`) | `unreported exception IOException`: anche chiudere può fallire |
+| usi il try-with-resources "perché è meglio" | corretto in generale, **non** quando la traccia impone il `finally`: il vincolo non è soddisfatto agli occhi del correttore |
+
+**Se il metodo non deve propagare nulla** ("mai propagare eccezioni", "restituisce `null` in caso di errore"), il `close()` ha il suo `try/catch` dentro il `finally`, così il `return` del `catch` esterno resta valido:
+
+```java
+public String primaRigaOppureNull(String percorso) {
+    BufferedReader in = null;
+    try {
+        in = new BufferedReader(new FileReader(percorso));
+        return in.readLine();
+    } catch (IOException e) {
+        return null;
+    } finally {
+        if (in != null) {
+            try {
+                in.close();
+            } catch (IOException e) {
+                // niente da fare: stiamo già chiudendo
+            }
+        }
+    }
+}
+```
+
+Con **due** flussi annidati (`DataOutputStream` su `FileOutputStream`) si dichiara e si chiude solo quello **esterno**: chiude anche l'interno. Il caso completo con scrittura in coda è nel Livello 4.
+
+### Quali metodi lanciano quali eccezioni controllate
+Gli errori `unreported exception` nascono quasi sempre da qui: non ricordi che un'API lancia un'eccezione controllata. La tabella si impara a memoria.
+
+| Chiamata | Eccezione controllata |
+|---|---|
+| `Thread.sleep(..)`, `wait()`, `join()` | `InterruptedException` |
+| `new FileReader(p)`, `new FileInputStream(p)`, `new FileOutputStream(p)`, `new PrintWriter(p)`, `new Scanner(file)` | `FileNotFoundException` (è una `IOException`) |
+| `new FileWriter(p)`, `readLine()`, `write..`, `read..`, `close()` su un flusso | `IOException` |
+| `readUTF()`, `readInt()`, `readDouble()`, `readObject()` a **fine file** | `EOFException` (è una `IOException`) |
+| `readObject()` | `IOException` **e** `ClassNotFoundException` |
+| `new Socket(..)`, `serverSocket.accept()`, `getInputStream()`, `getOutputStream()` | `IOException` |
+| `InetAddress.getByName(..)` | `UnknownHostException` (è una `IOException`) |
+| `datagramSocket.send(..)` / `receive(..)` | `IOException` (`SocketTimeoutException` se c'è un timeout) |
+| `builder.parse(..)`, `newDocumentBuilder()` (DOM) | `SAXException`, `IOException`, `ParserConfigurationException` |
+
+Quasi tutta la famiglia dell'I/O e della rete è **sottoclasse di `IOException`**: un solo `catch (IOException e)` le copre tutte, e un solo `throws IOException` le dichiara tutte. Fanno eccezione `InterruptedException` e `ClassNotFoundException`, che non c'entrano con `IOException` e vanno dichiarate o catturate a parte.
+
+**I due messaggi del compilatore, e come si leggono:**
+- `unreported exception X; must be caught or declared to be thrown` → mancano o un `try/catch` o un `throws X` sulla firma. Se stai scrivendo il metodo che la lancia, il rimedio è la **firma**: `throws X`. Cambiare il corpo (`throw e` → `throw new IOException(e)`) sposta il problema e non lo risolve.
+- `exception X is never thrown in body of corresponding try statement` → hai scritto un `catch (X)` per un `try` in cui nessuno lancia `X`. Togli il `catch`, oppure metti nel `try` la riga che davvero la lancia. Vale solo per le eccezioni **controllate**: `catch (Exception e)` e `catch (RuntimeException e)` non danno mai questo errore.
+
+**`InterruptedException` quando il metodo non può dichiararla.** Hai tre scelte, tutte legali: dichiararla nella firma (`throws InterruptedException`, se la traccia lo chiede *o* se i chiamanti la gestiscono); catturarla e uscire in modo pulito; oppure, nel caso comune di un thread, catturarla e **ripristinare il flag** con `Thread.currentThread().interrupt()`. Non esiste `throw new InterruptedException(e)`: quel costruttore non prende una causa, e comunque rilanciarla richiede `throws`. Se vuoi trasformarla in un'eccezione non controllata, `throw new RuntimeException(e)`.
 
 ### Errori Comuni
 - **Stampe fuori dal `finally` quando la traccia lo impone.** Output identico, requisito non soddisfatto: è una penalità pesante *a programma perfettamente funzionante*.
@@ -381,3 +456,8 @@ Funziona con qualunque tipo che implementi `AutoCloseable`: stream, `Socket`, `S
 - **`catch` vuoto.** Compila, non fa niente, e nasconde il guasto: l'errore più difficile da diagnosticare in assoluto.
 - **Dichiarare `throws` su una `RuntimeException` "per sicurezza".** È legale ma inutile e segnala che la distinzione checked/unchecked non è chiara.
 - **Istruzione vuota dopo un `if`:** `if (n > 0);` compila, il `;` chiude l'if e il blocco successivo viene eseguito sempre. È un errore di stile che nasce dalla fretta e sposta il comportamento del metodo.
+- **Variabile del flusso dichiarata dentro il `try` e chiusa nel `finally`.** Non compila: nel `finally` non esiste. Si dichiara fuori, a `null`, e si chiude con `if (x != null)`.
+- **`close()` nel `finally` senza controllo `null`.** Se l'apertura fallisce, la `NullPointerException` copre l'eccezione vera e annulla il `return` del `catch`.
+- **Try-with-resources quando la traccia impone il `finally`.** Funziona, ma il vincolo di collocazione non è rispettato: è la stessa famiglia delle stampe fuori dal `finally`, con la chiusura dei flussi al posto delle stampe.
+- **`throws` della classe sbagliata.** `temperaturaMassima() throws OraNonValidaException` per un metodo che legge un file: la firma dichiara ciò che il **corpo** può lanciare (`IOException`), non l'eccezione che hai appena definito.
+- **Un `catch` di eccezione controllata che nessuno lancia.** `exception X is never thrown in body of corresponding try statement`. Non è un refuso: il `try` non contiene la riga che serve.

@@ -370,6 +370,8 @@ public class Smartwatch {
 }
 ```
 
+> **Attenzione: `private` e `esterna.new Interna()`.** Qui la inner class è `private` perché **nessuno fuori da `Smartwatch` deve crearla**: la crea `Smartwatch` stesso con `new Batteria()`. Se invece la traccia (o il suo esempio di output) crea la classe annidata **da fuori**, con `p.new Lettore()` nel `main`, la classe **non può essere `private`**: `Playlist.Lettore has private access in Playlist` e il programma non compila. Regola: leggi *chi* crea la classe annidata. Se è la classe esterna, `private` va bene; se è il `main` o un'altra classe, nessun modificatore (o `public`).
+
 ### Quando invece serve `static`
 Una **static nested class** è annidata solo per organizzazione: **non** ha il riferimento all'oggetto esterno, quindi non può toccarne i campi d'istanza, e si istanzia come una classe normale.
 
@@ -402,6 +404,8 @@ Regola di scelta: **se la classe annidata deve lavorare sui dati dell'oggetto es
 - **Dichiarare a mano `private Asta asta;` dentro la classe interna.** È il segno che non si sta usando il riferimento implicito. Funziona, ma raddoppia lo stato e tradisce il senso dell'esercizio: molte tracce lo vietano esplicitamente.
 - **`new Esterna.Interna(...)` su una inner class non statica.** Non compila: manca l'istanza esterna. Serve `esterna.new Interna(...)`.
 - **Dimenticare che l'inner class vede i campi *privati* dell'esterna e viceversa.** È legale e voluto: l'incapsulamento in Java è a livello di *classe di primo livello*, non di singola classe annidata.
+- **`private class Lettore` quando la traccia fa `p.new Lettore()` dal `main`.** Compila solo se il `main` sta dentro la classe esterna; altrimenti `Lettore has private access`. La traccia non chiede `private`: non aggiungerlo. Un tester già compilato non se ne accorge, ma un test scritto in sorgente sì.
+- **`public` su una classe annidata o su una seconda classe dello stesso file.** All'appello tutte le classi stanno in un solo file: nessuna è `public` (Livello 1 §9).
 
 ---
 
@@ -456,3 +460,111 @@ public class RegistroVoti {
     }
 }
 ```
+
+### I nomi esatti dell'API di `Map` (e perché `getValue` non c'è)
+`Map` ha pochi metodi e vanno scritti **esatti**. Il più inventato per analogia è `getValue`, che **non appartiene a `Map`**: è un metodo di `Map.Entry`, cioè della coppia che ottieni iterando `entrySet()`.
+
+| Voglio | Scrivo | Nota |
+|---|---|---|
+| inserire o sovrascrivere | `m.put(chiave, valore)` | restituisce il valore precedente o `null` |
+| leggere un valore | `m.get(chiave)` | `null` se la chiave non c'è: con `int` fa **unboxing di `null`** (`NullPointerException`) |
+| leggere con un default | `m.getOrDefault(chiave, 0)` | niente `null` da controllare |
+| esiste la chiave? | `m.containsKey(chiave)` | |
+| contare occorrenze | `m.put(k, m.get(k) + 1)` oppure `m.merge(k, 1, Integer::sum)` | la chiave deve già esserci, o usa `merge` |
+| quanti elementi | `m.size()` | non `length` e non `length()` |
+| tutte le chiavi / i valori | `m.keySet()` / `m.values()` | |
+| scorrere le coppie | `for (Map.Entry<K, V> e : m.entrySet())` poi `e.getKey()`, `e.getValue()` | `getValue` **solo** qui |
+
+**Dichiarare una mappa non la popola.** Un campo `private Map<String, Integer> voti = new HashMap<>();` è una mappa **vuota**: `containsKey` è sempre `false`. Se la traccia dà l'elenco dei candidati (o dei prodotti) nel costruttore, è il **costruttore** che deve fare `put(nome, 0)` per ognuno, altrimenti ogni operazione successiva "non trova" niente.
+
+```java
+import java.util.*;
+
+class Urna {
+    private Map<String, Integer> voti = new HashMap<>();
+    private int nulle = 0;
+
+    public Urna(String[] candidati) {
+        for (String c : candidati) {
+            voti.put(c, 0);                  // la mappa si POPOLA nel costruttore: dichiararla non basta
+        }
+    }
+
+    public void vota(String candidato) {
+        if (voti.containsKey(candidato)) {
+            voti.put(candidato, voti.get(candidato) + 1);   // get sulla MAPPA; getValue è di Map.Entry
+        } else {
+            nulle++;
+        }
+    }
+
+    public int voti(String candidato) { return voti.getOrDefault(candidato, 0); }
+    public int nulle() { return nulle; }
+    public int totale() {
+        int t = nulle;
+        for (int v : voti.values()) t += v;
+        return t;
+    }
+}
+```
+
+Le chiavi `String` si confrontano per **contenuto** (`equals`), non con `==`: la mappa lo fa da sola, ma se confronti a mano due nomi, `.equals()`.
+
+---
+
+## 6. Leggere il codice fornito: dedurre le firme (variante B)
+
+In molte tracce una o più classi sono **già scritte** e a te ne manca una: *"le firme dei metodi vanno dedotte dalle invocazioni"*. Non c'è niente da inventare: il codice fornito contiene **tutto** ciò che serve. Gli errori più cari di questa variante sono nomi di metodo "adattati" (`leggiProdotti` al posto di `leggi`, `getSchedeNulle` al posto di `nulle`) e un `throws` che manca.
+
+### Come si legge una riga di codice fornito
+| Nel codice fornito vedi | Ne ricavi |
+|---|---|
+| `x.nome(a, b)` | il **nome esatto** del metodo, il numero e il tipo dei parametri |
+| `double s = x.nome()` | il **tipo di ritorno** (con `int` avresti `possible lossy conversion`) |
+| `somma += x.get()` con `somma` `double` | `get()` restituisce un numero; il tipo più largo è `double` |
+| `x.nome()` usato come istruzione | probabilmente `void` |
+| `new X(a, b)` | la firma del **costruttore**, nell'ordine in cui compaiono gli argomenti |
+| `catch (E e)` attorno alla chiamata | il metodo dichiara **`throws E`**: un `catch` di un'eccezione controllata ha senso solo se il `try` può lanciarla |
+| `catch (E1 e) {...} catch (E2 e) {...}` | `throws E1, E2` (o la superclasse comune) |
+| `x.metodo()` dentro un `main` che non ha `throws` né `try` | il metodo **non** dichiara eccezioni controllate |
+| `static` nella chiamata (`Classe.metodo()`) | il metodo è `static` |
+| `ArrayList<String> r = x.leggi();` | tipo di ritorno `ArrayList<String>` (o un tipo compatibile con quello a sinistra) |
+
+### Esempio completo
+```java
+// Codice FORNITO dalla traccia: da qui si leggono le firme.
+class Promemoria {
+    public static void main(String[] args) {
+        Diario diario = new Diario("note.txt");                  // costruttore (String)
+        try {
+            diario.aggiungi("comprare il pane");                 // aggiungi(String), void
+            java.util.ArrayList<String> tutte = diario.leggi();  // leggi() restituisce ArrayList<String>
+            System.out.println(tutte.size());
+        } catch (VoceVuotaException e) {                         // aggiungi dichiara throws VoceVuotaException
+            System.out.println(e.getMessage());
+        } catch (java.io.IOException e) {                        // ... e throws IOException
+            System.out.println("errore");
+        }
+    }
+}
+
+// Quello che DEVI scrivere, ricavato riga per riga:
+class VoceVuotaException extends Exception {                     // catch + checked => extends Exception
+    public VoceVuotaException(String m) { super(m); }
+}
+
+class Diario {
+    private String percorso;
+    public Diario(String percorso) { this.percorso = percorso; }
+    public void aggiungi(String testo) throws VoceVuotaException, java.io.IOException {
+        if (testo.trim().isEmpty()) throw new VoceVuotaException("voce vuota");
+    }
+    public java.util.ArrayList<String> leggi() throws java.io.IOException { return new java.util.ArrayList<>(); }
+}
+```
+
+### Tre regole di metodo
+1. **Il nome si copia.** Prima di scrivere il corpo di un metodo dedotto, rileggi la riga che lo chiama e ricopia il nome; non "migliorarlo", non tradurlo, non usare un sinonimo. Un nome diverso non funziona in nessun caso: con le classi nello stesso file è `cannot find symbol`, con un test già compilato è `NoSuchMethodError` a runtime.
+2. **I `catch` sono la tua lista di `throws`.** Se il codice fornito cattura `IOException`, il tuo metodo deve poterla lanciare. Se hai un errore `unreported exception` e continui a cambiare il corpo del metodo, stai guardando nel posto sbagliato: il rimedio è sulla **firma** (`throws`), non su un altro `throw` (Livello 3 §5).
+3. **Il messaggio e il formato stanno nella traccia, non nel codice fornito.** Il codice fornito ti dice come si **chiama** il metodo, non che cosa deve stampare o con quale messaggio rifiutare: quello lo dice la descrizione (`voce vuota` in minuscolo è un requisito).
+

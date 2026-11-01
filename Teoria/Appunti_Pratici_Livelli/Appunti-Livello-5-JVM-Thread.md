@@ -40,24 +40,48 @@ public class TestEsteso {
 }
 ```
 
-*Esempio 1B: Il Thread che si "Auto-Lancia"*
-Un pattern elegante è far sì che il Thread si auto-avvii non appena viene istanziato, includendo la chiamata `start()` direttamente nel suo costruttore.
+*Esempio 1B: il thread NON si avvia nel proprio costruttore*
+Può sembrare comodo far partire il thread da solo, con `this.start()` dentro il costruttore. **È un errore**, e le correzioni lo hanno penalizzato più volte. Il costruttore deve **preparare** l'oggetto; è **chi lo crea** a decidere quando farlo partire.
+
 ```java
+// SBAGLIATO: il thread parte dentro il costruttore
 public class ThreadAutoAvviante extends Thread {
-    public ThreadAutoAvviante() {
-        // Il thread chiama start() su se stesso al momento della creazione
-        this.start(); 
+    private String nome;
+
+    public ThreadAutoAvviante(String nome) {
+        this.start();            // il thread gira GIÀ, e il costruttore non ha finito
+        this.nome = nome;        // quando run() legge 'nome' può trovare ancora null
     }
 
     @Override
     public void run() {
-        System.out.println("Sono partito da solo!");
+        System.out.println("Sono " + nome);
     }
 }
 
-// Nel main basta solo instanziarlo:
-// new ThreadAutoAvviante();
+// GIUSTO: il costruttore prepara, il chiamante fa partire
+public class MioThread extends Thread {
+    private String nome;
+
+    public MioThread(String nome) {
+        this.nome = nome;        // solo stato, nessun start()
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Sono " + nome);
+    }
+}
+
+// nel main (o in chi coordina):
+MioThread t = new MioThread("A");
+t.start();                       // la decisione è di chi crea
 ```
+
+**Perché è sbagliato.**
+- **Può partire due volte.** Se chi usa la classe fa, come ci si aspetta, `new Thread(oggetto).start()` o `oggetto.start()`, i thread che girano sullo **stesso oggetto** sono due. Con un `run()` che modifica uno stato (un bonus, un contatore), il risultato raddoppia.
+- **Il thread può girare su un oggetto non ancora completo.** Dopo `start()` il nuovo thread è indipendente: può eseguire `run()` prima che il costruttore abbia assegnato i campi successivi, e prima che il costruttore di una **sottoclasse** abbia finito.
+- **Toglie la decisione a chi coordina.** Quando la traccia dice "il manager crea **e avvia** i thread", l'avvio è del manager. Una classe che parte da sola gli ruba il lavoro: è l'anti-pattern che l'esame penalizza.
 
 #### Metodo 2: Implementare l'interfaccia `Runnable` (Consigliato)
 Si crea una classe che implementa il metodo `run()`, poi la si passa come parametro (target) al costruttore di un nuovo oggetto `Thread`.
@@ -83,26 +107,34 @@ public class TestRunnable {
 }
 ```
 
-*Esempio 2B: Il Runnable che si auto-avvia*
-In questo caso, la classe non è un Thread, ma possiede un Thread interno (composizione) a cui passa se stessa (`this`).
+*Esempio 2B: il Runnable che possiede il proprio Thread (avvio su richiesta)*
+In questo caso la classe non è un Thread, ma ne possiede uno interno (composizione) a cui passa se stessa (`this`). Il `Thread` si **prepara** nel costruttore e si **avvia** con un metodo esplicito: nel costruttore non si chiama `start()` (vedi Esempio 1B).
 ```java
-public class RunnableAutoAvviante implements Runnable {
-    private Thread motore;
+public class RunnableConMotore implements Runnable {
+    private Thread motore;                    // composizione: il Runnable possiede il suo Thread
 
-    public RunnableAutoAvviante() {
-        // Inietto me stesso (this, in quanto Runnable) nel nuovo Thread
-        motore = new Thread(this);
-        motore.start(); // Avvio il motore
+    public RunnableConMotore() {
+        motore = new Thread(this);            // solo preparato: NON avviato
+    }
+
+    public void avvia() {
+        motore.start();                       // lo avvia chi coordina, quando vuole
+    }
+
+    public void attendi() throws InterruptedException {
+        motore.join();
     }
 
     @Override
     public void run() {
-        System.out.println("Runnable auto-avviato tramite composition!");
+        System.out.println("Runnable avviato su richiesta.");
     }
 }
 
 // Nel main:
-// new RunnableAutoAvviante();
+// RunnableConMotore r = new RunnableConMotore();
+// r.avvia();
+// r.attendi();
 ```
 
 *Esempio 2C: Implementazione tramite Classe Anonima o Lambda Expression*
@@ -461,6 +493,94 @@ class Analizzatore {
 
 Ogni worker scrive in un campo **proprio**: nessuna variabile condivisa, quindi nessun `synchronized` necessario. La sincronizzazione serve solo quando più thread toccano lo *stesso* dato.
 
+### Con `Runnable` i due oggetti sono due: `Reparto[]` e `Thread[]`
+L'esempio sopra usa `extends Thread`: l'oggetto **è** il thread, quindi un solo array basta. Ma le tracce spesso dicono *"`Reparto` implementa `Runnable`"* (o lasciano libera la scelta, e `Runnable` è quella consigliata). Allora **gli oggetti sono due per ogni lavoro**: il `Runnable` (che ha i dati e il getter del risultato) e il `Thread` che lo esegue (che ha `start()` e `join()`). Servono **due array paralleli**, e il getter si chiama sempre sul `Runnable`.
+
+L'esempio completo, su una **matrice** con un thread per riga:
+
+```java
+import java.util.*;
+
+class Reparto implements Runnable {
+    private int[] misure;
+    private int min;
+    private int max;
+    private int fuori = 0;                       // scritto dal thread, letto dal main DOPO il join()
+
+    public Reparto(int[] misure, int min, int max) {
+        this.misure = misure;
+        this.min = min;
+        this.max = max;
+    }
+
+    @Override
+    public void run() {
+        for (int i = 0; i < misure.length; i++) {
+            if (misure[i] < min || misure[i] > max) fuori++;
+        }
+    }
+
+    public int getFuori() {
+        return fuori;
+    }
+}
+
+class Controllo {
+    private int[] parziali = new int[0];
+
+    public int esamina(int[][] matrice, int min, int max) {
+        Reparto[] lavori = new Reparto[matrice.length];     // i dati: hanno getFuori()
+        Thread[] thread = new Thread[matrice.length];       // i thread: hanno start() e join()
+        for (int i = 0; i < matrice.length; i++) {          // ciclo 1: crea e avvia TUTTI
+            lavori[i] = new Reparto(matrice[i], min, max);
+            thread[i] = new Thread(lavori[i]);
+            thread[i].start();
+        }
+        parziali = new int[matrice.length];
+        int totale = 0;
+        for (int i = 0; i < matrice.length; i++) {          // ciclo 2: aspetta, poi legge
+            try {
+                thread[i].join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            parziali[i] = lavori[i].getFuori();             // il getter è sul Reparto, non sul Thread
+            totale += parziali[i];
+        }
+        return totale;
+    }
+
+    public int[] getParziali() {
+        return parziali.clone();                            // copia: niente privacy leak
+    }
+}
+```
+
+Con la matrice `{{8,12,25,10}, {15,20,11}, {30,9,21,14,5}, {}}` e l'intervallo `[10, 20]`: `esamina` restituisce `6` e `getParziali()` `[2, 0, 4, 0]`. La riga vuota è un reparto con zero misure: il suo thread parte, il ciclo non gira, `getFuori()` vale `0`.
+
+**Cinque cose da ricordare.**
+1. **Due cicli**, non uno: il primo crea e avvia, il secondo aspetta e legge.
+2. **Il risultato si legge dopo il `join()`**, e dal `Runnable` (`lavori[i].getFuori()`): `thread[i].getFuori()` non compila.
+3. **`join()` dichiara `InterruptedException`**: se il metodo non la dichiara (la traccia dice "la gestisce internamente"), `try/catch` attorno al `join()`.
+4. **`getParziali()` restituisce una copia** (`clone()`), non il campo.
+5. **Una riga = un thread** quando la traccia dice "un `Reparto` per ogni riga": `matrice.length` thread, nessuna formula di partizionamento.
+
+### Partizionare un array fra `n` thread: il `for`, non il `while`
+Quando il numero di thread è un **parametro** (non uno per riga), l'array va diviso in `n` blocchi. L'ultimo prende il resto della divisione. Il ciclo è un `for` su `i`, con gli estremi calcolati per ogni blocco.
+
+```java
+int passo = dati.length / n;                          // dimensione base di un blocco
+for (int i = 0; i < n; i++) {
+    int da = i * passo;
+    int a = (i == n - 1) ? dati.length : (i + 1) * passo;   // l'ultimo arriva fino in fondo
+    lavori[i] = new ContaPositivi(dati, da, a);        // [da, a): 'a' ESCLUSO
+    thread[i] = new Thread(lavori[i]);
+    thread[i].start();
+}
+```
+
+**Perché non il `while`.** Un ciclo come `while (fine != dati.length - 1)` con gli indici aggiornati a mano è fragile: con `n = 1` la condizione è già falsa alla partenza e il ciclo **non gira mai**, quindi nessun thread parte e il risultato è `0`. Il `for` su `i` funziona anche con `n = 1`, e con `n` che non divide la lunghezza (`1000` elementi su `3` thread: blocchi da `333`, `333` e `334`). **Estremo escluso:** se la traccia dice "da `inizio` incluso a `fine` escluso", il ciclo è `i < fine`, non `i <= fine`.
+
 ---
 
 ## 4. Errori Comuni sulla Concorrenza
@@ -469,9 +589,64 @@ Ogni worker scrive in un campo **proprio**: nessuna variabile condivisa, quindi 
 - **Un getter che si mette in attesa.** `public synchronized int getDimensione() { while (coda.isEmpty()) wait(); ... }` è concettualmente sbagliato: chiedere *"quanti elementi ci sono?"* non deve mai bloccare il chiamante. Se il buffer è vuoto la risposta corretta è `0`, immediata. Un getter legge e torna.
 - **Chiamare `run()` invece di `start()`.** Il metodo viene eseguito, in modo perfettamente sequenziale, sul thread chiamante. Nessun thread nuovo nasce e il programma sembra funzionare.
 - **`start()` e `join()` nello stesso ciclo.** Annulla il parallelismo (vedi sopra).
-- **Dichiarare l'array come `Thread[]` e poi chiamare un getter del worker.** `Thread` non conosce `getRisultato()`: o si dichiara l'array del tipo concreto, o serve un cast esplicito.
+- **Dichiarare l'array come `Thread[]` e poi chiamare un getter del worker.** `Thread` non conosce `getRisultato()`: con `extends Thread` si dichiara l'array del tipo concreto, con `Runnable` servono **due array** (`Reparto[]` per i dati, `Thread[]` per `start`/`join`), come nell'esempio sopra.
+- **`start()` nel costruttore del thread.** Può far partire il lavoro due volte e su un oggetto non ancora completo; l'avvio spetta a chi coordina (vedi Esempio 1B).
 - **Campo mai assegnato nel costruttore.** `public Deposito(int capienza) { capienza = capienza; }` assegna il parametro a se stesso: il campo resta a `0` e il buffer si comporta come se fosse sempre pieno. Serve `this.capienza = capienza;`. È un bug che i test sullo stato finale spesso non intercettano, perché il valore finale può coincidere per caso.
 - **`synchronized` su metodi che non toccano lo stato condiviso.** Non è più sicuro: è solo più lento, e segnala che non si è capito su cosa serve la mutua esclusione.
 - **Il lock è sull'oggetto, non sul metodo.** Due metodi `synchronized` della stessa istanza si escludono a vicenda; gli stessi metodi su **due istanze diverse** non si escludono affatto. Se la risorsa condivisa deve essere unica, deve esserci **un solo oggetto** condiviso fra i thread.
-- **Deadlock AB-BA.** Due thread che prendono due lock in ordine opposto (`A` poi `B` uno, `B` poi `A` l'altro) si bloccano a vicenda per sempre. La difesa è banale e va ricordata: **acquisire sempre i lock nello stesso ordine** in tutto il programma.
+- **Deadlock AB-BA.** Due thread che prendono due lock in ordine opposto (`A` poi `B` uno, `B` poi `A` l'altro) si bloccano a vicenda per sempre. La difesa è banale e va ricordata: **acquisire sempre i lock nello stesso ordine** in tutto il programma. L'esempio completo, con i due conti, è nell'ultima sezione.
 - **`sleep()` non rilascia il lock, `wait()` sì.** Dormire dentro un blocco `synchronized` congela tutti gli altri thread in attesa di quel lock.
+
+---
+
+## 5. Deadlock AB-BA: il trasferimento fra due conti
+
+È l'esercizio classico: due conti, due thread che si trasferiscono denaro **in direzioni opposte**. Il `synchronized` sul metodo non basta.
+
+```java
+// INCOMPLETO: blocca solo il conto di ORIGINE
+public synchronized void trasferisci(Conto destinazione, int importo) {
+    saldo -= importo;
+    destinazione.setSaldo(destinazione.getSaldo() + importo);   // due chiamate separate sul conto di destinazione
+}
+```
+
+Qui `synchronized` tiene il lock di `this` per tutta l'operazione, ma il conto di **destinazione** viene toccato con `getSaldo()` e `setSaldo()` separati, ciascuno dei quali (se sono `synchronized`) prende e rilascia subito il proprio lock: fra la lettura e la scrittura c'è una finestra in cui un altro thread può modificare lo stesso saldo. E se si prova a risolvere bloccando entrambi i conti, senza un ordine, si cade nel deadlock: il thread `A→B` tiene `A` e chiede `B`; il thread `B→A` tiene `B` e chiede `A`; restano bloccati per sempre.
+
+**La soluzione: entrambi i lock, per tutta l'operazione, sempre nello stesso ordine globale.** L'ordine lo dà un **identificativo progressivo** assegnato nel costruttore con un contatore `static`.
+
+```java
+class Conto {
+    private static int prossimoId = 1;           // condiviso da tutti i Conto
+    private final int id;
+    private int saldo;
+
+    public Conto(int saldo) {
+        this.id = prossimoId++;                  // assegnato nel costruttore: 1, 2, 3...
+        this.saldo = saldo;
+    }
+
+    public int getId() { return id; }
+    public synchronized int getSaldo() { return saldo; }
+
+    public void trasferisci(Conto destinazione, int importo) {
+        // Lock SEMPRE nello stesso ordine globale (per id), qualunque sia la direzione.
+        Conto primo = (this.id < destinazione.id) ? this : destinazione;
+        Conto secondo = (primo == this) ? destinazione : this;
+        synchronized (primo) {
+            synchronized (secondo) {             // entrambi bloccati per TUTTA l'operazione
+                this.saldo -= importo;
+                destinazione.saldo += importo;
+            }
+        }
+    }
+}
+```
+
+**Perché funziona.** `A→B` e `B→A` prendono **entrambi** prima il conto con l'id più piccolo: non esiste un istante in cui un thread tenga il lock del conto grande e aspetti il piccolo. L'attesa circolare, che è la condizione del deadlock, è impossibile. Con due thread da 20 000 trasferimenti di segno opposto il programma termina sempre, e i saldi finali tornano agli iniziali.
+
+**Tre punti da ricordare.**
+1. **Il contatore è `static`**, altrimenti ogni conto avrebbe il suo e tutti gli `id` varrebbero `1`. Un `id` che resta `0` per ogni conto è il sintomo del costruttore non scritto.
+2. **`synchronized (oggetto)` a blocchi annidati**, non `synchronized` sul metodo: il metodo blocca solo `this`.
+3. **L'ordine si stabilisce con un dato che non cambia** (l'`id`, `final`), non con il saldo né con l'ordine degli argomenti.
+

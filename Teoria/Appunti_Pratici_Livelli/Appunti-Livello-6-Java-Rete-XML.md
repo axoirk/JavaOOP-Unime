@@ -241,6 +241,7 @@ class ServerUDP {
 - **Riusare lo stesso `DatagramPacket` in ingresso senza resettare la lunghezza.** Dopo un `receive()` la lunghezza del pacchetto diventa quella dei dati ricevuti: se lo riusi, la ricezione successiva viene troncata a quella misura. Costruisci un pacchetto nuovo a ogni giro (come nell'esempio) oppure richiama `setLength(buffer.length)`.
 - **`receive()` blocca per sempre** se la risposta non arriva (pacchetto perso: è UDP, succede). In un programma reale si mette un timeout: `socket.setSoTimeout(3000);` fa scattare una `SocketTimeoutException` dopo 3 secondi.
 - **Confondere i due costruttori di `DatagramSocket`.** `new DatagramSocket(porta)` si mette *in ascolto* su quella porta ed è il server; `new DatagramSocket()` prende una porta libera qualunque ed è il client. Se il client si legasse alla porta del server, otterrebbe `BindException: Address already in use`.
+- **Restituire `null` quando la comunicazione fallisce.** Se la traccia dice "in caso di errore restituisce `null`" (o "se il server non risponde"), basta il `catch (IOException e) { return null; }` dell'esempio: **tutti** i casi di fallimento sono `IOException` — host inesistente (`UnknownHostException`), nessuna risposta entro il timeout (`SocketTimeoutException`), socket non apribile (`SocketException`). Verificato: con `setSoTimeout(1000)`, un client verso una porta in cui nessuno ascolta restituisce `null` dopo un secondo; senza il timeout `receive()` resterebbe appeso per sempre. Un errore del compilatore `exception X is never thrown` qui significa che hai messo il `catch` su un `try` che non contiene `send`/`receive`/`getByName`.
 
 ---
 
@@ -432,6 +433,62 @@ public class GestoreDOM {
     }
 }
 ```
+
+#### I nomi esatti dell'API DOM (non si inventano per analogia)
+Il DOM è l'argomento in cui gli errori sono stati **tutti nomi di API sbagliati**: la struttura (factory → builder → documento → lista di nodi → ciclo) era giusta, i nomi erano inventati (`newIstance`, `getElementByTagName`, `getTextContext`, `getDocumentElements`, un cast a `Elements`). La tabella va saputa **lettera per lettera**.
+
+| Passo | Si scrive esattamente | Attenzione |
+|---|---|---|
+| fabbrica | `DocumentBuilderFactory.newInstance()` | `newInstance`, con la **n**; è `static` |
+| costruttore del parser | `factory.newDocumentBuilder()` | dichiara `ParserConfigurationException` |
+| lettura | `builder.parse(new File("a.xml"))` | restituisce un `Document`; dichiara `SAXException`, `IOException` |
+| elemento radice | `doc.getDocumentElement()` | al **singolare**; `.normalize()` subito dopo |
+| tutti i tag con un nome | `doc.getElementsByTagName("libro")` | `Elements` (plurale) e `By` maiuscola; restituisce una `NodeList` |
+| lunghezza della lista | `lista.getLength()` | su `NodeList` è un **metodo** `getLength()`, non `length` né `size()` |
+| elemento i-esimo | `lista.item(i)` | restituisce un `Node` |
+| tipo del nodo | `nodo.getNodeType() == Node.ELEMENT_NODE` | per saltare i nodi di testo (spazi e a capo) |
+| da `Node` a `Element` | `(Element) nodo` | il cast è a **`Element`**, singolare, di `org.w3c.dom` |
+| attributo | `e.getAttribute("anno")` | restituisce una `String`: poi `Integer.parseInt(...)` |
+| testo di un figlio | `e.getElementsByTagName("titolo").item(0).getTextContent()` | `getTextContent`, non `getTextContext` né `getText` |
+| nome del tag | `e.getNodeName()` oppure `e.getTagName()` | |
+| ordinare una lista | `Collections.sort(lista)` | la classe è **`Collections`** (con la **s**), non `Collection` |
+
+**Esempio completo: leggere oggetti da XML e ordinarli.** È la composizione che le tracce amano: parsing DOM, costruzione di oggetti, ordinamento, `return`.
+
+```java
+import java.io.*;
+import java.util.*;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
+
+public class ProvaDom {
+    public static void main(String[] args) throws Exception {
+        String xml = "<libreria>"
+                   + "<libro anno=\"1980\"><titolo>Il nome della rosa</titolo><autore>Eco</autore></libro>"
+                   + "<libro anno=\"1965\"><titolo>Dune</titolo><autore>Herbert</autore></libro>"
+                   + "</libreria>";
+        DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();          // newInstance
+        DocumentBuilder b = f.newDocumentBuilder();
+        Document doc = b.parse(new ByteArrayInputStream(xml.getBytes()));         // oppure new File("libri.xml")
+        doc.getDocumentElement().normalize();
+        NodeList libri = doc.getElementsByTagName("libro");                       // ElementS ByTagName
+        List<String> titoli = new ArrayList<>();
+        for (int i = 0; i < libri.getLength(); i++) {                             // getLength su NodeList
+            Node n = libri.item(i);
+            if (n.getNodeType() == Node.ELEMENT_NODE) {
+                Element e = (Element) n;                                          // cast a Element
+                int anno = Integer.parseInt(e.getAttribute("anno"));              // getAttribute -> String
+                String t = e.getElementsByTagName("titolo").item(0).getTextContent();
+                titoli.add(anno + " " + t);
+            }
+        }
+        Collections.sort(titoli);                                                 // Collections.sort
+        System.out.println(titoli);       // [1965 Dune, 1980 Il nome della rosa]
+    }
+}
+```
+
+Se gli oggetti sono tuoi (una classe `Libro` che implementa `Comparable<Libro>`, Livello 3 §4), la lista è un `List<Libro>` e `Collections.sort(libri)` usa il tuo `compareTo`. E ricorda: la classe che usa il `main` non è `public` quando le classi stanno tutte in un file solo (Livello 1 §9).
 
 ---
 

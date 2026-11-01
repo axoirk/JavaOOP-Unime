@@ -116,6 +116,10 @@ public class EsempioLetturaFile {
 }
 ```
 
+> **`readLine()` si chiama una volta sola per giro.** Ogni chiamata **consuma** una riga: `if (reader.readLine() != null) { riga = reader.readLine(); }` legge due righe e butta via la prima. La forma giusta assegna e controlla nella stessa espressione, come nel ciclo qui sopra: `while ((riga = reader.readLine()) != null)`. Stessa regola per un file vuoto: `riga = reader.readLine(); if (riga == null) { ... }`.
+
+> **Aprire un file in scrittura lo svuota.** `new FileWriter("a.txt")`, `new PrintWriter("a.txt")` e `new FileOutputStream("a.txt")` **troncano il file nel momento in cui lo aprono**, prima di qualunque `write`. Per accodare serve il secondo argomento `true`: `new FileWriter("a.txt", true)`, `new FileOutputStream("a.txt", true)`. Se la traccia dice "in coda, senza cancellare le righe già presenti", senza `true` perdi il contenuto.
+
 ### Lettura e Scrittura di File Binari Crudi (Byte Streams)
 Oltre al testo e agli oggetti serializzati, spesso un programma deve manipolare file binari "puri", come immagini, file audio, video o eseguibili. Per questa tipologia di file non si usano i Character Streams (che corromperebbero i dati tentando di interpretarli come testo), ma si utilizzano le classi di base dei **Byte Streams**: `FileInputStream` e `FileOutputStream`.
 
@@ -272,6 +276,91 @@ try (DataInputStream in = new DataInputStream(new FileInputStream("magazzino.bin
 }
 ```
 
+#### Un file di record: scrivere in coda, leggere fino a fine file, chiudere nel `finally`
+È la forma tipica dell'esercizio "file binario": una classe con il percorso, un metodo che **aggiunge** un record in coda e uno che **rilegge tutto**. Racchiude quattro regole che le tracce verificano.
+
+```java
+import java.io.*;
+
+class Registro {
+    private String percorso;
+
+    public Registro(String percorso) {
+        this.percorso = percorso;
+    }
+
+    // Scrive in coda; la chiusura è nel finally (forma imposta da molte tracce).
+    public void aggiungi(String nome, int ora, double temp) throws IOException {
+        if (ora < 0 || ora > 23) {                       // 1. si valida PRIMA di aprire il file
+            throw new IllegalArgumentException("Ora non valida: " + ora);
+        }
+        DataOutputStream out = null;                     // 2. dichiarato FUORI dal try
+        try {
+            out = new DataOutputStream(new FileOutputStream(percorso, true));   // 3. true = in coda
+            out.writeUTF(nome);                          // il record: stringa, int, double...
+            out.writeInt(ora);
+            out.writeDouble(temp);                       // ...sempre in QUESTO ordine
+        } finally {
+            if (out != null) {                           // 4. se l'apertura è fallita, out è ancora null
+                out.close();                             // close() dichiara IOException
+            }
+        }
+    }
+
+    public double massima() throws IOException {
+        DataInputStream in = null;
+        double max = Double.NEGATIVE_INFINITY;
+        try {
+            in = new DataInputStream(new FileInputStream(percorso));
+            while (true) {                               // quanti record? non si sa: si legge finché ce ne sono
+                in.readUTF();                            // si leggono TUTTI i campi, anche quelli che non servono
+                in.readInt();
+                double t = in.readDouble();
+                if (t > max) max = t;
+            }
+        } catch (EOFException fine) {
+            // fine del file: è l'uscita normale dal ciclo, non un errore
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
+        return max;
+    }
+}
+```
+
+**Le quattro regole.**
+1. **Validare prima di aprire.** `new FileOutputStream(percorso)` svuota il file subito. Se il controllo (`ora` fuori da 0-23) sta *dopo* l'apertura, un record rifiutato lascia comunque il file vuoto, mentre la traccia dice "il file resta invariato".
+2. **`true` per accodare.** Senza, ogni `aggiungi` cancella i record precedenti. Con 3 record da `writeUTF("Messina")` + `writeInt` + `writeDouble`, il file pesa 63 byte (21 a record: 2 + 7 + 4 + 8).
+3. **Fine file = `EOFException`.** `DataInputStream` e `ObjectInputStream` non hanno `hasNext()` e **non restituiscono mai `null` o `-1`**: quando i dati finiscono, `readUTF`, `readInt`, `readDouble` e `readObject` **lanciano `EOFException`**. Il ciclo è `while (true)` e il `catch (EOFException)` è l'uscita. Un file vuoto lancia l'eccezione al primo giro: il risultato è quello iniziale (`NEGATIVE_INFINITY`, lista vuota, `0`), non un errore.
+4. **Ordine di lettura = ordine di scrittura.** Se il record è `UTF, int, double`, leggi `readUTF, readInt, readDouble`, anche se di un campo non ti serve il valore: lo leggi e lo scarti, altrimenti il record dopo è sfalsato.
+
+**Lo stesso schema per gli oggetti.** Se scrivi più oggetti con `writeObject` uno dopo l'altro, li rileggi con un ciclo `while (true)` e `catch (EOFException)`; `readObject()` dichiara **anche** `ClassNotFoundException`, che si cattura a parte. `readObject()` **non** restituisce `null` a fine file: `while ((x = ois.readObject()) != null)` non termina mai bene.
+
+```java
+ArrayList<String> letti = new ArrayList<>();
+try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("dati.dat"))) {
+    while (true) {
+        letti.add((String) in.readObject());     // cast: readObject restituisce Object
+    }
+} catch (EOFException fine) {
+    // fine: uscita normale
+} catch (ClassNotFoundException e) {
+    System.out.println("classe sconosciuta");
+} catch (IOException e) {
+    System.out.println("errore di I/O");         // dopo EOFException: è la sua superclasse, va DOPO
+}
+```
+
+**Tre convenzioni diverse per dire "è finito".** Vanno sapute a memoria, perché ogni flusso ha la sua:
+
+| Flusso | Come segnala la fine | Come si scrive il ciclo |
+|---|---|---|
+| `BufferedReader.readLine()` | restituisce `null` | `while ((riga = r.readLine()) != null)` |
+| `InputStream.read()` / `read(buffer)` | restituisce `-1` | `while ((n = in.read(buf)) != -1)` |
+| `DataInputStream` (`readUTF`/`readInt`/`readDouble`), `ObjectInputStream.readObject()` | **lancia** `EOFException` | `while (true) { ... } catch (EOFException e) { }` |
+
 ### Serializzazione **attraverso la Rete**: lo stesso oggetto, un altro tubo
 Questo è il punto in cui la serializzazione viene sbagliata più spesso, e l'errore non è sintattico: è di **destinazione**.
 
@@ -379,6 +468,10 @@ try (ServerSocket server = new ServerSocket(5555)) {
 - **Non chiudere lo stream se devi ancora leggere.** `out.close()` chiude anche il socket sottostante: la risposta non arriverà mai. Usa `flush()`, e lascia che sia il `try-with-resources` a chiudere tutto alla fine.
 
 ### Best Practices & Errori Comuni
+- **`while ((x = (Libro) ois.readObject()) != null)`.** `readObject()` non restituisce `null` a fine file: lancia `EOFException`. Il ciclo è `while (true)` con `catch (EOFException)`.
+- **`new FileOutputStream(percorso)` senza `true` quando la traccia dice "in coda".** Ogni scrittura sovrascrive il file. E il file si svuota già all'apertura, quindi un controllo fatto dopo non protegge il vecchio contenuto.
+- **Chiudere i flussi nel try-with-resources quando la traccia dice `finally`**, o dichiararli dentro il `try`. La forma è nel Livello 3 §5 e nel `Registro` qui sopra: dichiarati fuori, a `null`, `if (x != null) x.close()` nel `finally`.
+- **`catch (IOException e)` prima di `catch (EOFException e)`.** Non compila (`exception EOFException has already been caught`): `EOFException` è una `IOException`, il catch più specifico va per primo.
 - **Il Memory Leak del Buffer non svuotato:** Se decidi di ignorare il `try-with-resources` e gestisci gli stream manualmente senza chiamare l'indispensabile metodo `.close()` (o almeno `.flush()`) su scrittori come `PrintWriter` o `BufferedWriter`, i dati rimarranno intrappolati nella RAM e il file sul disco risulterà tristemente vuoto. Il `close()` è l'atto che forza lo svuotamento fisico sul disco.
 - **La Trappola della `InvalidClassException`:** Come anticipato, se serializzi un oggetto su file, poi chiudi il programma, aggiungi una nuova variabile alla sua classe e riprovi a leggere il vecchio file di salvataggio, il programma esploderà lanciando una `InvalidClassException`. La JVM, per sicurezza, ricalcola un ID basato sulla nuova struttura della classe e, vedendo che non corrisponde a quello salvato nel file, blocca la procedura temendo una compromissione dei dati. Metti *sempre* un `serialVersionUID` statico.
 - **L'Errore della Path Relativa:** In un'applicazione standard, passare semplicemente `"documento.txt"` significa dire al programma di cercare il file nella sua *Current Working Directory* (la cartella da cui è stato lanciato il programma, tipicamente la root del progetto). Attenzione che non coincide necessariamente con la cartella dove si trova il file `.java` sorgente!
