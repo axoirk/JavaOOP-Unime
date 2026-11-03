@@ -38,7 +38,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 03 | [Stringhe e input/output da console](03-stringhe-e-console.md) | 1 | completo | — |
 | 04 | [Strutture di controllo](04-strutture-di-controllo.md) | 1 | completo | — |
 | 05 | [Array e matrici](05-array-e-matrici.md) | 1 | completo | EXAM2 |
-| 06 | [Metodi](06-metodi.md) | 1-2 | da fare | EXAM2, EXAM4 |
+| 06 | [Metodi](06-metodi.md) | 1-2 | completo | EXAM2, EXAM4 |
 | 07 | [Classi e oggetti](07-classi-e-oggetti.md) | 2 | da fare | EXAM1, EXAM3, EXAM4 |
 | 08 | [Riferimenti e memoria](08-riferimenti-e-memoria.md) | 2 | da fare | EXAM3 |
 | 09 | [Ereditarietà e polimorfismo](09-ereditarieta-e-polimorfismo.md) | 2-3 | da fare | EXAM1 |
@@ -62,7 +62,7 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 
 | Argomento tipico d'esame | Dove |
 |---|---|
-| Un metodo statico dentro una classe, conversioni numeriche | cap. 01, §1.10; cap. 06; cap. 02, §2.8 |
+| Un metodo statico dentro una classe, conversioni numeriche | cap. 01, §1.10; cap. 06, §6.1.2 e §6.4.1; cap. 02, §2.8 |
 | Divisione intera e cast | cap. 02, §2.5.2 e §2.6.3 |
 | Confrontare due stringhe (`equals`, `compareTo`) | cap. 03, §3.4 |
 | Scegliere tra intervalli (`if` / `else if`) | cap. 04, §4.2 |
@@ -78,6 +78,13 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Massimo, ricerca, ordinamento di un array | cap. 05, §5.6 |
 | Matrici, anche con righe di lunghezza diversa | cap. 05, §5.7 |
 | Array di oggetti (elementi `null` fino al `new`) | cap. 05, §5.8 |
+| Un metodo con `return` su ogni percorso (`missing return statement`) | cap. 06, §6.1.4 |
+| Passaggio per valore: perché un metodo non scambia due `int` | cap. 06, §6.3.2 |
+| Metodo `static` contro metodo d'istanza (`static` e costanti di classe) | cap. 06, §6.4 |
+| `Math.pow`, `sqrt`, `round`, `random` e i loro tipi di ritorno | cap. 06, §6.5 |
+| Classi wrapper, `parseInt`, `Character.isDigit`, `Integer` con `equals` | cap. 06, §6.6 |
+| Overloading e scelta del metodo | cap. 06, §6.7 |
+| Metodo ricorsivo con caso base, ricerca binaria, ordinamento per fusione | cap. 06, §6.9 |
 | Classe con campi privati, getter e setter, costruttori in overload | cap. 07 |
 | Sottoclasse con `super(...)` e override | cap. 09 |
 | Classe astratta o interfaccia implementata da più classi | cap. 10 |
