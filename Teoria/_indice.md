@@ -40,7 +40,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 05 | [Array e matrici](05-array-e-matrici.md) | 1 | completo | EXAM2 |
 | 06 | [Metodi](06-metodi.md) | 1-2 | completo | EXAM2, EXAM4 |
 | 07 | [Classi e oggetti](07-classi-e-oggetti.md) | 2 | completo | EXAM1, EXAM3, EXAM4 |
-| 08 | [Riferimenti e memoria](08-riferimenti-e-memoria.md) | 2 | da fare | EXAM3 |
+| 08 | [Riferimenti e memoria](08-riferimenti-e-memoria.md) | 2 | completo | EXAM3 |
 | 09 | [Ereditarietà e polimorfismo](09-ereditarieta-e-polimorfismo.md) | 2-3 | da fare | EXAM1 |
 | 10 | [Classi astratte e interfacce](10-classi-astratte-e-interfacce.md) | 3 | da fare | EXAM1, EXAM3 |
 | 11 | [Classi annidate, interne e anonime](11-classi-annidate.md) | 2-3 | da fare | EXAM4 |
@@ -93,6 +93,15 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Package, `import` e conflitti di nome | cap. 7, §7.6; cap. 1, §1.5.4 |
 | Dal testo di una traccia alla classe (nomi, ordine dei parametri, `private`) | cap. 7, §7.8 |
 | Perdita di riservatezza e copia difensiva | cap. 7, §7.3.7 |
+| Variabile e oggetto, riferimento, alias (`q = p` non copia) | cap. 8, §8.1 e §8.2 |
+| Disegnare la memoria (stack, heap) per prevedere l'output | cap. 8, §8.1.3 e §8.1.5 |
+| `null`, `NullPointerException`, controllo `!= null` nell'ordine giusto | cap. 8, §8.3.2 e §8.3.3 |
+| Metodo che restituisce `null` se non trova nulla | cap. 8, §8.3.4 |
+| `==` contro `equals`; scrivere un confronto sul contenuto | cap. 8, §8.4 e scheletro |
+| Un oggetto letto da file o da rete è un oggetto nuovo | cap. 8, §8.4.5 |
+| Un metodo modifica l'oggetto ricevuto ma non può sostituirlo; scambio | cap. 8, §8.5 |
+| Copia di un oggetto, costruttore di copia, copia di un array di oggetti | cap. 8, §8.6 |
+| Garbage collector, oggetto irraggiungibile | cap. 8, §8.7 |
 | Sottoclasse con `super(...)` e override | cap. 09 |
 | Classe astratta o interfaccia implementata da più classi | cap. 10 |
 | Classe interna non statica che modifica lo stato della classe esterna | cap. 11 |
