@@ -45,7 +45,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 10 | [Classi astratte e interfacce](10-classi-astratte-e-interfacce.md) | 3 | completo | EXAM1, EXAM3 |
 | 11 | [Classi annidate, interne e anonime](11-classi-annidate.md) | 2-3 | completo | EXAM4 |
 | 12 | [Generics e collezioni](12-generics-e-collezioni.md) | 2-3 | completo | — |
-| 13 | [Eccezioni](13-eccezioni.md) | 3 | da fare | EXAM1, EXAM3 |
+| 13 | [Eccezioni](13-eccezioni.md) | 3 | completo | EXAM1, EXAM3 |
 | 14 | [File di testo](14-file-di-testo.md) | 4 | da fare | — |
 | 15 | [Stream binari e serializzazione](15-stream-binari-e-serializzazione.md) | 4 | da fare | EXAM3 |
 | 16 | [Interfacce grafiche](16-interfacce-grafiche.md) | 4 | da fare | — |
@@ -148,8 +148,11 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Mappa chiave-valore (`HashMap`, `TreeMap`): `put`, `get`, `getOrDefault`, `entrySet`; contare | cap. 12, §12.6.4 e terzo scheletro |
 | Ordinare una lista: `Collections.sort`, `Comparator`, `List.sort` | cap. 12, §12.6.5 e quarto scheletro |
 | Quale collezione scegliere | cap. 12, §12.6.6 |
-| Le cinque parole chiave delle eccezioni, stampa nel `finally` | cap. 13 |
-| Eccezione personalizzata controllata o non controllata | cap. 13 |
+| Le cinque parole chiave delle eccezioni, stampa nel `finally` | cap. 13, §13.7.2 e primo scheletro |
+| Eccezione personalizzata controllata o non controllata | cap. 13, §13.6 e secondo scheletro |
+| Conversione da checked a unchecked (rilancio incapsulato) | cap. 13, §13.4.3 e terzo scheletro |
+| Chiusura classica dei flussi nel `finally` con guardia `null` | cap. 13, §13.5.3 e quarto scheletro |
+| Checked contro unchecked, `throws` e overriding | cap. 13, §13.2.4 e §13.3.3 |
 | Leggere un file di testo riga per riga fino alla fine | cap. 14 |
 | Scrivere in coda a un file | cap. 14 |
 | Leggere dati binari o oggetti fino a `EOFException` | cap. 15 |
