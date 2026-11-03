@@ -43,7 +43,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 08 | [Riferimenti e memoria](08-riferimenti-e-memoria.md) | 2 | completo | EXAM3 |
 | 09 | [Ereditarietà e polimorfismo](09-ereditarieta-e-polimorfismo.md) | 2-3 | completo | EXAM1 |
 | 10 | [Classi astratte e interfacce](10-classi-astratte-e-interfacce.md) | 3 | completo | EXAM1, EXAM3 |
-| 11 | [Classi annidate, interne e anonime](11-classi-annidate.md) | 2-3 | da fare | EXAM4 |
+| 11 | [Classi annidate, interne e anonime](11-classi-annidate.md) | 2-3 | completo | EXAM4 |
 | 12 | [Generics e collezioni](12-generics-e-collezioni.md) | 2-3 | da fare | — |
 | 13 | [Eccezioni](13-eccezioni.md) | 3 | da fare | EXAM1, EXAM3 |
 | 14 | [File di testo](14-file-di-testo.md) | 4 | da fare | — |
@@ -123,7 +123,14 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Classe astratta contro interfaccia: quando si sceglie l'una o l'altra | cap. 10, §10.3 |
 | Ordinare un array di oggetti: `Comparable`, `compareTo`, `Arrays.sort` | cap. 10, §10.4 e quarto scheletro |
 | `Runnable` e il metodo `run()` come realizzazione di un'interfaccia | cap. 10, §10.5; cap. 17 |
-| Classe interna non statica che modifica lo stato della classe esterna | cap. 11 |
+| Classe interna non statica che modifica lo stato della classe esterna | cap. 11, §11.2.1-§11.2.2 e primo scheletro |
+| Creare un oggetto interno (`esterna.new Interna(...)`, `Esterna.this`) | cap. 11, §11.2.3-§11.2.4 |
+| Classe interna `private` e `main` fuori dall'esterna | cap. 11, §11.2.5 |
+| Annidare non è ereditare (`extends` al posto della classe interna) | cap. 11, §11.2.6 |
+| Nodo di lista nascosto dentro la lista (classe interna privata) | cap. 11, §11.3 e secondo scheletro |
+| Classe annidata `static` e `new Esterna.Annidata(...)`; interna o statica | cap. 11, §11.4 e terzo scheletro |
+| Classe anonima (`new Interfaccia() { ... }`), variabili `final` di fatto | cap. 11, §11.5 e quarto scheletro |
+| Dalla frase della traccia (classe annidata, "non statica", nessun riferimento all'esterna) al codice | cap. 11, §11.6 |
 | Le cinque parole chiave delle eccezioni, stampa nel `finally` | cap. 13 |
 | Eccezione personalizzata controllata o non controllata | cap. 13 |
 | Leggere un file di testo riga per riga fino alla fine | cap. 14 |
