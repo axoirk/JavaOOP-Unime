@@ -34,7 +34,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | # | Capitolo | Livello | Stato | Appelli in cui compare |
 |---|---|---|---|---|
 | 01 | [Java e la JVM](01-java-e-la-jvm.md) | 1 | completo | EXAM2, EXAM4 |
-| 02 | [Tipi primitivi, variabili e operatori](02-tipi-variabili-operatori.md) | 1 | da fare | EXAM2, EXAM4 |
+| 02 | [Tipi primitivi, variabili e operatori](02-tipi-variabili-operatori.md) | 1 | completo | EXAM2, EXAM4 |
 | 03 | [Stringhe e input/output da console](03-stringhe-e-console.md) | 1 | da fare | — |
 | 04 | [Strutture di controllo](04-strutture-di-controllo.md) | 1 | da fare | — |
 | 05 | [Array e matrici](05-array-e-matrici.md) | 1 | da fare | EXAM2 |
@@ -62,8 +62,8 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 
 | Argomento tipico d'esame | Dove |
 |---|---|
-| Un metodo statico dentro una classe, conversioni numeriche | cap. 01, §1.10; cap. 06; cap. 02 |
-| Divisione intera e cast | cap. 02 |
+| Un metodo statico dentro una classe, conversioni numeriche | cap. 01, §1.10; cap. 06; cap. 02, §2.8 |
+| Divisione intera e cast | cap. 02, §2.5.2 e §2.6.3 |
 | Classe con campi privati, getter e setter, costruttori in overload | cap. 07 |
 | Sottoclasse con `super(...)` e override | cap. 09 |
 | Classe astratta o interfaccia implementata da più classi | cap. 10 |
