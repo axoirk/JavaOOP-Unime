@@ -44,7 +44,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 09 | [Ereditarietà e polimorfismo](09-ereditarieta-e-polimorfismo.md) | 2-3 | completo | EXAM1 |
 | 10 | [Classi astratte e interfacce](10-classi-astratte-e-interfacce.md) | 3 | completo | EXAM1, EXAM3 |
 | 11 | [Classi annidate, interne e anonime](11-classi-annidate.md) | 2-3 | completo | EXAM4 |
-| 12 | [Generics e collezioni](12-generics-e-collezioni.md) | 2-3 | da fare | — |
+| 12 | [Generics e collezioni](12-generics-e-collezioni.md) | 2-3 | completo | — |
 | 13 | [Eccezioni](13-eccezioni.md) | 3 | da fare | EXAM1, EXAM3 |
 | 14 | [File di testo](14-file-di-testo.md) | 4 | da fare | — |
 | 15 | [Stream binari e serializzazione](15-stream-binari-e-serializzazione.md) | 4 | da fare | EXAM3 |
@@ -131,6 +131,23 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Classe annidata `static` e `new Esterna.Annidata(...)`; interna o statica | cap. 11, §11.4 e terzo scheletro |
 | Classe anonima (`new Interfaccia() { ... }`), variabili `final` di fatto | cap. 11, §11.5 e quarto scheletro |
 | Dalla frase della traccia (classe annidata, "non statica", nessun riferimento all'esterna) al codice | cap. 11, §11.6 |
+| Contenitore che cresce da solo: `ArrayList`, metodi, `import`, solo oggetti | cap. 12, §12.1.1-§12.1.3 e primo scheletro |
+| Lista di numeri (`ArrayList<Integer>`), `remove(int)` contro `remove(Object)` | cap. 12, §12.1.4 |
+| Percorrere una lista (`for`, for-each); indice fuori dai limiti | cap. 12, §12.1.5-§12.1.6 |
+| Copiare una lista (alias, `new ArrayList<>(a)`, `clone`) | cap. 12, §12.1.7 |
+| Classe generica `Classe<T>`; `new T[]` e tipi primitivi vietati; tipo grezzo | cap. 12, §12.2 |
+| Lista concatenata: nodo interno privato, aggiungere e togliere nodi | cap. 12, §12.3.2 e secondo scheletro |
+| Eccezione al posto del messaggio d'errore in una struttura dati | cap. 12, §12.3.3 |
+| Lista concatenata generica (`<E>`) | cap. 12, §12.3.4 |
+| `Iterator`, `Iterable`, for-each su una classe scritta da noi | cap. 12, §12.4.1-§12.4.3 e secondo scheletro |
+| Togliere durante la scansione, `ConcurrentModificationException` | cap. 12, §12.4.4 |
+| Pila (LIFO), albero binario | cap. 12, §12.5 |
+| `List`, `Set`, `Map`: variabile dichiarata con l'interfaccia | cap. 12, §12.6.1 |
+| `LinkedList`: `addFirst`, `removeFirst`, `push`/`pop`, `peek`/`poll` | cap. 12, §12.6.2 |
+| Insieme senza duplicati (`HashSet`, `TreeSet`); oggetti nostri con `equals`/`hashCode` | cap. 12, §12.6.3 e quinto scheletro |
+| Mappa chiave-valore (`HashMap`, `TreeMap`): `put`, `get`, `getOrDefault`, `entrySet`; contare | cap. 12, §12.6.4 e terzo scheletro |
+| Ordinare una lista: `Collections.sort`, `Comparator`, `List.sort` | cap. 12, §12.6.5 e quarto scheletro |
+| Quale collezione scegliere | cap. 12, §12.6.6 |
 | Le cinque parole chiave delle eccezioni, stampa nel `finally` | cap. 13 |
 | Eccezione personalizzata controllata o non controllata | cap. 13 |
 | Leggere un file di testo riga per riga fino alla fine | cap. 14 |
