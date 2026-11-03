@@ -39,7 +39,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 04 | [Strutture di controllo](04-strutture-di-controllo.md) | 1 | completo | — |
 | 05 | [Array e matrici](05-array-e-matrici.md) | 1 | completo | EXAM2 |
 | 06 | [Metodi](06-metodi.md) | 1-2 | completo | EXAM2, EXAM4 |
-| 07 | [Classi e oggetti](07-classi-e-oggetti.md) | 2 | da fare | EXAM1, EXAM3, EXAM4 |
+| 07 | [Classi e oggetti](07-classi-e-oggetti.md) | 2 | completo | EXAM1, EXAM3, EXAM4 |
 | 08 | [Riferimenti e memoria](08-riferimenti-e-memoria.md) | 2 | da fare | EXAM3 |
 | 09 | [Ereditarietà e polimorfismo](09-ereditarieta-e-polimorfismo.md) | 2-3 | da fare | EXAM1 |
 | 10 | [Classi astratte e interfacce](10-classi-astratte-e-interfacce.md) | 3 | da fare | EXAM1, EXAM3 |
@@ -85,7 +85,14 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Classi wrapper, `parseInt`, `Character.isDigit`, `Integer` con `equals` | cap. 06, §6.6 |
 | Overloading e scelta del metodo | cap. 06, §6.7 |
 | Metodo ricorsivo con caso base, ricerca binaria, ordinamento per fusione | cap. 06, §6.9 |
-| Classe con campi privati, getter e setter, costruttori in overload | cap. 07 |
+| Classe con campi privati, getter e setter, costruttori in overload | cap. 7, §7.2, §7.3.3 e scheletri finali |
+| Costruttore che ne richiama un altro con `this(...)` | cap. 7, §7.2.5 |
+| Il costruttore di default che sparisce | cap. 7, §7.2.3 |
+| Contatore di oggetti creati, costante di classe, campo `final` | cap. 7, §7.4 |
+| `enum` con campi e costruttore | cap. 7, §7.5 |
+| Package, `import` e conflitti di nome | cap. 7, §7.6; cap. 1, §1.5.4 |
+| Dal testo di una traccia alla classe (nomi, ordine dei parametri, `private`) | cap. 7, §7.8 |
+| Perdita di riservatezza e copia difensiva | cap. 7, §7.3.7 |
 | Sottoclasse con `super(...)` e override | cap. 09 |
 | Classe astratta o interfaccia implementata da più classi | cap. 10 |
 | Classe interna non statica che modifica lo stato della classe esterna | cap. 11 |
