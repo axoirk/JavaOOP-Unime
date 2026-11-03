@@ -41,7 +41,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 06 | [Metodi](06-metodi.md) | 1-2 | completo | EXAM2, EXAM4 |
 | 07 | [Classi e oggetti](07-classi-e-oggetti.md) | 2 | completo | EXAM1, EXAM3, EXAM4 |
 | 08 | [Riferimenti e memoria](08-riferimenti-e-memoria.md) | 2 | completo | EXAM3 |
-| 09 | [Ereditarietà e polimorfismo](09-ereditarieta-e-polimorfismo.md) | 2-3 | da fare | EXAM1 |
+| 09 | [Ereditarietà e polimorfismo](09-ereditarieta-e-polimorfismo.md) | 2-3 | completo | EXAM1 |
 | 10 | [Classi astratte e interfacce](10-classi-astratte-e-interfacce.md) | 3 | da fare | EXAM1, EXAM3 |
 | 11 | [Classi annidate, interne e anonime](11-classi-annidate.md) | 2-3 | da fare | EXAM4 |
 | 12 | [Generics e collezioni](12-generics-e-collezioni.md) | 2-3 | da fare | — |
@@ -102,7 +102,18 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Un metodo modifica l'oggetto ricevuto ma non può sostituirlo; scambio | cap. 8, §8.5 |
 | Copia di un oggetto, costruttore di copia, copia di un array di oggetti | cap. 8, §8.6 |
 | Garbage collector, oggetto irraggiungibile | cap. 8, §8.7 |
-| Sottoclasse con `super(...)` e override | cap. 09 |
+| Sottoclasse con `extends`, una sola superclasse, ordine di `extends` e `implements` | cap. 9, §9.1.2 e §9.1.5 |
+| Un campo privato della superclasse non si nomina; `protected` | cap. 9, §9.2 |
+| Costruttore di sottoclasse con `super(...)`, chiamata implicita, ordine di costruzione | cap. 9, §9.3.1-§9.3.2 |
+| Costruttore che non ha i dati della superclasse | cap. 9, §9.3.4 e scheletro |
+| Riscrivere un metodo (stessa firma, `public`), `@Override`, `super.metodo()` | cap. 9, §9.4.1-§9.4.3 e scheletro |
+| Overloading contro overriding; `@Overload` non esiste | cap. 9, §9.4.4; cap. 6, §6.7 |
+| Metodo o classe `final` | cap. 9, §9.4.6 |
+| Una variabile della superclasse che indica un oggetto della sottoclasse; cast verso il basso | cap. 9, §9.5.1-§9.5.3 |
+| "È un" contro "ha un" | cap. 9, §9.5.4 |
+| Array polimorfico, binding dinamico, quale versione parte | cap. 9, §9.6 e scheletro |
+| `toString` che restituisce la stringa nel formato richiesto | cap. 9, §9.7.2 e scheletro |
+| `equals(Object)` e `hashCode` | cap. 9, §9.7.3-§9.7.4 e scheletro |
 | Classe astratta o interfaccia implementata da più classi | cap. 10 |
 | Classe interna non statica che modifica lo stato della classe esterna | cap. 11 |
 | Le cinque parole chiave delle eccezioni, stampa nel `finally` | cap. 13 |
