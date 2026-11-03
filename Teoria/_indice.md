@@ -36,7 +36,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 01 | [Java e la JVM](01-java-e-la-jvm.md) | 1 | completo | EXAM2, EXAM4 |
 | 02 | [Tipi primitivi, variabili e operatori](02-tipi-variabili-operatori.md) | 1 | completo | EXAM2, EXAM4 |
 | 03 | [Stringhe e input/output da console](03-stringhe-e-console.md) | 1 | completo | — |
-| 04 | [Strutture di controllo](04-strutture-di-controllo.md) | 1 | da fare | — |
+| 04 | [Strutture di controllo](04-strutture-di-controllo.md) | 1 | completo | — |
 | 05 | [Array e matrici](05-array-e-matrici.md) | 1 | da fare | EXAM2 |
 | 06 | [Metodi](06-metodi.md) | 1-2 | da fare | EXAM2, EXAM4 |
 | 07 | [Classi e oggetti](07-classi-e-oggetti.md) | 2 | da fare | EXAM1, EXAM3, EXAM4 |
@@ -65,6 +65,10 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Un metodo statico dentro una classe, conversioni numeriche | cap. 01, §1.10; cap. 06; cap. 02, §2.8 |
 | Divisione intera e cast | cap. 02, §2.5.2 e §2.6.3 |
 | Confrontare due stringhe (`equals`, `compareTo`) | cap. 03, §3.4 |
+| Scegliere tra intervalli (`if` / `else if`) | cap. 04, §4.2 |
+| Scegliere tra valori esatti (`switch`, `break`, enum) | cap. 04, §4.3 e §4.4 |
+| Ciclo `while`, `do-while`, `for`; valore sentinella | cap. 04, §4.5 e §4.6 |
+| Dal testo di un esercizio alla struttura di controllo | cap. 04, §4.9 |
 | Spezzare una riga di testo in campi con `split` | cap. 03, §3.5 |
 | Formattare l'output con `printf` e `String.format`, simbolo decimale e `Locale` | cap. 03, §3.6.3 |
 | Classe con campi privati, getter e setter, costruttori in overload | cap. 07 |
