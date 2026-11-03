@@ -35,7 +35,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 |---|---|---|---|---|
 | 01 | [Java e la JVM](01-java-e-la-jvm.md) | 1 | completo | EXAM2, EXAM4 |
 | 02 | [Tipi primitivi, variabili e operatori](02-tipi-variabili-operatori.md) | 1 | completo | EXAM2, EXAM4 |
-| 03 | [Stringhe e input/output da console](03-stringhe-e-console.md) | 1 | da fare | — |
+| 03 | [Stringhe e input/output da console](03-stringhe-e-console.md) | 1 | completo | — |
 | 04 | [Strutture di controllo](04-strutture-di-controllo.md) | 1 | da fare | — |
 | 05 | [Array e matrici](05-array-e-matrici.md) | 1 | da fare | EXAM2 |
 | 06 | [Metodi](06-metodi.md) | 1-2 | da fare | EXAM2, EXAM4 |
@@ -64,6 +64,9 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 |---|---|
 | Un metodo statico dentro una classe, conversioni numeriche | cap. 01, §1.10; cap. 06; cap. 02, §2.8 |
 | Divisione intera e cast | cap. 02, §2.5.2 e §2.6.3 |
+| Confrontare due stringhe (`equals`, `compareTo`) | cap. 03, §3.4 |
+| Spezzare una riga di testo in campi con `split` | cap. 03, §3.5 |
+| Formattare l'output con `printf` e `String.format`, simbolo decimale e `Locale` | cap. 03, §3.6.3 |
 | Classe con campi privati, getter e setter, costruttori in overload | cap. 07 |
 | Sottoclasse con `super(...)` e override | cap. 09 |
 | Classe astratta o interfaccia implementata da più classi | cap. 10 |
