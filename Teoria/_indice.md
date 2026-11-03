@@ -42,7 +42,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 07 | [Classi e oggetti](07-classi-e-oggetti.md) | 2 | completo | EXAM1, EXAM3, EXAM4 |
 | 08 | [Riferimenti e memoria](08-riferimenti-e-memoria.md) | 2 | completo | EXAM3 |
 | 09 | [Ereditarietà e polimorfismo](09-ereditarieta-e-polimorfismo.md) | 2-3 | completo | EXAM1 |
-| 10 | [Classi astratte e interfacce](10-classi-astratte-e-interfacce.md) | 3 | da fare | EXAM1, EXAM3 |
+| 10 | [Classi astratte e interfacce](10-classi-astratte-e-interfacce.md) | 3 | completo | EXAM1, EXAM3 |
 | 11 | [Classi annidate, interne e anonime](11-classi-annidate.md) | 2-3 | da fare | EXAM4 |
 | 12 | [Generics e collezioni](12-generics-e-collezioni.md) | 2-3 | da fare | — |
 | 13 | [Eccezioni](13-eccezioni.md) | 3 | da fare | EXAM1, EXAM3 |
@@ -114,7 +114,15 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Array polimorfico, binding dinamico, quale versione parte | cap. 9, §9.6 e scheletro |
 | `toString` che restituisce la stringa nel formato richiesto | cap. 9, §9.7.2 e scheletro |
 | `equals(Object)` e `hashCode` | cap. 9, §9.7.3-§9.7.4 e scheletro |
-| Classe astratta o interfaccia implementata da più classi | cap. 10 |
+| Classe astratta con metodo astratto e sottoclassi (`abstract`, metodo senza corpo) | cap. 10, §10.1.2 e primo scheletro |
+| Regole delle classi astratte (non si istanziano, sottoclasse incompleta, modificatori vietati) | cap. 10, §10.1.3 |
+| Classe astratta con costruttore e metodo completo che chiama quello astratto | cap. 10, §10.1.4-§10.1.5 e terzo scheletro |
+| Interfaccia (`interface`) realizzata da più classi con `implements`, metodi `public` | cap. 10, §10.2.2-§10.2.3 e secondo scheletro |
+| Usare gli oggetti attraverso il tipo dell'interfaccia (variabile, parametro, array) | cap. 10, §10.2.4 |
+| Costanti in un'interfaccia; più interfacce; interfaccia che ne estende un'altra | cap. 10, §10.2.5-§10.2.7 |
+| Classe astratta contro interfaccia: quando si sceglie l'una o l'altra | cap. 10, §10.3 |
+| Ordinare un array di oggetti: `Comparable`, `compareTo`, `Arrays.sort` | cap. 10, §10.4 e quarto scheletro |
+| `Runnable` e il metodo `run()` come realizzazione di un'interfaccia | cap. 10, §10.5; cap. 17 |
 | Classe interna non statica che modifica lo stato della classe esterna | cap. 11 |
 | Le cinque parole chiave delle eccezioni, stampa nel `finally` | cap. 13 |
 | Eccezione personalizzata controllata o non controllata | cap. 13 |
