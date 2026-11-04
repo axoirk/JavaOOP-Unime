@@ -27,7 +27,7 @@ La lingua del repository è l'italiano — tracce, appunti, report e commit.
 
 | Area | Cosa contiene | A cosa serve |
 |---|---|---|
-| **`Teoria/`** | Appunti in Markdown, ~3 500 righe | Studiare e ripassare la teoria, con gli esempi già compilati e verificati |
+| **`Teoria/`** | Appunti in Markdown, 22 capitoli | Studiare e ripassare la teoria, con gli esempi già compilati e verificati |
 | **`Esercitazioni (Self)/`** | Esercizi Java scritti dallo studente, organizzati su 7 livelli | Fare pratica in ordine crescente di difficoltà |
 | **`Exams/`** | Tracce d'appello reali, tester black-box, e gli strumenti per simulare l'esame | Prepararsi alla prova, non solo alla materia |
 
@@ -39,9 +39,9 @@ La lingua del repository è l'italiano — tracce, appunti, report e commit.
 JavaOOP-Unime/
 │
 ├── Teoria/
-│   ├── Fondamenti_e_Pilastri_OOP/       teoria trasversale, 01 → 06
-│   ├── Appunti_Pratici_Livelli/         un file per Livello 1-7
-│   └── Extra/                           approfondimenti (client-server)
+│   ├── _indice.md                       indice dei capitoli e mappa argomento → capitolo
+│   ├── 01-java-e-la-jvm.md … 22-ecosistema.md   un file per capitolo, nell'ordine del Syllabus
+│   └── _archivio/                       vecchi appunti (sostituiti dai capitoli)
 │
 ├── Esercitazioni (Self)/
 │   ├── Livello 1/ … Livello 7/
@@ -69,25 +69,21 @@ JavaOOP-Unime/
 
 ## `Teoria/` — gli appunti
 
-Due collezioni complementari, più un documento di controllo.
+Ventidue capitoli che seguono l'ordine del Syllabus a sette livelli, dalle basi di Java all'ecosistema di strumenti. Si parte da [`Teoria/_indice.md`](Teoria/_indice.md): l'elenco dei capitoli con il livello, lo stato e gli appelli in cui compaiono, più una mappa «argomento tipico d'esame → capitolo e sezione».
 
-### `Fondamenti_e_Pilastri_OOP/` — la teoria trasversale
-Sei file numerati che si leggono in ordine: architettura e JVM, sintassi e memoria, strutture di controllo, i pilastri OOP, costruttori e ciclo di vita, OOP avanzata. È il "perché" del linguaggio, indipendente dal programma del corso.
+Ogni capitolo ha la stessa struttura: introduzione, teoria in sezioni numerate, **Come esce all'esame** (solo se l'argomento è comparso in un appello), **Scheletri da esame** (i frammenti minimi da saper scrivere a memoria), **Errori tipici** e **Riassunto**. Il codice è compilato ed eseguito prima di entrare negli appunti, quello di rete e concorrenza compreso.
 
-### `Appunti_Pratici_Livelli/` — un file per livello
-Segue il Syllabus a sette livelli, uno a uno. Ogni file è autosufficiente: teoria, esempi di codice, e una sezione **Errori Comuni** che raccoglie gli sbagli realmente commessi, non quelli ipotetici.
+| Capitoli | Argomenti | Livello |
+|---|---|---|
+| 01-06 | Java e la JVM, tipi e operatori, stringhe e console, strutture di controllo, array, metodi | 1-2 |
+| 07-11 | Classi e oggetti, riferimenti e memoria, ereditarietà, classi astratte e interfacce, classi annidate | 2-3 |
+| 12-13 | Generics e collezioni, eccezioni | 3 |
+| 14-16 | File di testo, stream binari e serializzazione, interfacce grafiche | 4 |
+| 17-18 | Thread, sincronizzazione | 5 |
+| 19-20 | Networking (TCP, UDP), XML in Java | 6 |
+| 21-22 | JDBC, ecosistema (Maven, Spring Boot, NoSQL) | 7 |
 
-| File | Argomenti |
-|---|---|
-| `Livello 1` | Sintassi, `Scanner`, primitive, cicli, array, stringhe |
-| `Livello 2` | Classi e oggetti, information hiding, `privacy leak`, `equals`/`hashCode`/`toString`, `static`, `ArrayList`, `HashMap`, wrapper e autoboxing, `Iterator`, classi annidate |
-| `Livello 3` | Ereditarietà, `super`, classi astratte, interfacce, `Comparable`, eccezioni (le 5 keyword, custom, `throws` e override) |
-| `Livello 4` | `File`, stream e Decorator, file di testo, file binari, **serializzazione su file e attraverso socket**, Swing, JavaFX |
-| `Livello 5` | Processi e thread, `Runnable`, `synchronized`, `wait`/`notifyAll`, produttore/consumatore, `join()`, deadlock |
-| `Livello 6` | TCP (`Socket`/`ServerSocket`), **UDP richiesta e risposta**, `URL` e HTTP, XML con SAX e DOM |
-| `Livello 7` | Maven, JDBC, NoSQL, Spring Boot |
-
-Gli esempi di codice sono **compilati ed eseguiti** prima di entrare negli appunti, quelli di rete e concorrenza compresi.
+I vecchi appunti, sostituiti da questi capitoli, restano consultabili in [`Teoria/_archivio/`](Teoria/_archivio/).
 
 ---
 

@@ -748,7 +748,7 @@ Una classe di eccezione corretta segue poche regole precise:
 
 ### 13.6.2 Un esempio completo: `ContoCorrente` ed eccezioni personalizzate
 
-L'esempio seguente, tratto dal materiale del docente, mostra un conto corrente con un'eccezione **controllata** (saldo insufficiente) e una **non controllata** (importo non valido), riorganizzato in un unico file pronto per la compilazione:
+L'esempio seguente, tratto dal materiale del docente, mostra un conto corrente con un'eccezione **controllata** (saldo insufficiente) e una **non controllata** (versamento negativo o nullo), riorganizzato in un unico file pronto per la compilazione:
 
 ```java
 // Eccezione personalizzata CHECKED: estende Exception

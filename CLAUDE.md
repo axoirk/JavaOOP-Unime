@@ -54,7 +54,7 @@ Non esistono test unitari (nessun JUnit configurato). L'unico meccanismo di test
 
 | Area | Contenuto |
 |------|-----------|
-| `Teoria/` | Appunti in Markdown. `Fondamenti_e_Pilastri_OOP/` (01→06, teoria trasversale) e `Appunti_Pratici_Livelli/` (un file per Livello 1-7, allineato al Syllabus). |
+| `Teoria/` | Appunti in Markdown: 22 capitoli `NN-titolo.md` (ordine del Syllabus, indice e stato in `_indice.md`). I vecchi appunti sono in `_archivio/` (`Fondamenti_e_Pilastri_OOP/`, `Appunti_Pratici_Livelli/`, `Extra/`). |
 | `Esercitazioni (Self)/` | `Livello 1..7/Esercizio N/` + `Progetti Recap/`. Esercizi scritti dallo studente. |
 | `Exams/` | `Appelli Ufficiali Unime/EXAM1..4/` (tracce, soluzioni e tester; **EXAM3 ed EXAM4 sono gli appelli davvero sostenuti**, 08/07/2026 e 08/09/2026) e `Simulazioni/`: `GUIDA_PUBBLICA.md` (tracciata) più il materiale personale non tracciato — `GUIDA.md` con il registro delle prove, `Prove/SIM_N/` (serie attiva), `Archivio/Serie_N/` (serie chiuse). |
 | `java_lessons/` | Materiale del professore. **Ignorato da git — non modificare.** |
