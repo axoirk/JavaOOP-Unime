@@ -50,7 +50,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 15 | [Stream binari e serializzazione](15-stream-binari-e-serializzazione.md) | 4 | completo | EXAM3 |
 | 16 | [Interfacce grafiche](16-interfacce-grafiche.md) | 4 | completo | — |
 | 17 | [Thread](17-thread.md) | 5 | completo | EXAM1 |
-| 18 | [Sincronizzazione](18-sincronizzazione.md) | 5 | da fare | EXAM2 |
+| 18 | [Sincronizzazione](18-sincronizzazione.md) | 5 | completo | EXAM2 |
 | 19 | [Networking](19-networking.md) | 6 | da fare | EXAM2, EXAM3, EXAM4 |
 | 20 | [XML in Java](20-xml.md) | 6 | da fare | — |
 | 21 | [JDBC](21-jdbc.md) | 7 | da fare | — |
@@ -205,8 +205,17 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Dividere un array o una matrice tra più thread (due cicli, ultimo con il resto) | cap. 17, §17.6.2-§17.6.3 e terzo scheletro |
 | Due thread sullo stesso contatore (race condition) | cap. 17, §17.6.5; cap. 18 |
 | Dalla frase della traccia (`Runnable`, "crea e avvia", `join`, `n` thread) al codice | cap. 17, §17.7 |
-| Mutua esclusione con `synchronized` | cap. 18 |
-| Buffer condiviso con `wait` e `notifyAll` (produttore/consumatore) | cap. 18 |
+| Race condition: perché `i = i + 1` non è sicuro | cap. 18, §18.1 |
+| Mutua esclusione, lock, monitor di un oggetto | cap. 18, §18.2 |
+| Metodi `synchronized`; il lock è dell'oggetto; `static synchronized` | cap. 18, §18.3 e primo scheletro |
+| Blocco `synchronized (oggetto)`; quale oggetto scegliere | cap. 18, §18.4 e secondo scheletro |
+| Deadlock: definizione, esempio, come riconoscerlo (`BLOCKED`) | cap. 18, §18.5 |
+| `wait`, `notify`, `notifyAll`: firme, `IllegalMonitorStateException`, `InterruptedException` | cap. 18, §18.6.2-§18.6.4 |
+| `wait` sempre in un `while`; risveglio spurio; `wait(long)` | cap. 18, §18.6.5-§18.6.6 |
+| `sleep` contro `wait` | cap. 18, §18.6.7 |
+| Buffer condiviso a capacità limitata (produttore/consumatore): pila e coda con array | cap. 18, §18.7 e scheletri 3-5 |
+| Dedurre le firme dei metodi dalle chiamate (`throws InterruptedException`) | cap. 18, §18.8.1 |
+| Dalla frase della traccia (mutua esclusione, array primitivo di N posti, pieno/vuoto) al codice | cap. 18, §18.8.2 |
 | Client TCP che invia un messaggio | cap. 19 |
 | Inviare un oggetto serializzato su un socket e leggere la risposta | cap. 19, cap. 15 (§15.5 e §15.11) |
 | Client UDP che invia un datagramma e attende la risposta | cap. 19 |
