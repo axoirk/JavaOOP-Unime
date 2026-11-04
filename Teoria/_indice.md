@@ -52,7 +52,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 17 | [Thread](17-thread.md) | 5 | completo | EXAM1 |
 | 18 | [Sincronizzazione](18-sincronizzazione.md) | 5 | completo | EXAM2 |
 | 19 | [Networking](19-networking.md) | 6 | completo | EXAM2, EXAM3, EXAM4 |
-| 20 | [XML in Java](20-xml.md) | 6 | da fare | — |
+| 20 | [XML in Java](20-xml.md) | 6 | completo | — |
 | 21 | [JDBC](21-jdbc.md) | 7 | da fare | — |
 | 22 | [Ecosistema: Maven, Spring Boot, NoSQL](22-ecosistema.md) | 7 | da fare | — |
 
@@ -230,7 +230,18 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Leggere una pagina web con `URL` e `Scanner` | cap. 19, §19.6 |
 | Eccezioni della rete (`ConnectException`, `UnknownHostException`, `BindException`) e il `catch` giusto | cap. 19, §19.7 |
 | Dalle parole della traccia (server già in ascolto, «in caso di fallimento restituisce `null`») al codice | cap. 19, §19.8 |
-| Caricare un documento XML con DOM e leggere gli elementi | cap. 20 |
+| Documento XML: elementi, attributi, testo, radice, «ben formato» | cap. 20, §20.1 |
+| DOM contro SAX: modello a oggetti e a eventi, quando scegliere | cap. 20, §20.2 e §20.6 |
+| Fabbriche JAXP (`newInstance`), package, eccezioni dei parser | cap. 20, §20.3 |
+| Caricare un documento XML con DOM e leggere gli elementi | cap. 20, §20.4.2-§20.4.6 e scheletro 1 |
+| Perché `getChildNodes` include nodi di spazi; `getElementsByTagName` | cap. 20, §20.4.3-§20.4.4 |
+| Attributi e testo (`getAttribute`, `getTextContent`, `getNodeValue`) e conversione in numero | cap. 20, §20.4.5 |
+| Dal documento XML a una lista di oggetti | cap. 20, §20.4.7 e scheletro 2 |
+| Documento XML in una `String` (`InputSource`, `StringReader`) | cap. 20, §20.4.2 e scheletro 3 |
+| Costruire e modificare un albero DOM; salvarlo con `Transformer` | cap. 20, §20.4.8-§20.4.9 e scheletro 4 |
+| Gestore SAX (`DefaultHandler`, `startElement`, `characters`, `endElement`, flag) | cap. 20, §20.5 e scheletro 5 |
+| `qName` contro `localName`; `characters` a pezzi; `Attributes.getValue` | cap. 20, §20.5.4-§20.5.6 |
+| Dalle parole della traccia ai nomi esatti delle API DOM e SAX | cap. 20, §20.8 |
 | Query con `PreparedStatement` e lettura del `ResultSet` | cap. 21 |
 
 La colonna *Dove* indicherà anche la sezione esatta man mano che i capitoli vengono scritti.
