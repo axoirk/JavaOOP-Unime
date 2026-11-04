@@ -51,7 +51,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 16 | [Interfacce grafiche](16-interfacce-grafiche.md) | 4 | completo | — |
 | 17 | [Thread](17-thread.md) | 5 | completo | EXAM1 |
 | 18 | [Sincronizzazione](18-sincronizzazione.md) | 5 | completo | EXAM2 |
-| 19 | [Networking](19-networking.md) | 6 | da fare | EXAM2, EXAM3, EXAM4 |
+| 19 | [Networking](19-networking.md) | 6 | completo | EXAM2, EXAM3, EXAM4 |
 | 20 | [XML in Java](20-xml.md) | 6 | da fare | — |
 | 21 | [JDBC](21-jdbc.md) | 7 | da fare | — |
 | 22 | [Ecosistema: Maven, Spring Boot, NoSQL](22-ecosistema.md) | 7 | da fare | — |
@@ -216,9 +216,20 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Buffer condiviso a capacità limitata (produttore/consumatore): pila e coda con array | cap. 18, §18.7 e scheletri 3-5 |
 | Dedurre le firme dei metodi dalle chiamate (`throws InterruptedException`) | cap. 18, §18.8.1 |
 | Dalla frase della traccia (mutua esclusione, array primitivo di N posti, pieno/vuoto) al codice | cap. 18, §18.8.2 |
-| Client TCP che invia un messaggio | cap. 19 |
-| Inviare un oggetto serializzato su un socket e leggere la risposta | cap. 19, cap. 15 (§15.5 e §15.11) |
-| Client UDP che invia un datagramma e attende la risposta | cap. 19 |
+| Client e server, indirizzo e porta, TCP contro UDP | cap. 19, §19.1 |
+| `ServerSocket`, `accept` e `Socket`; i flussi del socket (`PrintWriter` con *autoflush*, `BufferedReader`) | cap. 19, §19.2.2-§19.2.5 e scheletro 1 |
+| Client TCP che invia un messaggio (nel costruttore o in un metodo) | cap. 19, §19.2.3-§19.2.6 e scheletro 2 |
+| Client TCP che invia una riga e restituisce la risposta, `null` se fallisce | cap. 19, §19.2.7, §19.7.2 e scheletro 3 |
+| Protocollo a righe con sentinella (`#`), `readLine` che restituisce `null` | cap. 19, §19.2.7 |
+| Server che serve più client (un thread per client) | cap. 19, §19.3 e scheletro 7 |
+| Inviare un oggetto serializzato su un socket e leggere la risposta | cap. 19, §19.4 e scheletro 4; cap. 15 (§15.5 e §15.11) |
+| Ordine di apertura di `ObjectOutputStream` e `ObjectInputStream` in rete, `flush` | cap. 19, §19.4.2 |
+| Client UDP che invia un datagramma e attende la risposta | cap. 19, §19.5 e scheletro 5 |
+| `DatagramPacket`: buffer, `getLength`, testo contro byte; server UDP che risponde al mittente | cap. 19, §19.5.3-§19.5.6 e scheletro 6 |
+| `InetAddress.getByName` | cap. 19, §19.5.4 |
+| Leggere una pagina web con `URL` e `Scanner` | cap. 19, §19.6 |
+| Eccezioni della rete (`ConnectException`, `UnknownHostException`, `BindException`) e il `catch` giusto | cap. 19, §19.7 |
+| Dalle parole della traccia (server già in ascolto, «in caso di fallimento restituisce `null`») al codice | cap. 19, §19.8 |
 | Caricare un documento XML con DOM e leggere gli elementi | cap. 20 |
 | Query con `PreparedStatement` e lettura del `ResultSet` | cap. 21 |
 
