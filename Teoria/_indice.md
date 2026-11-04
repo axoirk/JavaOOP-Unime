@@ -54,7 +54,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 19 | [Networking](19-networking.md) | 6 | completo | EXAM2, EXAM3, EXAM4 |
 | 20 | [XML in Java](20-xml.md) | 6 | completo | — |
 | 21 | [JDBC](21-jdbc.md) | 7 | completo | — |
-| 22 | [Ecosistema: Maven, Spring Boot, NoSQL](22-ecosistema.md) | 7 | da fare | — |
+| 22 | [Ecosistema: Maven, Spring Boot, NoSQL](22-ecosistema.md) | 7 | completo | — |
 
 Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 ed EXAM4 quello dell'8 settembre 2026; EXAM1 ed EXAM2 sono tracce di appelli precedenti, ricostruite.
 
@@ -255,5 +255,20 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Metodo che inserisce o modifica e restituisce un esito | cap. 21, §21.9.2 e scheletro 2 |
 | Metadati, `RowSet`, `CallableStatement`, `DataSource` | cap. 21, §21.10 |
 | Dalle parole della traccia ai nomi esatti delle API JDBC | cap. 21, §21.11 |
+| Che cos'è Maven, convenzione piuttosto che configurazione, struttura `src/main/java` e `target` | cap. 22, §22.2.1 e §22.2.3 |
+| Il file `pom.xml`: coordinate GAV, `packaging`, `properties` | cap. 22, §22.2.4 |
+| Dichiarare una dipendenza, dipendenze transitive, `scope` (`compile`, `provided`, `runtime`, `test`) | cap. 22, §22.2.5 |
+| Repository locale (`~/.m2/repository`) e remoto; `install` contro `deploy` | cap. 22, §22.2.6 e §22.2.9 |
+| Plugin e goal (`plugin:goal`), configurare un plugin nel POM | cap. 22, §22.2.7 |
+| Ciclo di vita e fasi (`compile`, `test`, `package`, `install`), una fase esegue le precedenti | cap. 22, §22.2.8 |
+| Comandi `mvn clean`, `package`, `install`, `clean install`, `dependency:tree` | cap. 22, §22.2.9 |
+| Creare un progetto con `mvn archetype:generate` | cap. 22, §22.2.10 |
+| Eseguire il programma (`exec:java`), fat JAR con il plugin `assembly` | cap. 22, §22.2.11 |
+| POM genitore, progetti multi-modulo, profili | cap. 22, §22.2.12 |
+| Che cos'è Spring Boot, starter, creare il progetto da `start.spring.io` | cap. 22, §22.3.1-§22.3.3 |
+| `@SpringBootApplication` (`@Configuration`, `@EnableAutoConfiguration`, `@ComponentScan`) | cap. 22, §22.3.4 |
+| `@RestController`, `@GetMapping`, `@RequestParam`; REST; oggetto restituito come JSON | cap. 22, §22.3.5-§22.3.6 |
+| Inversione del controllo, iniezione delle dipendenze, bean (`@Service`, `@Component`) | cap. 22, §22.3.7 |
+| Database NoSQL: a documenti (MongoDB) e per serie temporali (InfluxDB: bucket, measurement, field, tag) | cap. 22, §22.4 |
 
 La colonna *Dove* indicherà anche la sezione esatta man mano che i capitoli vengono scritti.
