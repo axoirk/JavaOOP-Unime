@@ -34,6 +34,8 @@ Totale **31 punti**, **45 minuti** complessivi per i tre esercizi. Il tempo è g
 - **Esercizio 2 (13 punti) — Core Java e API built-in.** File I/O (testo, binario, serializzazione), Networking (`Socket`, `ServerSocket`), parsing XML, JDBC, uso avanzato di Collections e `Comparable`. Variare costantemente.
 - **Esercizio 3 (13 punti) — L'esercizio difficile.** **Non è per forza sui thread.** Nell'unico appello sostenuto era serializzazione di oggetti su socket. Il terzo esercizio è quello complesso da 13 punti, e attinge a: thread e concorrenza (`Thread`/`Runnable`, `synchronized`, `wait`/`notifyAll`, `join()`, Produttore/Consumatore, information hiding su risorsa condivisa), oppure serializzazione, oppure networking, **spesso in combinazione tra loro**.
 
+> **Livello di difficoltà.** Ogni simulazione ha un livello da 1 a 5, scelto per la singola prova (§12). La struttura sopra non cambia: cambia la complessità di ciò che si chiede.
+
 > **Regola di composizione.** Gli argomenti si presentano combinati, non isolati. Almeno una traccia ES3 su tre deve richiedere di comporre due aree distinte (es. serializzazione *attraverso* un socket, thread che scrivono *su file*, `Comparable` applicato a oggetti letti *da XML*). Saper fare le due cose separatamente non basta: è esattamente il punto in cui l'appello reale è stato perso.
 
 ---
@@ -89,6 +91,8 @@ TEST SUPERATO            (oppure: TEST FALLITO (n verifiche non superate))
 Il nome della verifica descrive *cosa* si stava controllando, mai *come* risolverlo. Le righe `atteso`/`ottenuto` compaiono solo sulle verifiche fallite e solo dove un confronto di valori ha senso. Codice di uscita `0` se tutte passano, `1` altrimenti: è quello che decide il verdetto.
 
 **Attenzione ai test che verificano solo lo stato finale.** Un tester che controlla soltanto un valore aggregato di fine esecuzione (es. "il contatore condiviso vale 0 al termine") può risultare identico sia per un'implementazione corretta sia per una completamente rotta che per un altro motivo arriva allo stesso numero (caso reale: un costruttore con un bug di auto-assegnazione che lascia il campo al suo valore di default — se quel valore di default combacia comunque con l'esito finale atteso, il tester supera senza che il codice funzioni mai). Dove il valore finale può coincidere per percorsi diversi, il tester deve aggiungere almeno una verifica che osservi un comportamento intermedio (es. l'esito di una singola operazione riuscita), non solo il totale.
+
+**Attenzione ai tipi di ritorno non deducibili (caso reale: S3/SIM_4, ES3).** Il tester è compilato: una chiamata diretta fissa nel bytecode nome, parametri **e tipo di ritorno**. Se la traccia (o il codice fornito, in Variante B) non determina il tipo di ritorno di un metodo — tipicamente `parcheggio.esce();` con il valore scartato — una soluzione corretta con un tipo diverso (`boolean` al posto di `void`) fallisce con `NoSuchMethodError` per un difetto del tester, non dello studente. Per ogni metodo il cui tipo di ritorno non è fissato, il tester lo invoca per nome (reflection) senza vincolarlo; oppure la traccia lo dichiara. Prima di consegnare, si prova il tester anche contro una variante legittima della soluzione di riferimento (es. `boolean` al posto di `void`).
 
 ---
 
@@ -224,3 +228,28 @@ esempi: "rendi meno difficili gli esercizi", "non centrare troppo la serializzaz
 - Una direttiva non può sospendere §0 (fedeltà ambientale), §4 (tester black-box) o §7 (severità
   della rubrica): riguarda cosa si genera e quanto è difficile, non le condizioni della prova o il
   rigore della correzione.
+
+---
+
+### 12. Livello di Difficoltà per Simulazione (Scala 1-5)
+
+Ogni simulazione ha **un livello da 1 a 5**, lo stesso per ES1, ES2 ed ES3. Le definizioni dei cinque livelli stanno in `Exams/Simulazioni/GUIDA_PUBBLICA.md` §2 (e nella `GUIDA.md` locale). Il livello governa **quanto è complessa** la prova, non come è fatta: punteggi 5+13+13, 45 minuti, ambiente (§0), stile della traccia (§2), tester black-box (§4) e rubrica (§7) restano identici a ogni livello.
+
+**Come si sceglie.**
+
+- L'utente può indicare il livello nella richiesta ("genera una simulazione di livello 3"). Vale **solo per quella simulazione**.
+- Senza indicazione si usa il **livello consigliato**: quello che risulta dalle regole di avanzamento della guida, sullo storico dei punteggi.
+- È un parametro della richiesta, non una direttiva di sessione (§11): non va ripetuto a ogni generazione e non modifica il livello registrato.
+
+**Come si applica il livello.**
+
+- ES1, ES2 ed ES3 si compongono al livello scelto, scegliendo tra gli argomenti di quel livello e dei precedenti. I livelli 4 e 5 richiedono le composizioni di due aree della regola di §1.
+- Più il livello è alto, più il tester di ogni esercizio prova casi limite: gli stessi che la traccia permette di dedurre dall'esempio, mai casi su cui la traccia tace (§2).
+- Il livello alza la complessità, non l'ambiguità: la traccia resta scarna, senza suggerimenti, e con l'output atteso.
+- Le pesature di §5 e §6 (anti-ripetizione, lacune) valgono a ogni livello. Una lacuna prioritaria rientra nella forma più semplice che il livello consente.
+
+**Conferma visibile e registro.**
+
+- Chi genera dichiara all'utente, **fuori dalla traccia**, il livello usato e se è scelto da lui o consigliato dalle regole di avanzamento.
+- Lo storico registra il livello **realmente usato** nella colonna del livello.
+- Una prova svolta a un livello diverso da quello registrato **non conta per la salita o la discesa** (guida, regole di avanzamento) e non le interrompe: il livello registrato cambia solo con le prove svolte a quel livello.

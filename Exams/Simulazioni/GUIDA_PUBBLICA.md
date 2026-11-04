@@ -48,8 +48,9 @@ invece che di pura concorrenza.
 
 ## 2. Scala di difficoltà
 
-Si parte dal livello 1 e si sale solo per merito. Ogni livello **eredita** gli argomenti dei
-precedenti: salire non toglie nulla, aggiunge.
+La scala va da 1 a 5. Si parte dal livello 1 e si sale per merito; in più, per una singola
+simulazione, si può **scegliere il livello** (regola 4 di "Regole di avanzamento"). Ogni livello
+**eredita** gli argomenti dei precedenti: salire non toglie nulla, aggiunge.
 
 ### Livello 1 — rimettere le mani sulla sintassi
 - **ES1** — una classe elementare con costruttore e information hiding più un'interfaccia con un solo metodo; oppure un metodo statico che risolve un calcolo diretto (conversione, somma, massimo, conteggio su una stringa).
@@ -71,6 +72,12 @@ precedenti: salire non toglie nulla, aggiunge.
 - Le tracce diventano più scarne: più deduzione dalle invocazioni, meno enunciati espliciti.
 - È il livello dell'appello reale. **Ci si arriva, non ci si parte.**
 
+### Livello 5 — oltre l'appello
+- Stesse aree e stessa scarnezza del livello 4, con il margine in più per arrivare all'esame preparati.
+- **ES1** — un algoritmo che usa una struttura dati, oppure una gerarchia di più classi con polimorfismo, con casi limite non elencati nella traccia ma deducibili dall'esempio.
+- **ES2 ed ES3** — composizione di due aree con **almeno due vincoli architetturali** per esercizio (collocazione nel `finally`, ordine delle operazioni, blocco `synchronized`, ciclo di `start` separato da quello di `join`), più classi da scrivere e firme da dedurre anche per eccezioni e interfacce. ES3 può unire due meccanismi, ad esempio `wait`/`notifyAll` con `join()`, o un trasferimento fra due risorse in cui il deadlock va evitato.
+- La complessità cresce, l'ambiguità no: la traccia resta chiara e con l'output atteso.
+
 ---
 
 ## 3. Regole di avanzamento
@@ -78,6 +85,7 @@ precedenti: salire non toglie nulla, aggiunge.
 1. **Si sale di livello** dopo **due simulazioni consecutive dello stesso livello** chiuse a **≥ 26/31**, con **nessun esercizio sotto la metà** dei suoi punti. Un 28/31 ottenuto azzerando ES3 non promuove.
 2. **Si scende di un livello** dopo **due simulazioni consecutive sotto 16/31**, la soglia di non superamento dell'appello.
 3. **La lacuna prioritaria pesa più del livello.** Finché lo storico locale non registra due punteggi pieni consecutivi su un argomento identificato come lacuna critica, quell'argomento rientra nel giro **anche ai livelli bassi**, nella forma più semplice che il livello consente.
+4. **Il livello si può scegliere per la singola simulazione** (1-5). Senza indicazione vale il livello consigliato da queste regole. Una prova svolta a un livello diverso da quello registrato è registrata con il suo livello, ma **non conta per la salita o la discesa** e non le interrompe.
 
 ---
 

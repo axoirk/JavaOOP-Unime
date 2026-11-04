@@ -67,7 +67,7 @@ Documenti trasversali:
 - `Esercitazioni (Self)/Q&A.MD` — domande/risposte per l'orale, ordinate per livello.
 - `Exams/ESAMI_PASSATI.MD` — tracce testuali degli appelli reali + regole d'appello.
 - `Exams/REGOLE_GENERAZIONE_AI.MD` — direttiva vincolante per generare simulazioni (vedi sotto).
-- `Exams/Simulazioni/GUIDA_PUBBLICA.md` — struttura fissa delle prove (ES1 basi OOP **o** problem solving su metodo statico · ES2 argomenti specifici · ES3 thread e mutua esclusione), scala di difficoltà a 4 livelli, avanzamento e criteri di composizione. La prova successiva **non è mai decisa in anticipo**: argomenti, variante e natura di ES1 si scelgono al momento della generazione, leggendo storico e tracce già proposte.
+- `Exams/Simulazioni/GUIDA_PUBBLICA.md` — struttura fissa delle prove (ES1 basi OOP **o** problem solving su metodo statico · ES2 argomenti specifici · ES3 thread e mutua esclusione), scala di difficoltà a 5 livelli (scelta per simulazione, o consigliata dall'avanzamento), avanzamento e criteri di composizione. La prova successiva **non è mai decisa in anticipo**: argomenti, variante e natura di ES1 si scelgono al momento della generazione, leggendo storico e tracce già proposte.
 - `Exams/STORICO_SIMULAZIONI.md` — storico, copertura per sotto-argomento, curva dei punteggi. **Materiale personale: locale e non tracciato**, come `Simulazioni/GUIDA.md` (che contiene il registro delle prove) e le simulazioni stesse. È la memoria dell'anti-ripetizione, ma su un clone non esiste.
 
 Materiale personale, presente in locale ma **non tracciato**: `Teoria/MAPPA_LACUNE.md` (confronto appelli ↔ appunti), `docs/`, i `Report_EXAM*.md` e le cartelle `_solutions/` e `_soluzione/` dentro gli appelli. Prima di dire "non è nel repository", tienilo presente.
