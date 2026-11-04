@@ -1,6 +1,6 @@
 ---
 materia: Programmazione a Oggetti
-aggiornato: 2026-11-03
+aggiornato: 2026-11-04
 ---
 
 # Programmazione a Oggetti (Java) — Appunti di teoria
@@ -46,7 +46,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 11 | [Classi annidate, interne e anonime](11-classi-annidate.md) | 2-3 | completo | EXAM4 |
 | 12 | [Generics e collezioni](12-generics-e-collezioni.md) | 2-3 | completo | — |
 | 13 | [Eccezioni](13-eccezioni.md) | 3 | completo | EXAM1, EXAM3 |
-| 14 | [File di testo](14-file-di-testo.md) | 4 | da fare | — |
+| 14 | [File di testo](14-file-di-testo.md) | 4 | completo | — |
 | 15 | [Stream binari e serializzazione](15-stream-binari-e-serializzazione.md) | 4 | da fare | EXAM3 |
 | 16 | [Interfacce grafiche](16-interfacce-grafiche.md) | 4 | da fare | — |
 | 17 | [Thread](17-thread.md) | 5 | da fare | EXAM1 |
@@ -153,8 +153,18 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Conversione da checked a unchecked (rilancio incapsulato) | cap. 13, §13.4.3 e terzo scheletro |
 | Chiusura classica dei flussi nel `finally` con guardia `null` | cap. 13, §13.5.3 e quarto scheletro |
 | Checked contro unchecked, `throws` e overriding | cap. 13, §13.2.4 e §13.3.3 |
-| Leggere un file di testo riga per riga fino alla fine | cap. 14 |
-| Scrivere in coda a un file | cap. 14 |
+| Flusso, file di testo e file binario; flussi di byte contro flussi di caratteri | cap. 14, §14.1 |
+| Scrivere righe in un file con `PrintWriter`; `close` e buffer | cap. 14, §14.2.1-§14.2.2 e primo scheletro |
+| `FileNotFoundException` all'apertura; chiusura nel `finally` con guardia `null` | cap. 14, §14.2.4 e §14.2.6 |
+| `FileWriter` e `BufferedWriter` (`write`, `newLine`) | cap. 14, §14.2.7 |
+| Scrivere in coda a un file (`FileWriter(nome, true)`, `FileOutputStream(nome, true)`) | cap. 14, §14.3 e secondo scheletro |
+| Leggere un file di testo riga per riga fino alla fine (`Scanner`, `hasNextLine`) | cap. 14, §14.4.1 e quarto scheletro |
+| Leggere con `BufferedReader` fino a `readLine() == null` | cap. 14, §14.4.2-§14.4.3 e terzo scheletro |
+| Leggere numeri da un file di testo | cap. 14, §14.4.5 |
+| Classe `File`: esistenza, lunghezza, cancellazione, elenco di una cartella; percorsi relativi | cap. 14, §14.5 |
+| Metodo che apre un flusso e due flussi chiusi insieme | cap. 14, §14.6 e sesto scheletro |
+| File CSV: intestazione, `split`, conversione dei campi | cap. 14, §14.7 e quinto scheletro |
+| Dalle parole della traccia (in coda, fino alla fine, nel `finally`) al codice dei file | cap. 14, §14.8 |
 | Leggere dati binari o oggetti fino a `EOFException` | cap. 15 |
 | `Serializable` e `serialVersionUID` | cap. 15 |
 | Thread con `Runnable`, `start` e `join` | cap. 17 |
