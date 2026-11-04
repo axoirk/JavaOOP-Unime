@@ -48,7 +48,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 13 | [Eccezioni](13-eccezioni.md) | 3 | completo | EXAM1, EXAM3 |
 | 14 | [File di testo](14-file-di-testo.md) | 4 | completo | — |
 | 15 | [Stream binari e serializzazione](15-stream-binari-e-serializzazione.md) | 4 | completo | EXAM3 |
-| 16 | [Interfacce grafiche](16-interfacce-grafiche.md) | 4 | da fare | — |
+| 16 | [Interfacce grafiche](16-interfacce-grafiche.md) | 4 | completo | — |
 | 17 | [Thread](17-thread.md) | 5 | da fare | EXAM1 |
 | 18 | [Sincronizzazione](18-sincronizzazione.md) | 5 | da fare | EXAM2 |
 | 19 | [Networking](19-networking.md) | 6 | da fare | EXAM2, EXAM3, EXAM4 |
@@ -181,6 +181,17 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | File contro rete: quale flusso avvolgere («salva» contro «invia») | cap. 15, §15.11 |
 | Le eccezioni della serializzazione (`NotSerializableException`, `StreamCorruptedException`, `ClassNotFoundException`) | cap. 15, §15.12 |
 | Dalla frase della traccia (costante di versione, ordine dei parametri, formato di `toString`) al codice | cap. 15, §15.13 |
+| Finestra con `JFrame`, titolo, dimensione, `setVisible`, content pane | cap. 16, §16.2.1-§16.2.3 e primo scheletro |
+| La chiusura della finestra: `EXIT_ON_CLOSE`, `WindowAdapter` | cap. 16, §16.2.4 e quarto scheletro |
+| Finestra come classe che estende `JFrame` | cap. 16, §16.2.5 |
+| `BorderLayout`, `FlowLayout`, `GridLayout` | cap. 16, §16.3 |
+| Pulsante e `ActionListener` (`actionPerformed`, `addActionListener`) | cap. 16, §16.4.2 e secondo scheletro |
+| Listener come classe interna o anonima; quale pulsante è stato premuto | cap. 16, §16.4.3-§16.4.4 |
+| Schema model–view–controller | cap. 16, §16.4.5 |
+| `JPanel`, gerarchia di Swing | cap. 16, §16.5 |
+| `JTextField`, `JTextArea`, `getText`/`setText` | cap. 16, §16.6.1-§16.6.3 |
+| Numeri come stringhe, `parseInt`, `NumberFormatException` in una finestra | cap. 16, §16.6.4-§16.6.5 e terzo scheletro |
+| JavaFX: `Stage`, `Scene`, FXML, controller, `@FXML` | cap. 16, §16.7 |
 | Thread con `Runnable`, `start` e `join` | cap. 17 |
 | Dividere un array tra più thread | cap. 17 |
 | Mutua esclusione con `synchronized` | cap. 18 |
