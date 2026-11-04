@@ -49,7 +49,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 14 | [File di testo](14-file-di-testo.md) | 4 | completo | — |
 | 15 | [Stream binari e serializzazione](15-stream-binari-e-serializzazione.md) | 4 | completo | EXAM3 |
 | 16 | [Interfacce grafiche](16-interfacce-grafiche.md) | 4 | completo | — |
-| 17 | [Thread](17-thread.md) | 5 | da fare | EXAM1 |
+| 17 | [Thread](17-thread.md) | 5 | completo | EXAM1 |
 | 18 | [Sincronizzazione](18-sincronizzazione.md) | 5 | da fare | EXAM2 |
 | 19 | [Networking](19-networking.md) | 6 | da fare | EXAM2, EXAM3, EXAM4 |
 | 20 | [XML in Java](20-xml.md) | 6 | da fare | — |
@@ -192,8 +192,19 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | `JTextField`, `JTextArea`, `getText`/`setText` | cap. 16, §16.6.1-§16.6.3 |
 | Numeri come stringhe, `parseInt`, `NumberFormatException` in una finestra | cap. 16, §16.6.4-§16.6.5 e terzo scheletro |
 | JavaFX: `Stage`, `Scene`, FXML, controller, `@FXML` | cap. 16, §16.7 |
-| Thread con `Runnable`, `start` e `join` | cap. 17 |
-| Dividere un array tra più thread | cap. 17 |
+| Che cos'è un thread; memoria privata e condivisa; ordine imprevedibile | cap. 17, §17.1 |
+| `start()` contro `run()`; `IllegalThreadStateException` | cap. 17, §17.2.3 |
+| Thread con `extends Thread` o con `Runnable`; quale scegliere | cap. 17, §17.3.1-§17.3.3 e primo scheletro |
+| Classe che estende un'altra e realizza `Runnable` | cap. 17, §17.3.3 e quinto scheletro |
+| Runnable anonimo; più thread avviati insieme; chi avvia il thread | cap. 17, §17.3.4-§17.3.6 |
+| Stati di un thread, `getState`; un'eccezione che esce da `run` | cap. 17, §17.4.1-§17.4.3 |
+| Fermare un thread con una sentinella `volatile` | cap. 17, §17.4.4 e quarto scheletro |
+| `sleep`, `InterruptedException` (catturare o dichiarare) | cap. 17, §17.5.2 e secondo scheletro |
+| `join`, `isAlive`, attendere un thread; `yield`, priorità | cap. 17, §17.5.3-§17.5.5 e secondo scheletro |
+| Risultato di un thread (campo del `Runnable`, letto dopo `join`) | cap. 17, §17.6.1 |
+| Dividere un array o una matrice tra più thread (due cicli, ultimo con il resto) | cap. 17, §17.6.2-§17.6.3 e terzo scheletro |
+| Due thread sullo stesso contatore (race condition) | cap. 17, §17.6.5; cap. 18 |
+| Dalla frase della traccia (`Runnable`, "crea e avvia", `join`, `n` thread) al codice | cap. 17, §17.7 |
 | Mutua esclusione con `synchronized` | cap. 18 |
 | Buffer condiviso con `wait` e `notifyAll` (produttore/consumatore) | cap. 18 |
 | Client TCP che invia un messaggio | cap. 19 |
