@@ -47,7 +47,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 12 | [Generics e collezioni](12-generics-e-collezioni.md) | 2-3 | completo | — |
 | 13 | [Eccezioni](13-eccezioni.md) | 3 | completo | EXAM1, EXAM3 |
 | 14 | [File di testo](14-file-di-testo.md) | 4 | completo | — |
-| 15 | [Stream binari e serializzazione](15-stream-binari-e-serializzazione.md) | 4 | da fare | EXAM3 |
+| 15 | [Stream binari e serializzazione](15-stream-binari-e-serializzazione.md) | 4 | completo | EXAM3 |
 | 16 | [Interfacce grafiche](16-interfacce-grafiche.md) | 4 | da fare | — |
 | 17 | [Thread](17-thread.md) | 5 | da fare | EXAM1 |
 | 18 | [Sincronizzazione](18-sincronizzazione.md) | 5 | da fare | EXAM2 |
@@ -165,14 +165,28 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Metodo che apre un flusso e due flussi chiusi insieme | cap. 14, §14.6 e sesto scheletro |
 | File CSV: intestazione, `split`, conversione dei campi | cap. 14, §14.7 e quinto scheletro |
 | Dalle parole della traccia (in coda, fino alla fine, nel `finally`) al codice dei file | cap. 14, §14.8 |
-| Leggere dati binari o oggetti fino a `EOFException` | cap. 15 |
-| `Serializable` e `serialVersionUID` | cap. 15 |
+| Flusso binario e file binario contro file di testo; `ObjectOutputStream` attorno a `FileOutputStream` | cap. 15, §15.1 |
+| Scrivere e leggere `int`, `double`, `boolean`, stringhe (`writeInt`, `writeUTF`, `readInt`, …) | cap. 15, §15.2-§15.3 e primo scheletro |
+| Stesso ordine e stessi tipi in lettura e in scrittura | cap. 15, §15.3.2 |
+| `DataOutputStream` / `DataInputStream` e file di record | cap. 15, §15.2.5 |
+| Leggere dati binari fino a `EOFException` (ciclo `while (true)`, ordine dei `catch`) | cap. 15, §15.4 e secondo scheletro |
+| Raddoppiare i numeri di un file in un altro file | cap. 15, §15.4.6 |
+| Dal valore sentinella alla fine del file | cap. 15, §15.4.4 |
+| Serializzare un oggetto: `Serializable`, `writeObject`, `readObject` e il cast | cap. 15, §15.5 e terzo scheletro |
+| Campi non serializzabili, superclasse, `static` e `transient` | cap. 15, §15.6 |
+| Lo stesso oggetto scritto due volte, `reset()` | cap. 15, §15.7 |
+| `serialVersionUID` nella forma esatta, `InvalidClassException` | cap. 15, §15.8 e quinto scheletro |
+| Serializzare un array o una collezione in un colpo | cap. 15, §15.9 |
+| Leggere più oggetti fino alla fine del file; perché non si aggiunge in coda con `ObjectOutputStream` | cap. 15, §15.10 e quarto scheletro |
+| File contro rete: quale flusso avvolgere («salva» contro «invia») | cap. 15, §15.11 |
+| Le eccezioni della serializzazione (`NotSerializableException`, `StreamCorruptedException`, `ClassNotFoundException`) | cap. 15, §15.12 |
+| Dalla frase della traccia (costante di versione, ordine dei parametri, formato di `toString`) al codice | cap. 15, §15.13 |
 | Thread con `Runnable`, `start` e `join` | cap. 17 |
 | Dividere un array tra più thread | cap. 17 |
 | Mutua esclusione con `synchronized` | cap. 18 |
 | Buffer condiviso con `wait` e `notifyAll` (produttore/consumatore) | cap. 18 |
 | Client TCP che invia un messaggio | cap. 19 |
-| Inviare un oggetto serializzato su un socket e leggere la risposta | cap. 19, cap. 15 |
+| Inviare un oggetto serializzato su un socket e leggere la risposta | cap. 19, cap. 15 (§15.5 e §15.11) |
 | Client UDP che invia un datagramma e attende la risposta | cap. 19 |
 | Caricare un documento XML con DOM e leggere gli elementi | cap. 20 |
 | Query con `PreparedStatement` e lettura del `ResultSet` | cap. 21 |
