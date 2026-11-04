@@ -53,7 +53,7 @@ Il docente non valuta soltanto se il programma funziona, ma se rispetta **alla l
 | 18 | [Sincronizzazione](18-sincronizzazione.md) | 5 | completo | EXAM2 |
 | 19 | [Networking](19-networking.md) | 6 | completo | EXAM2, EXAM3, EXAM4 |
 | 20 | [XML in Java](20-xml.md) | 6 | completo | — |
-| 21 | [JDBC](21-jdbc.md) | 7 | da fare | — |
+| 21 | [JDBC](21-jdbc.md) | 7 | completo | — |
 | 22 | [Ecosistema: Maven, Spring Boot, NoSQL](22-ecosistema.md) | 7 | da fare | — |
 
 Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 ed EXAM4 quello dell'8 settembre 2026; EXAM1 ed EXAM2 sono tracce di appelli precedenti, ricostruite.
@@ -242,6 +242,18 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Gestore SAX (`DefaultHandler`, `startElement`, `characters`, `endElement`, flag) | cap. 20, §20.5 e scheletro 5 |
 | `qName` contro `localName`; `characters` a pezzi; `Attributes.getValue` | cap. 20, §20.5.4-§20.5.6 |
 | Dalle parole della traccia ai nomi esatti delle API DOM e SAX | cap. 20, §20.8 |
-| Query con `PreparedStatement` e lettura del `ResultSet` | cap. 21 |
+| Che cos'è JDBC, driver (tipi I-IV), URL JDBC, `DriverManager` | cap. 21, §21.2 e §21.4.1-§21.4.3 |
+| Catena di oggetti e passi per interrogare un database | cap. 21, §21.3 |
+| Aprire e chiudere una connessione, `SQLException` | cap. 21, §21.4.3-§21.4.6 |
+| `Statement`: `executeQuery` contro `executeUpdate`, `CREATE TABLE`, `INSERT`, `UPDATE`, `DELETE` | cap. 21, §21.5 |
+| `ResultSet`: cursore, `next`, `getString`/`getInt`/`getDouble`, colonne da 1 | cap. 21, §21.6.1-§21.6.2 e scheletro 1 |
+| Una sola riga o un solo valore (`if (rs.next())`, `COUNT(*)`) | cap. 21, §21.6.3 e scheletri 3-4 |
+| Valori `NULL` e `wasNull`; cursore scorrevole | cap. 21, §21.6.5-§21.6.6 |
+| `PreparedStatement`: segnaposto `?`, `setString`/`setInt`/`setDouble`, iniezione SQL | cap. 21, §21.7 e scheletri 1-3 |
+| Chiusura nel `finally` di `ResultSet`, comando e connessione; `try-with-resources` | cap. 21, §21.8 |
+| Dalle righe a una `List` di oggetti, `null` per il fallimento | cap. 21, §21.9.1 e scheletro 1 |
+| Metodo che inserisce o modifica e restituisce un esito | cap. 21, §21.9.2 e scheletro 2 |
+| Metadati, `RowSet`, `CallableStatement`, `DataSource` | cap. 21, §21.10 |
+| Dalle parole della traccia ai nomi esatti delle API JDBC | cap. 21, §21.11 |
 
 La colonna *Dove* indicherà anche la sezione esatta man mano che i capitoli vengono scritti.
