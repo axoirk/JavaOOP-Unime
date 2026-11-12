@@ -25,8 +25,8 @@ argomenti non cambia mai da una simulazione all'altra: è la struttura ricorrent
 
 | | Punti | Area | Cosa ci sta dentro |
 |---|---|---|---|
-| **ES1** | 5 | **Basi e fondamenti OOP**, oppure **problem solving** | Due nature possibili, da alternare. *OOP:* classi elementari, costruttori, information hiding, interfacce, classi astratte, ereditarietà, polimorfismo, override. *Problem solving:* un metodo **statico** che risolve un calcolo o un problema di logica — conversioni, ricorsione, cifre di un numero, manipolazione di array e stringhe |
-| **ES2** | 13 | **Argomenti specifici** | Eccezioni custom, file di testo, file binari, serializzazione, `Socket`/`ServerSocket`, `URL`, XML (DOM/SAX), CSV, JDBC, Collections e `Comparable` |
+| **ES1** | 5 | **Basi e fondamenti OOP**, oppure **problem solving** | Due nature possibili, da alternare. *OOP:* classi elementari, costruttori, information hiding, interfacce, classi astratte, ereditarietà, polimorfismo, override. *Problem solving:* un metodo **statico** che risolve un calcolo o un problema di logica — conversioni, cifre di un numero, manipolazione di array e stringhe (ricorsione dal Livello 3; ai Livelli 1 e 2 al più un ciclo semplice) |
+| **ES2** | 13 | **Argomenti specifici** | Eccezioni custom, file di testo, file binari, serializzazione, `Socket`/`ServerSocket`, `URL`, XML (DOM/SAX), CSV, JDBC, Collections (`ArrayList`, senza `Map`) e `Comparable` |
 | **ES3** | 13 | **Thread e mutua esclusione** | `Thread`/`Runnable`, `join()`, `synchronized`, lock intrinsechi, `wait`/`notifyAll`, produttore-consumatore, terminazione pulita, deadlock |
 
 ### Riscontro sugli appelli reali
@@ -44,6 +44,8 @@ sopra è la norma, non una legge: dal livello 4 in poi l'ES3 può essere un eser
 **composizione** (oggetti serializzati che viaggiano sulla rete, thread che scrivono su file)
 invece che di pura concorrenza.
 
+**Il riciclo.** Dai due appelli sostenuti risulta che il docente riprende **un solo esercizio** da un appello precedente (EXAM3 ha ripreso le cinque parole chiave di EXAM1, EXAM4 il metodo km → m di EXAM2) e ne scrive due nuovi. Ogni simulazione fa lo stesso: un esercizio riciclato da un appello ufficiale, due nuovi (regola completa in `REGOLE_GENERAZIONE_AI.MD` §5.1). Il dato è piccolo (due appelli).
+
 ---
 
 ## 2. Scala di difficoltà
@@ -54,18 +56,19 @@ simulazione, si può **scegliere il livello** (regola 4 di "Regole di avanzament
 
 ### Livello 1 — rimettere le mani sulla sintassi
 - **ES1** — una classe elementare con costruttore e information hiding più un'interfaccia con un solo metodo; oppure un metodo statico che risolve un calcolo diretto (conversione, somma, massimo, conteggio su una stringa).
-- **ES2** — eccezione custom (controllata o non controllata) e file di testo: `BufferedReader`, `FileWriter`.
-- **ES3** — mutua esclusione elementare su una risorsa condivisa: `synchronized`, nessuna attesa fra thread.
+- **ES2** — una forma elementare di un tema d'appello, a rotazione: eccezione custom (controllata o non controllata) con file di testo (`BufferedReader`, `FileWriter`); le cinque parole chiave delle eccezioni in un metodo; un client `Socket` che invia un messaggio a un server già attivo e ne legge la risposta.
+- **ES3** — mutua esclusione elementare su una risorsa condivisa (`synchronized`, nessuna attesa fra thread), oppure `Runnable` con ereditarietà, costruttori in overload e information hiding (come EXAM1 ES3). Le due famiglie si alternano.
 
 ### Livello 2 — la struttura richiesta, non solo il risultato
-- **ES1** — classi astratte, ereditarietà con `super()`, override, polimorfismo su array di tipo base; oppure un metodo statico con logica a più passaggi (ricorsione, cifre di un numero, ricerca in un array).
-- **ES2** — file binari (`DataOutputStream`), serializzazione su file, Collections e `Comparable`. Compaiono i **vincoli architetturali** sulla collocazione delle istruzioni (blocco `finally`, chiusura del flusso, ordine delle operazioni).
+- **ES1** — classi astratte, ereditarietà con `super()`, override, polimorfismo su array di tipo base, classi annidate (inner class non statica elementare); oppure un metodo statico con **un solo ciclo semplice** e al più un `if` (ricerca in un array, conteggio con condizione, somma delle cifre): niente cicli annidati né ricorsione, che arrivano dal Livello 3.
+- **ES2** — un client UDP che invia un messaggio e attende la risposta; file binari (`DataOutputStream`), serializzazione su file, Collections (`ArrayList`, senza `Map`) e `Comparable`. Compaiono i **vincoli architetturali** sulla collocazione delle istruzioni (blocco `finally`, chiusura del flusso, ordine delle operazioni).
 - **ES3** — coordinamento con `join()`, suddivisione del carico fra thread, terminazione ordinata.
 
 ### Livello 3 — le API che l'appello pretende
-- **ES1** — interfacce multiple, `Comparable`, classi astratte con stato; oppure un metodo statico che combina algoritmo e struttura dati.
+- **ES1** — interfacce multiple, `Comparable`, classi astratte con stato; oppure un metodo statico che combina algoritmo e struttura dati, anche con ricorsione o cicli annidati.
 - **ES2** — `Socket` e `ServerSocket`, `URL`, parsing XML (DOM o SAX), CSV, JDBC di base.
 - **ES3** — `wait`/`notifyAll`, produttore-consumatore, buffer limitato, attesa dentro un `while` e non dentro un `if`.
+- **ES2 o ES3, a rotazione** — classi annidate da 13 punti, come in EXAM4: inner class non statica con vincoli espliciti (nessun riferimento all'esterna, non discendente dall'esterna).
 
 ### Livello 4 — composizione, cioè l'appello vero
 - **ES2 ed ES3 combinano due aree in un solo esercizio:** serializzazione *attraverso* un socket, thread che scrivono *su file*, oggetti letti *da XML* e poi ordinati, client e server che si scambiano oggetti mentre più thread lavorano.
@@ -121,12 +124,13 @@ senza motivo.
 
 Il thread principale:
 
-1. decide livello, variante e argomento di ES1/ES2/ES3 come sopra;
+1. decide livello, variante, argomento di ES1/ES2/ES3, **quale esercizio d'appello riciclare** (`REGOLE_GENERAZIONE_AI.MD` §5.1) e **l'ordine in aula** (`ordine.txt`, §0.1) come sopra;
 2. lancia **tre subagent in parallelo**, uno per esercizio, ciascuno con:
    - il proprio argomento assegnato e la variante (A o B);
-   - lo **stralcio già estratto** di §1-§3 di `Exams/REGOLE_GENERAZIONE_AI.MD`, copiato nel brief e non come rimando al file — il subagent non deve rileggere l'intero documento;
+   - lo **stralcio già estratto** di §1-§4 di `Exams/REGOLE_GENERAZIONE_AI.MD` (con il tetto di logica, il «vincolo contro soluzione» di §2 e le verifiche di struttura di §4), copiato nel brief e non come rimando al file — il subagent non deve rileggere l'intero documento;
    - l'esempio di formulazione più vicino tra le tracce già presenti;
-   - ogni direttiva di sessione attiva (§11 di `REGOLE_GENERAZIONE_AI.MD`).
+   - ogni direttiva di sessione attiva (§11 di `REGOLE_GENERAZIONE_AI.MD`);
+   - **per l'esercizio riciclato:** il testo integrale della traccia originale, il path del suo `Main.class` in `Appelli Ufficiali Unime/EXAMn/ESk/` (da leggere, non da modificare), il testo di §5.1 «Come si riscrive» e l'obbligo del blocco dell'output atteso.
 
    Il subagent ha accesso solo a `Read`/`Write`/`Bash` sui path della propria cartella esercizio,
    non a `Grep`/`Glob` liberi sul resto del repository. Scrive `README.md`, compila una soluzione
@@ -168,7 +172,7 @@ Anche la correzione è indipendente esercizio per esercizio. Il thread principal
 1. legge **una sola volta** `Consegna_SIM_N_<data>.md` — codice consegnato e output delle esecuzioni in aula per tutti e tre gli esercizi;
 2. lancia **tre subagent in parallelo**, uno per esercizio, ciascuno con il **path assoluto** del proprio `Soluzione.java` consegnato e del proprio `Main.class`: non gli si chiede di cercarli. Accesso solo a `Read`/`Bash` (compilazione ed esecuzione) e `Write` sulla propria `_solutions/ESn/`, niente esplorazione libera. Ciascuno:
    - compila ed esegue il codice consegnato contro il tester nascosto di quel solo esercizio — **obbligatorio anche se l'ultima esecuzione in aula era fallita** (§7 delle regole);
-   - applica la **rubrica a quattro assi** e restituisce **in formato fisso** — punteggio per asse più una riga di motivazione per asse, non un paragrafo discorsivo;
+   - applica la **rubrica a quattro assi** e restituisce **in formato fisso** — punteggio per asse più una riga di motivazione per asse, non un paragrafo discorsivo e, se l'esercizio è sotto soglia (regole §7, «Rimandi agli appunti di teoria»), una riga **Da ripassare** con link a `Teoria/` (capitolo e sezione verificati);
    - scrive su disco `Soluzione.java` (verificata contro il tester) e `Note.md` nel path **assoluto** `<path della simulazione>/_solutions/ESn/`. Mai un path relativo: il subagent lavora con la cartella dell'esercizio come working directory, e un path relativo lì finisce annidato dentro `ESn/_solutions/ESn/` invece che a fianco di `ES1`/`ES2`/`ES3`;
 3. appena i tre risultati rientrano, assembla `Report_Esame_N.md` **incollando** le righe asse-per-asse di ciascun subagent, non riscrivendole, e aggiorna lo storico locale — l'unico passaggio ancora sequenziale, perché richiede la vista d'insieme sui tre esercizi.
 
@@ -181,9 +185,9 @@ Anche la correzione è indipendente esercizio per esercizio. Il thread principal
 
 | File | Contenuto |
 |---|---|
-| `Report_Esame_N.md` | Punteggio per esercizio ed esito, con l'asse della rubrica a cui è imputata ogni penalità |
+| `Report_Esame_N.md` | Punteggio per esercizio ed esito, con l'asse della rubrica a cui è imputata ogni penalità; per gli esercizi deboli, i capitoli di `Teoria/` da ripassare |
 | `_solutions/ESn/Soluzione.java` | La soluzione corretta, **compilata e verificata contro il tester**, con un commento nel punto esatto di ogni errore realmente commesso |
-| `_solutions/ESn/Note.md` | Punteggio, l'errore in linguaggio piano, perché il codice va fatto così, cosa ricordare |
+| `_solutions/ESn/Note.md` | Punteggio, l'errore in linguaggio piano, perché il codice va fatto così, cosa ricordare; se l'esercizio è debole, il rimando agli appunti |
 | riga nello storico locale | Argomenti, punteggi, esecuzioni consumate, ambiente, variante — la memoria dell'anti-ripetizione |
 
 Le note si ancorano a ciò che è stato **effettivamente scritto**, non a errori generici: chi ha

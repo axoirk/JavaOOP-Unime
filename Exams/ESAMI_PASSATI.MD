@@ -66,7 +66,7 @@ Si richiede allo studente di implementare ex-novo la classe `Buffer` (attualment
 
 # 📝 APPELLO SOSTENUTO — 8 luglio 2026
 
-Unico appello effettivamente sostenuto in aula. **È la fonte più attendibile** su come il docente costruisce e corregge le tracce: le altre sono ricostruzioni. Voto rifiutato.
+Primo appello effettivamente sostenuto in aula (il secondo è quello di settembre, sotto). **È la fonte più attendibile** su come il docente costruisce e corregge le tracce: le altre sono ricostruzioni. Voto rifiutato.
 
 Tracce e tester eseguibili: `Exams/Appelli Ufficiali Unime/EXAM3/`.
 

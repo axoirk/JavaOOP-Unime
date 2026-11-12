@@ -26,6 +26,7 @@ Uso:
     python3 Exams/aula.py <cartella> --durata 45      minuti (default 45)
     python3 Exams/aula.py <cartella> --riparti        azzera prova e contatori
     python3 Exams/aula.py <cartella> --porta 8765
+    <cartella>/ordine.txt (facoltativo)  ordine delle schede, es. "ES2 ES3 ES1"
 """
 
 import html
@@ -41,7 +42,31 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 ESERCIZI = ["ES1", "ES2", "ES3"]
-PUNTI = {"ES1": 5, "ES2": 13, "ES3": 13}
+PUNTI = {"ES1": 5, "ES2": 13, "ES3": 13}   # valore di riserva: i punti veri sono nel titolo del README
+
+
+def punti_esercizio(cartella, es):
+    """Punti dal titolo del README ("... (13 Punti) ..."); se non ci sono, il valore standard."""
+    try:
+        riga = (cartella / es / "README.md").read_text().splitlines()[0]
+        trovato = re.search(r"\((\d+)\s*[Pp]unti?\)", riga)
+        if trovato:
+            return int(trovato.group(1))
+    except (OSError, IndexError):
+        pass
+    return PUNTI[es]
+
+
+def ordine_esercizi(cartella):
+    """Ordine delle schede: da `ordine.txt` (es. "ES2 ES3 ES1"); senza file o se non valido, ES1 ES2 ES3."""
+    try:
+        voci = (cartella / "ordine.txt").read_text().split()
+        if sorted(voci) == sorted(ESERCIZI):
+            return voci
+        print(f"Attenzione: {cartella / 'ordine.txt'} non è valido (servono ES1 ES2 ES3 separati da spazi, in qualunque ordine): uso ES1 ES2 ES3.", file=sys.stderr)
+    except OSError:
+        pass
+    return list(ESERCIZI)
 LIMITE_ESECUZIONI = 5
 TIMEOUT_RUN = 30
 
@@ -220,6 +245,7 @@ class Prova:
         r.append(f"- **Motivo della consegna:** {motivo}")
         if self.dati["pausa_totale"] > 0:
             r.append(f"- **Tempo in pausa (non conteggiato):** {formatta(self.dati['pausa_totale'])}")
+        r.append(f"- **Ordine delle schede:** {' '.join(ordine_esercizi(self.cartella))}")
         r.append("- **Ambiente:** editor nella pagina, colorazione della sintassi e parentesi automatiche "
                  "(nessuna analisi del codice), un solo file per esercizio\n")
 
@@ -231,7 +257,7 @@ class Prova:
             n = self.numero_esecuzioni(es)    # comprende i run fatti con esegui.sh
             oltre = max(0, n - LIMITE_ESECUZIONI)
             ultima = voci[-1]["esito"] if voci else "—"
-            r.append(f"| {es} | {PUNTI[es]} | {n} / {LIMITE_ESECUZIONI} | "
+            r.append(f"| {es} | {punti_esercizio(self.cartella, es)} | {n} / {LIMITE_ESECUZIONI} | "
                      f"{oltre if oltre else '—'} | {ultima} |")
         r.append("")
 
@@ -621,7 +647,7 @@ PAGINA = r"""<!doctype html>
 const ESERCIZI = __ESERCIZI__;
 const TRACCE = __TRACCE__;
 const TIMEOUT = __TIMEOUT__;
-let corrente = "ES1";
+let corrente = ESERCIZI[0];
 let stato = null;
 let ricevuto = 0;   // performance.now() dell'ultimo stato arrivato dal server
 let scollegato = false;
@@ -1316,7 +1342,7 @@ def main(argv):
 
     pagina = (PAGINA
               .replace("__NOME__", html.escape(cartella.name))
-              .replace("__ESERCIZI__", json.dumps(ESERCIZI))
+              .replace("__ESERCIZI__", json.dumps(ordine_esercizi(cartella)))
               .replace("__TIMEOUT__", str(TIMEOUT_RUN))
               .replace("__TRACCE__", json.dumps(tracce, ensure_ascii=False)))
 

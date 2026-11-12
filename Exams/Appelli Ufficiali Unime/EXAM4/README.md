@@ -26,8 +26,8 @@ sono stati fissati dove l'originale era implicito:
 - **ES3** — nome della classe (`Convertitore`) e del metodo (`converti`), presi dalla forma già
   vista all'Esame 2, e tipi `int`.
 
-La numerazione segue il peso, non l'ordine di somministrazione: in aula il metodo statico era
-l'ultimo dei tre.
+Le cartelle seguono l'ordine in cui gli esercizi comparivano in aula: il metodo statico da 5 punti
+era l'ultimo dei tre (ES3), non il primo come a luglio. `aula.py` legge i punti dal titolo del README.
 
 ## Cosa contiene ogni cartella
 
