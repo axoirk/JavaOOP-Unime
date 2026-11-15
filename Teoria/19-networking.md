@@ -1007,6 +1007,33 @@ L'esempio funziona perché abbiamo provato client e server sulla stessa macchina
 - **Nessun avviso se il server non c'è.** `send` non fallisce se non c'è nessuno in ascolto: il pacchetto va semplicemente perso. A quel punto `receive` **resta in attesa per sempre**, senza lanciare nulla. Un client UDP il cui server non è avviato si blocca in silenzio.
 - **Il messaggio deve stare nel buffer.** Altrimenti viene troncato (paragrafo 19.5.6).
 
+> [!NOTE]
+> **Approfondimento fuori programma — Un oggetto serializzato su UDP**
+> Questo approfondimento **non compare nel materiale del corso**: l'esempio UDP del docente spedisce solo testo, e `ByteArrayOutputStream`/`ByteArrayInputStream` non sono mai usate. Nessun appello l'ha chiesto; si legge solo per curiosità.
+>
+> Un `DatagramSocket` non ha flussi (`getOutputStream` non esiste), quindi non si può avvolgere un `ObjectOutputStream` attorno al socket come in TCP (paragrafo 19.4). Si serializza invece **in memoria**: `ObjectOutputStream` avvolge un `ByteArrayOutputStream`, e i byte ottenuti con `toByteArray()` vanno nel pacchetto. Chi riceve fa il percorso inverso: i byte del pacchetto, e solo i primi `getLength()`, vanno in un `ByteArrayInputStream` avvolto da un `ObjectInputStream`.
+>
+> ```java
+> // Invio (Biglietto implementa Serializable)
+> ByteArrayOutputStream bout = new ByteArrayOutputStream();
+> ObjectOutputStream out = new ObjectOutputStream(bout);
+> out.writeObject(new Biglietto("Rossi", 12));
+> out.close();                                   // svuota il flusso nell'array
+> byte[] dati = bout.toByteArray();
+> socket.send(new DatagramPacket(dati, dati.length,
+>         InetAddress.getByName("localhost"), 5055));
+>
+> // Ricezione
+> byte[] buffer = new byte[1024];
+> DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length);
+> socket.receive(pacchetto);
+> ObjectInputStream in = new ObjectInputStream(
+>         new ByteArrayInputStream(pacchetto.getData(), 0, pacchetto.getLength()));
+> Biglietto b = (Biglietto) in.readObject();     // dichiara anche ClassNotFoundException
+> ```
+>
+> Cose da sapere: ogni pacchetto contiene **un solo oggetto** con la propria intestazione, perché non c'è un flusso che resti aperto; la classe deve essere `Serializable` e presente su entrambi i lati; il buffer di ricezione deve contenere **tutti** i byte serializzati, più numerosi dei campi (nell'esecuzione di prova un `Biglietto` con una stringa e un `int` occupa 78 byte). Con un buffer da 20 byte il pacchetto viene troncato senza errore e `readObject` lancia `EOFException`. Valgono infine tutti i limiti di UDP descritti sopra.
+
 ---
 
 ## 19.6 Leggere una pagina web con `URL`
