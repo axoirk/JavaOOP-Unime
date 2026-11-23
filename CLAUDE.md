@@ -65,7 +65,7 @@ I 7 Livelli sono definiti da `Esercitazioni (Self)/SYLLABUS.MD`: 1 basi/sintassi
 Documenti trasversali:
 - `Esercitazioni (Self)/SYLLABUS.MD` — percorso ufficiale a 7 livelli (fonte di verità per gli argomenti).
 - `Esercitazioni (Self)/REPORT.MD` — stato di avanzamento e incongruenze Syllabus ↔ Teoria ↔ esercizi.
-- `Esercitazioni (Self)/Q&A.MD` — domande/risposte per l'orale, ordinate per livello.
+- `Teoria/Q&A.MD` — domande/risposte per l'orale: temi già chiesti, tutto il programma per capitolo, confronti rapidi; ogni risposta linka il paragrafo di `Teoria/`.
 - `Exams/ESAMI_PASSATI.MD` — tracce testuali degli appelli reali + regole d'appello.
 - `Exams/REGOLE_GENERAZIONE_AI.MD` — direttiva vincolante per generare simulazioni (vedi sotto).
 - `Exams/Simulazioni/GUIDA_PUBBLICA.md` — struttura fissa delle prove (ES1 basi OOP **o** problem solving su metodo statico · ES2 argomenti specifici · ES3 di norma thread e mutua esclusione, con classi annidate da Livello 3), scala di difficoltà a 5 livelli (scelta per simulazione, o consigliata dall'avanzamento), avanzamento e criteri di composizione. La prova successiva **non è mai decisa in anticipo**: argomenti, variante e natura di ES1 si scelgono al momento della generazione, leggendo storico e tracce già proposte.

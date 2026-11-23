@@ -41,14 +41,14 @@ JavaOOP-Unime/
 ├── Teoria/
 │   ├── _indice.md                       indice dei capitoli e mappa argomento → capitolo
 │   ├── 01-java-e-la-jvm.md … 22-ecosistema.md   un file per capitolo, nell'ordine del Syllabus
+│   ├── Q&A.MD                           domande e risposte per l'orale, con link ai paragrafi
 │   └── _archivio/                       vecchi appunti (sostituiti dai capitoli)
 │
 ├── Esercitazioni (Self)/
 │   ├── Livello 1/ … Livello 7/
 │   │   ├── Esercizio 1/ … Esercizio N/  un progetto indipendente ciascuno
 │   │   └── Progetti Recap/              esercizi di sintesi del livello
-│   ├── Extra/                           progetti fuori percorso
-│   └── Q&A.MD                           domande e risposte per l'orale, per livello
+│   └── Extra/                           progetti fuori percorso
 │
 ├── Exams/
 │   ├── Appelli Ufficiali Unime/
@@ -101,7 +101,7 @@ Esercizi scritti dallo studente, uno per cartella, ciascuno con il proprio `READ
 | **6** | Networking e XML |
 | **7** | Maven, JDBC, NoSQL, Spring |
 
-Ogni livello chiude con **`Progetti Recap/`**: esercizi più grandi che mettono insieme gli argomenti del livello. `Q&A.MD` raccoglie le domande dell'orale ordinate per livello.
+Ogni livello chiude con **`Progetti Recap/`**: esercizi più grandi che mettono insieme gli argomenti del livello. Le domande dell'orale stanno in [`Teoria/Q&A.MD`](Teoria/Q&A.MD), ordinate per capitolo.
 
 ---
 
