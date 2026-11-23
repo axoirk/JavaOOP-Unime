@@ -793,6 +793,42 @@ Dentro `run()` si deve **catturare**: il metodo `run()` di `Runnable` e di `Thre
 
 L'eccezione viene lanciata quando un altro thread *interrompe* il thread che sta dormendo (o aspettando) chiamando il metodo `interrupt()` su di esso. Negli esempi di questo capitolo nessuno lo fa mai, quindi il `catch` non viene mai eseguito: serve solo a far compilare il programma. Quando non si ha nulla da fare nel `catch`, lo si scrive comunque, con il blocco vuoto o con una stampa.
 
+> [!NOTE]
+> **Approfondimento fuori programma — `interrupt()`: svegliare un thread che dorme**
+> Questo approfondimento **non compare nel materiale del corso**: le dispense del docente usano `InterruptedException` solo nel `catch` e non mostrano mai `interrupt()`. Nessun appello l'ha chiesto, e le simulazioni non possono richiederlo. Si legge per completezza.
+>
+> `t.interrupt()` è un metodo **non statico**: chiede al thread `t` di interrompersi. Se `t` è fermo in `sleep`, in `wait` o in `join`, la chiamata lo **sveglia subito** e quel metodo lancia `InterruptedException` dentro `t`. È l'unico modo di non aspettare la fine di un `sleep` lungo; una variabile sentinella (paragrafo 17.4.4) viene riletta solo quando il thread si sveglia da solo.
+>
+> ```java
+> public class Allarme implements Runnable {
+>     public void run() {
+>         try {
+>             while (true) {
+>                 System.out.println("controllo");
+>                 Thread.sleep(5000);
+>             }
+>         } catch (InterruptedException e) {      // fuori dal ciclo: l'eccezione fa uscire dal while
+>             System.out.println("fermato");
+>         }
+>     }
+>
+>     public static void main(String[] args) throws InterruptedException {
+>         Thread t = new Thread(new Allarme());
+>         t.start();
+>         Thread.sleep(300);
+>         t.interrupt();                          // sveglia sleep subito
+>         t.join();                               // attende che il thread abbia finito
+>     }
+> }
+> ```
+>
+> ```text
+> controllo
+> fermato
+> ```
+>
+> Il programma termina dopo circa 300 ms, non dopo 5 secondi. Cose da sapere: se il `catch` sta **dentro** il ciclo, l'eccezione viene assorbita e il thread non si ferma mai; se `t` non sta dormendo, `interrupt()` imposta soltanto un segnale (leggibile con `isInterrupted()`), e il primo `sleep` successivo lancia subito l'eccezione.
+
 ### 17.5.3 Cedere il turno: `yield`
 
 `yield()` è un metodo statico, come `sleep`, che dice allo scheduler: "per ora posso cedere il processore a un altro thread". Il thread **non** diventa *blocked*: rimane *runnable*, ed è spostato in fondo alla coda dei thread della sua stessa priorità. Se nessun altro è in attesa, il thread continua senza un inutile cambio di contesto. Si usa per favorire la cooperazione tra thread quando uno impegnerebbe il processore a lungo.
@@ -947,6 +983,7 @@ priorità non valida
 | `getName()` / `setName(String)` | no | nome del thread |
 | `getPriority()` / `setPriority(int)` | no | priorità (1-10, normale 5) |
 | `getState()` | no | stato (`Thread.State`) |
+| `interrupt()` | no | sveglia un thread in `sleep`/`wait`/`join` con `InterruptedException`; **fuori programma**, vedi 17.5.2 |
 | `stop()`, `suspend()`, `resume()` | no | **deprecati**: non si usano |
 
 Il fatto che `sleep`, `yield` e `currentThread` siano **statici** conta: riguardano *sempre il thread che sta eseguendo*, mai un altro. Scrivere `t.sleep(100)` su un thread `t` compila (lo vediamo tra gli errori tipici), ma fa dormire **chi scrive la riga**, non `t`.

@@ -200,6 +200,7 @@ Gli appelli sono indicati con una sigla. EXAM3 è l'appello dell'8 luglio 2026 e
 | Stati di un thread, `getState`; un'eccezione che esce da `run` | cap. 17, §17.4.1-§17.4.3 |
 | Fermare un thread con una sentinella `volatile` | cap. 17, §17.4.4 e quarto scheletro |
 | `sleep`, `InterruptedException` (catturare o dichiarare) | cap. 17, §17.5.2 e secondo scheletro |
+| `interrupt()`: svegliare un thread che dorme (**fuori programma**) | cap. 17, §17.5.2 (approfondimento) |
 | `join`, `isAlive`, attendere un thread; `yield`, priorità | cap. 17, §17.5.3-§17.5.5 e secondo scheletro |
 | Risultato di un thread (campo del `Runnable`, letto dopo `join`) | cap. 17, §17.6.1 |
 | Dividere un array o una matrice tra più thread (due cicli, ultimo con il resto) | cap. 17, §17.6.2-§17.6.3 e terzo scheletro |
