@@ -46,3 +46,6 @@ __pycache__/
 
 # critique di impeccable: locale
 .impeccable/
+
+# --- Promemoria personale per l'esame ---
+PROMEMORIA_ESAME.md
