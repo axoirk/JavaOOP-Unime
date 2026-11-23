@@ -57,7 +57,7 @@ Non esistono test unitari (nessun JUnit configurato). L'unico meccanismo di test
 |------|-----------|
 | `Teoria/` | Appunti in Markdown: 22 capitoli `NN-titolo.md` (ordine del Syllabus, indice e stato in `_indice.md`). I vecchi appunti sono in `_archivio/` (`Fondamenti_e_Pilastri_OOP/`, `Appunti_Pratici_Livelli/`, `Extra/`). |
 | `Esercitazioni (Self)/` | `Livello 1..7/Esercizio N/` + `Progetti Recap/`. Esercizi scritti dallo studente. |
-| `Exams/` | `Appelli Ufficiali Unime/EXAM1..4/` (tracce, soluzioni e tester; **EXAM3 ed EXAM4 sono gli appelli davvero sostenuti**, 08/07/2026 e 08/09/2026) e `Simulazioni/`: `GUIDA_PUBBLICA.md` (tracciata) più il materiale personale non tracciato — `GUIDA.md` con il registro delle prove, `Prove/SIM_N/` (serie attiva), `Archivio/Serie_N/` (serie chiuse). |
+| `Exams/` | `Appelli Ufficiali Unime/EXAM1..5/` (tracce, soluzioni e tester; **EXAM3, EXAM4 ed EXAM5 sono gli appelli davvero sostenuti**, 08/07/2026, 08/09/2026 e 23/11/2026, l'ultimo superato con 30 e lode) e `Simulazioni/`: `GUIDA_PUBBLICA.md` (tracciata) più il materiale personale non tracciato — `GUIDA.md` con il registro delle prove, `Prove/SIM_N/` (serie attiva), `Archivio/Serie_N/` (serie chiuse). |
 | `java_lessons/` | Materiale del professore. **Ignorato da git — non modificare.** |
 
 I 7 Livelli sono definiti da `Esercitazioni (Self)/SYLLABUS.MD`: 1 basi/sintassi → 2 fondamenti OOP → 3 OOP avanzata + eccezioni → 4 I/O, file, Serializable, Swing → 5 JVM e thread → 6 networking e XML → 7 Maven/JDBC/NoSQL/Spring. Ogni nuovo esercizio o file di teoria deve collocarsi in questo schema.

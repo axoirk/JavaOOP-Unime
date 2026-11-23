@@ -53,7 +53,7 @@ JavaOOP-Unime/
 ├── Exams/
 │   ├── Appelli Ufficiali Unime/
 │   │   ├── EXAM1/  EXAM2/               appelli ricostruiti
-│   │   ├── EXAM3/  EXAM4/               appelli realmente sostenuti
+│   │   ├── EXAM3/  EXAM4/  EXAM5/       appelli realmente sostenuti
 │   │   └── …/ESn/                       README (traccia) · Soluzione.java · Main.class (tester)
 │   ├── Simulazioni/GUIDA_PUBBLICA.md    come è fatta, si genera e si corregge una simulazione
 │   ├── ESAMI_PASSATI.MD                 tracce testuali degli appelli reali + regole d'appello
@@ -111,7 +111,7 @@ La parte più specifica del repository, e la ragione per cui esiste in questa fo
 
 ### Appelli ufficiali
 
-Quattro appelli in `Appelli Ufficiali Unime/`. **EXAM3 ed EXAM4 sono stati realmente sostenuti**; EXAM1 ed EXAM2 sono ricostruzioni. Ogni esercizio è una cartella:
+Cinque appelli in `Appelli Ufficiali Unime/`. **EXAM3, EXAM4 ed EXAM5 sono stati realmente sostenuti** (EXAM5 superato con 30 e lode); EXAM1 ed EXAM2 sono ricostruzioni. Ogni esercizio è una cartella:
 
 | File | Cos'è |
 |---|---|

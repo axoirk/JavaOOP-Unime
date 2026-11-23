@@ -136,3 +136,39 @@ Metodo statico che converte chilometri in metri. Stessa sostanza dell'Esercizio 
 2. **UDP esiste.** Fino a qui la rete era sempre TCP (`Socket`/`ServerSocket`) con serializzazione. `DatagramSocket`, `DatagramPacket` e `InetAddress.getByName` sono un blocco da sapere a memoria: su UDP il destinatario si scrive sul pacchetto, non sul socket, e non c'è nessuno stream da cui leggere.
 3. **Il primo Esegui va speso presto, anche sull'esercizio che sembra banale.** Gli errori più cari di questo appello sono tutti errori che il compilatore avrebbe mostrato al primo tentativo. Quindici esecuzioni disponibili in totale: non usarne nessuna è il modo più economico di perdere punti.
 4. **La forma costa più della logica.** A luglio il mezzo sbagliato, a settembre la classe mancante e la keyword sbagliata: in entrambi i casi il ragionamento era corretto e i punti sono andati via lo stesso.
+
+
+---
+
+# 📝 APPELLO SOSTENUTO — 23 novembre 2026
+
+Terzo appello effettivamente svolto, **superato con 30 e lode**. Tracce ricostruite a memoria
+subito dopo la prova: argomenti, nomi e vincoli sono quelli reali, i dettagli operativi sono
+dichiarati come tali nel README della cartella.
+
+Tracce e tester eseguibili: `Exams/Appelli Ufficiali Unime/EXAM5/`.
+
+### Esercizio 1 (5 Punti) — Classi Astratte e Polimorfismo
+Classe astratta `Animale` con il metodo astratto `verso`; sottoclassi `Cane` e `Gatto` che lo
+implementano restituendo `bau` e `miao`. È l'Esercizio 1 dell'Esame 1.
+
+### Esercizio 2 (13 Punti) — Le 5 Parole Chiave delle Eccezioni
+Classe `Automobile`, metodo `guida` con un parametro intero `n`:
+* Se `0`: lancia un'eccezione controllata che il metodo non gestisce, la gestisce il chiamante. Messaggio `eccezione`.
+* Se `1`: lancia una `IOException`, catturata dal `catch`, che a sua volta lancia una `RuntimeException`. Messaggio `eccezione in run time`.
+* Se `2`: non fa nulla. Messaggio `nessuna eccezione`.
+* Il messaggio di ogni caso va stampato in console, usando **tutte e cinque le parole chiave**.
+
+Stessa struttura degli Esami 1 e 3, con nomi nuovi. Il caso `0` qui **esce** dal metodo, mentre
+nell'Esame 3 il metodo lo catturava: è la parte da leggere con attenzione.
+
+### Esercizio 3 (13 Punti) — Comunicazione di Rete su Protocollo UDP
+Il `ClientUDP` dell'Esame 4, con le coordinate del server già date. Unica aggiunta: la conversione
+tra testo e byte va fatta in `UTF-8` (`getBytes("UTF-8")` all'invio, `new String(dati, 0, lunghezza, "UTF-8")` alla ricezione).
+
+---
+
+### Cosa insegna questo appello
+
+1. **Tutti e tre gli esercizi possono essere riciclati.** Luglio e settembre riprendevano un solo esercizio da un appello precedente; qui li riprendevano tutti e tre. Rifare gli appelli passati fino a scriverli senza esitazione è la preparazione che rende di più.
+2. **Una traccia riciclata cambia nei dettagli.** Nomi delle classi, testo dei messaggi, il caso che esce dal metodo invece di essere catturato, la codifica dei byte: chi ricorda la vecchia soluzione invece di rileggere la traccia perde punti sull'aderenza letterale.
